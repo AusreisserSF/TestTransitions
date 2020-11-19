@@ -19,10 +19,10 @@ public class Main extends Application {
     private static final double FIELD_WIDTH = 600;
     private static final double FIELD_HEIGHT = 600;
 
-    private Pane field = new Pane();
-    ParallelTransition parallel = new ParallelTransition();
-    SequentialTransition sequentialRobot1 = new SequentialTransition();
-    SequentialTransition sequentialRobot2 = new SequentialTransition();
+    private final Pane field = new Pane();
+    private final ParallelTransition parallel = new ParallelTransition();
+    private final SequentialTransition sequentialRobot1 = new SequentialTransition();
+    private final SequentialTransition sequentialRobot2 = new SequentialTransition();
 
     @Override
     public void start(Stage primaryStage) throws Exception{
