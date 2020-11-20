@@ -1,6 +1,6 @@
 package sample;
 
-import javafx.animation.ParallelTransition;
+//## import javafx.animation.ParallelTransition;
 import javafx.animation.SequentialTransition;
 import javafx.animation.TranslateTransition;
 import javafx.application.Application;
@@ -20,7 +20,7 @@ public class Main extends Application {
     private static final double FIELD_HEIGHT = 600;
 
     private final Pane field = new Pane();
-    private final ParallelTransition parallel = new ParallelTransition();
+    //## See fix below private final ParallelTransition parallel = new ParallelTransition();
     private final SequentialTransition sequentialRobot1 = new SequentialTransition();
     private final SequentialTransition sequentialRobot2 = new SequentialTransition();
 
@@ -44,10 +44,9 @@ public class Main extends Application {
 
         robotBody1.boundsInParentProperty().addListener((observable, oldValue, newValue) -> {
             if (northBoundary.getBoundsInParent().intersects(robotBody1.getBoundsInParent())) {
-                //** BROKEN!! IllegalStateException on next line
+                //## Was BROKEN!! when running with a ParallelTransition IllegalStateException on next line
                 sequentialRobot1.stop();
                 System.out.println("Collision detected");
-                parallel.play();
             }
         });
 
@@ -65,7 +64,7 @@ public class Main extends Application {
         sequentialRobot1.getChildren().add(translateTransition1);
 
         // The second robot.
-        Rectangle robotBody2 = new Rectangle(300, 300, 60, 60);
+        Rectangle robotBody2 = new Rectangle(300, 500, 60, 60);
         robotBody2.setArcHeight(15);
         robotBody2.setArcWidth(15);
         robotBody2.setStroke(Color.BLACK);
@@ -75,8 +74,8 @@ public class Main extends Application {
         TranslateTransition translateTransition2 = new TranslateTransition();
         translateTransition2.setNode(robotBody2);
         translateTransition2.setByX(0);
-        translateTransition2.setByY(-100);
-        translateTransition2.setDuration(Duration.seconds(1));
+        translateTransition2.setByY(-400);
+        translateTransition2.setDuration(Duration.seconds(2));
         translateTransition2.setOnFinished(event -> {
             robotBody2.setLayoutX(robotBody2.getLayoutX() + robotBody2.getTranslateX());
             robotBody2.setLayoutY(robotBody2.getLayoutY() + robotBody2.getTranslateY());
@@ -85,8 +84,14 @@ public class Main extends Application {
         });
         sequentialRobot2.getChildren().add(translateTransition2);
 
-        parallel.getChildren().addAll(sequentialRobot1, sequentialRobot2);
-        parallel.play();
+        // Fix according to the answer from swpalmer on
+        // https://stackoverflow.com/questions/64921759/javafx-sequentialtransition-illegalstateexception-cannot-stop-when-embedded-in
+        sequentialRobot1.play();
+        sequentialRobot2.play();
+
+        //## According to the fix, do not need a ParallelTransition.
+        //parallel.getChildren().addAll(sequentialRobot1, sequentialRobot2);
+        //parallel.play();
 
         primaryStage.setTitle("Field");
         primaryStage.setScene(new Scene(field, FIELD_WIDTH, FIELD_HEIGHT, Color.GRAY));
