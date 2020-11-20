@@ -5,3 +5,6 @@ The full application is a robot simulator with multiple robots that move autonom
 I really do want to stop the SequentialTransition for a robot that runs into an obstacle but let the other robot(s) continue. How can I do this?
 
 The error comes up in Java 8 but also in Java 11 and JavaFX 15.
+
+Fixed according to the answer from swpalmer on
+https://stackoverflow.com/questions/64921759/javafx-sequentialtransition-illegalstateexception-cannot-stop-when-embedded-in
