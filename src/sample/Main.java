@@ -1,12 +1,14 @@
 package sample;
 
 //## import javafx.animation.ParallelTransition;
+
 import javafx.animation.SequentialTransition;
 import javafx.animation.TranslateTransition;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -24,9 +26,11 @@ public class Main extends Application {
     private final SequentialTransition sequentialRobot1 = new SequentialTransition();
     private final SequentialTransition sequentialRobot2 = new SequentialTransition();
 
+    private boolean play = true;
+    private boolean pause = false;
+
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
 
         // Place one field boundary for testing.
         Line northBoundary = new Line(0, 0, FIELD_WIDTH, 0);
@@ -35,7 +39,7 @@ public class Main extends Application {
 
         // Place the robots on the field.
         // The first robot.
-        Rectangle robotBody1 = new Rectangle(100, 300, 60, 60);
+        Rectangle robotBody1 = new Rectangle(100, 500, 60, 60);
         robotBody1.setArcHeight(15);
         robotBody1.setArcWidth(15);
         robotBody1.setStroke(Color.BLACK);
@@ -53,8 +57,8 @@ public class Main extends Application {
         TranslateTransition translateTransition1 = new TranslateTransition();
         translateTransition1.setNode(robotBody1);
         translateTransition1.setByX(0);
-        translateTransition1.setByY(-300);
-        translateTransition1.setDuration(Duration.seconds(1));
+        translateTransition1.setByY(-495);
+        translateTransition1.setDuration(Duration.seconds(2));
         translateTransition1.setOnFinished(event -> {
             robotBody1.setLayoutX(robotBody1.getLayoutX() + robotBody1.getTranslateX());
             robotBody1.setLayoutY(robotBody1.getLayoutY() + robotBody1.getTranslateY());
@@ -75,7 +79,7 @@ public class Main extends Application {
         translateTransition2.setNode(robotBody2);
         translateTransition2.setByX(0);
         translateTransition2.setByY(-400);
-        translateTransition2.setDuration(Duration.seconds(2));
+        translateTransition2.setDuration(Duration.seconds(4));
         translateTransition2.setOnFinished(event -> {
             robotBody2.setLayoutX(robotBody2.getLayoutX() + robotBody2.getTranslateX());
             robotBody2.setLayoutY(robotBody2.getLayoutY() + robotBody2.getTranslateY());
@@ -84,10 +88,33 @@ public class Main extends Application {
         });
         sequentialRobot2.getChildren().add(translateTransition2);
 
-        // Fix according to the answer from swpalmer on
-        // https://stackoverflow.com/questions/64921759/javafx-sequentialtransition-illegalstateexception-cannot-stop-when-embedded-in
-        sequentialRobot1.play();
-        sequentialRobot2.play();
+        // https://www.geeksforgeeks.org/javafx-button-with-examples/
+        Button b = new Button("Play");
+
+        // action event
+        EventHandler<ActionEvent> event = e -> {
+            if (play) {
+                play = false;
+                pause = true;
+                b.setText("Pause");
+                sequentialRobot1.play();
+                sequentialRobot2.play();
+            }
+
+               else if (pause) {
+                    pause = false;
+                    play = true;
+                    b.setText("Play");
+                    sequentialRobot1.pause();
+                    sequentialRobot2.pause();
+                }
+        };
+
+        // when button is pressed
+        b.setOnAction(event);
+        b.setLayoutX(300);
+        b.setLayoutY(300);
+        field.getChildren().add(b);
 
         //## According to the fix, do not need a ParallelTransition.
         //parallel.getChildren().addAll(sequentialRobot1, sequentialRobot2);
@@ -96,6 +123,13 @@ public class Main extends Application {
         primaryStage.setTitle("Field");
         primaryStage.setScene(new Scene(field, FIELD_WIDTH, FIELD_HEIGHT, Color.GRAY));
         primaryStage.show();
+
+        // Fix according to the answer from swpalmer on
+        // https://stackoverflow.com/questions/64921759/javafx-sequentialtransition-illegalstateexception-cannot-stop-when-embedded-in
+        //sequentialRobot1.play();
+        //sequentialRobot2.play();
+
+
     }
 
 
