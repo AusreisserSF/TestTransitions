@@ -75,11 +75,13 @@ public class Main extends Application {
         robotBody2.setArcWidth(15);
         robotBody2.setStroke(Color.BLACK);
         robotBody2.setFill(Color.CYAN);
-        field.getChildren().add(robotBody2);
 
+        // Is it ok to set the rotation before adding the robot to the field?  Yes.
         robotBody2.setRotate(-30.0);
         Point2D rbCoord = robotBody2.localToScene(robotBody2.getX(), robotBody2.getY());
         System.out.println( "Initial (rotated) position x " + rbCoord.getX() + ", y " + rbCoord.getY());
+
+        field.getChildren().add(robotBody2);
 
         RotateTransition rotateTransition =
                 new RotateTransition(Duration.seconds(1), robotBody2);
