@@ -2,11 +2,13 @@ package sample;
 
 //## import javafx.animation.ParallelTransition;
 
+import javafx.animation.RotateTransition;
 import javafx.animation.SequentialTransition;
 import javafx.animation.TranslateTransition;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
@@ -74,6 +76,20 @@ public class Main extends Application {
         robotBody2.setStroke(Color.BLACK);
         robotBody2.setFill(Color.CYAN);
         field.getChildren().add(robotBody2);
+
+        robotBody2.setRotate(-30.0);
+        Point2D rbCoord = robotBody2.localToScene(robotBody2.getX(), robotBody2.getY());
+        System.out.println( "Initial (rotated) position x " + rbCoord.getX() + ", y " + rbCoord.getY());
+
+        RotateTransition rotateTransition =
+                new RotateTransition(Duration.seconds(1), robotBody2);
+        rotateTransition.setByAngle(30.0);
+        rotateTransition.setOnFinished(event -> {
+            Point2D rbCoord2 = robotBody2.localToScene(robotBody2.getX(), robotBody2.getY());
+            System.out.println( "Position after turn x " + rbCoord2.getX() + ", y " + rbCoord2.getY());
+        });
+
+        sequentialRobot2.getChildren().add(rotateTransition);
 
         TranslateTransition translateTransition2 = new TranslateTransition();
         translateTransition2.setNode(robotBody2);
