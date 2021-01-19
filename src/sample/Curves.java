@@ -99,8 +99,12 @@ public class Curves extends Application {
         cPath1.getElements().add(moveTo1);
 
         // 90 degree curve; rotation after path transition is 359+; add 90 to get rotation of robot body
-        CubicCurveTo ccTo1 = new CubicCurveTo(150, 149.5, 150, 149.5, 240, 150);
-        cPath1.getElements().add(ccTo1);
+        //CubicCurveTo cc90 = new CubicCurveTo(150, 149.5, 150, 149.5, 240, 150);
+        //cPath1.getElements().add(cc90);
+
+        // 45 degree curve
+        CubicCurveTo cc45 = new CubicCurveTo(150, 149.5, 150, 149.5, 250, 50);
+        cPath1.getElements().add(cc45);
 
         // Line at 45 degrees; rotation after path transition is 45.0; add 90 to get the actual 135 degree
         // rotation of the robot body.
@@ -167,21 +171,25 @@ public class Curves extends Application {
             Rectangle robotBody = (Rectangle) pRobot.lookup("#robotBodyId");
             Point2D rbCoord = robotBody.localToScene(robotBody.getX(), robotBody.getY());
             System.out.println("Position after path following x " + rbCoord.getX() + ", y " + rbCoord.getY());
-            System.out.println("Rotation " + pRobot.getRotate());
-            Point2D centroid = computeRotatedCentroid(rbCoord.getX(), rbCoord.getY(), ROBOT_WIDTH, ROBOT_HEIGHT, 90.0);
+            System.out.println("JavaFX rotation after path " + pRobot.getRotate());
+
+            double robotRotation = pRobot.getRotate() + 90.0;
+            System.out.println("Robot rotation after path " + robotRotation);
+
+            Point2D centroid = computeRotatedCentroid(rbCoord.getX(), rbCoord.getY(), ROBOT_WIDTH, ROBOT_HEIGHT, robotRotation);
             System.out.println("Centroid x " + centroid.getX() + ", y " + centroid.getY());
 
-            Map<Corners, Point2D> cornerMap = robotBodyCornerCoordinates(centroid.getX(), centroid.getY(), ROBOT_WIDTH, ROBOT_HEIGHT, 90.0);
-            //System.out.println("Top left x " + corners[TOP_LEFT].getX() + "' y " + corners[TOP_LEFT].getY());
-            // System.out.println("Top right x " + corners[TOP_RIGHT].getX() + "' y " + corners[TOP_RIGHT].getY());
-            //System.out.println("Bottom right x " + corners[BOTTOM_RIGHT].getX() + "' y " + corners[BOTTOM_RIGHT].getY());
-            //System.out.println("Bottom left x " + corners[BOTTOM_LEFT].getX() + "' y " + corners[BOTTOM_LEFT].getY());
+            Map<Corners, Point2D> cornerMap = robotBodyCornerCoordinates(centroid.getX(), centroid.getY(), ROBOT_WIDTH, ROBOT_HEIGHT, robotRotation);
+            System.out.println("Top left x " + cornerMap.get(Corners.TOP_LEFT).getX() + " y " + cornerMap.get(Corners.TOP_LEFT).getY());
+            System.out.println("Top right x " + cornerMap.get(Corners.TOP_RIGHT).getX() + " y " + cornerMap.get(Corners.TOP_RIGHT).getY());
+            System.out.println("Bottom right x " + cornerMap.get(Corners.BOTTOM_RIGHT).getX() + " y " + cornerMap.get(Corners.BOTTOM_RIGHT).getY());
+            System.out.println("Bottom left x " + cornerMap.get(Corners.BOTTOM_LEFT).getX() + " y " + cornerMap.get(Corners.BOTTOM_LEFT).getY());
 
             // https://stackoverflow.com/questions/26513747/efficient-way-to-find-min-value-in-map
             // Obtain the entry with the minimum value:
             Map.Entry<Corners, Point2D> entryWithMinValue = Collections.min(
                     cornerMap.entrySet(), Map.Entry.comparingByValue(Comparator.comparingDouble(Point2D::getY)));
-            System.out.println(entryWithMinValue);
+            System.out.println("Minimum y coordinate " + entryWithMinValue);
 
             // Or directly obtain the key, if you only need that:
             //String keyWithMinValue = Collections.min(
@@ -238,35 +246,38 @@ public class Curves extends Application {
         sequential.play();
     }
 
-    //**TODO theta is JavaFX -> FTC and invert? -- anyway standardize; FIX names
-    //** normalize to Cartesian? Why does it work anyway?
+    // Given the screen coordinates of a corner of a rectangle and its rotation angle,
+    // get the screen coordinates of the center of the rectangle.
+    // The angle is in the FTC range (0 to +180 not inclusive, 0 to -180 inclusive) but
+    // the JavaFX orientation (CW positive, CCW negative).
     // From https://stackoverflow.com/questions/60573374/finding-the-midpoint-of-the-rotated-rectangle
-    private Point2D computeRotatedCentroid(double x, double y, double width, double height, double theta) {
-        double cx = 0.5 * width;
-        double cy = 0.5 * height;
+    private Point2D computeRotatedCentroid(double pX, double pY, double pWidth, double pHeight, double pAngle) {
+        double centerX = 0.5 * pWidth;
+        double centerY = 0.5 * pHeight;
+        double angleRadians = Math.toRadians(pAngle);
 
-        double thetaRadians = Math.toRadians(theta);
+        double cosAngle = Math.cos(angleRadians);
+        double sinAngle = Math.sin(angleRadians);
 
-        double cosTheta = Math.cos(thetaRadians);
-        double sinTheta = Math.sin(thetaRadians);
-
-        double finalCx = x + cx * cosTheta - cy * sinTheta;
-        double finalCy = y + cx * sinTheta + cy * cosTheta;
+        double finalCx = pX + centerX * cosAngle - centerY * sinAngle;
+        double finalCy = pY + centerX * sinAngle + centerY * cosAngle;
 
         return new Point2D(finalCx, finalCy);
     }
 
     // Get the coordinates of all 4 corners of a rotated rectangle.
-    // The coordinates of the center of the rectange are JavaFX screen coordinates.
-    // The angle is in the FTC range (0 to +180 CCW not inclusive, 0 to -180 CW inclusive).
+    // The coordinates of the center of the rectangle are JavaFX screen coordinates.
+    // The angle is in the FTC range (0 to +180 not inclusive, 0 to -180 inclusive) but the JavaFX orientation
+    // (CW positive, CCW negative).
     // From https://stackoverflow.com/questions/41898990/find-corners-of-a-rotated-rectangle-given-its-center-point-and-rotation
     // See also https://math.stackexchange.com/questions/126967/rotating-a-rectangle-via-a-rotation-matrix
     private Map<Corners, Point2D> robotBodyCornerCoordinates(double pCenterX, double pCenterY, double pWidth, double pHeight, double pAngle) {
         Map<Corners, Point2D> cornerMap = new HashMap<>();
-        double angleRadians = Math.toRadians(pAngle);
 
-        // The formula assumes Cartesian coordinates. Convert screen Y coordinate to Cartesian.
-        pCenterY = FieldFX.FIELD_HEIGHT - pCenterY;
+        // The formula assumes FTC orientation (CCW positive, CW negative) and Cartesian coordinates.
+        pAngle = -pAngle;
+        double angleRadians = Math.toRadians(pAngle);
+        pCenterY = FieldFX.FIELD_HEIGHT - pCenterY; // Convert screen Y coordinate to Cartesian
 
         // TOP LEFT VERTEX
         double topLeftX = pCenterX - ((pWidth / 2) * Math.cos(angleRadians)) - ((pHeight / 2) * Math.sin(angleRadians));
