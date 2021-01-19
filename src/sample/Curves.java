@@ -99,23 +99,23 @@ public class Curves extends Application {
         cPath1.getElements().add(moveTo1);
 
         // 90 degree curve; rotation after path transition is 359+; add 90 to get rotation of robot body
-        //CubicCurveTo cc90 = new CubicCurveTo(150, 149.5, 150, 149.5, 240, 150);
-        //cPath1.getElements().add(cc90);
+        CubicCurveTo cc90 = new CubicCurveTo(150, 149.5, 150, 149.5, 240, 150);
+        cPath1.getElements().add(cc90);
 
         // 45 degree curve
-        CubicCurveTo cc45 = new CubicCurveTo(150, 149.5, 150, 149.5, 250, 50);
-        cPath1.getElements().add(cc45);
+        //CubicCurveTo cc45 = new CubicCurveTo(150, 149.5, 150, 149.5, 250, 50);
+       //cPath1.getElements().add(cc45);
+
+        //**TODO After the 90 degree turn move forward some distance then
+        // make a 45 degree turn. Cannot start the 45 degree turn at the end of
+        // the LineTo.
 
         // Line at 45 degrees; rotation after path transition is 45.0; add 90 to get the actual 135 degree
         // rotation of the robot body.
         //LineTo lineTo = new LineTo(340, 250);
         //cPath1.getElements().add(lineTo);
 
-        //**TODO Not quite right because the x and y coordinates of the control points should
-        // not be at the upper left of the robot, rather at its center. But this requires
-        // translation.
-        // see https://stackoverflow.com/questions/48624376/cubiccurve-and-cubiccurveto-in-javafx
-        //CubicCurveTo ccTo2 = new CubicCurveTo(382, 250, 382, 250, 300, 400);
+         //CubicCurveTo ccTo2 = new CubicCurveTo(382, 250, 382, 250, 300, 400);
         // CubicCurveTo ccTo2 = new CubicCurveTo(490, 236, 490, 236, 300, 400);
         //cPath1.getElements().add(ccTo2);
 
