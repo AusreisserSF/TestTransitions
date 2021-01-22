@@ -74,7 +74,7 @@ public class Transitions extends Application {
         robotBody2.setFill(Color.CYAN);
 
         // Is it ok to set the rotation before adding the robot to the field?  Yes.
-        robotBody2.setRotate(-30.0);
+        robotBody2.setRotate(30.0);
         Point2D rbCoord = robotBody2.localToScene(robotBody2.getX(), robotBody2.getY());
         System.out.println( "Initial (rotated) position x " + rbCoord.getX() + ", y " + rbCoord.getY());
 
@@ -82,10 +82,19 @@ public class Transitions extends Application {
 
         RotateTransition rotateTransition =
                 new RotateTransition(Duration.seconds(1), robotBody2);
-        rotateTransition.setByAngle(30.0);
+        rotateTransition.setByAngle(-60.0);
         rotateTransition.setOnFinished(event -> {
             Point2D rbCoord2 = robotBody2.localToScene(robotBody2.getX(), robotBody2.getY());
             System.out.println( "Position after turn x " + rbCoord2.getX() + ", y " + rbCoord2.getY());
+
+            double rotation = robotBody2.getRotate();
+            System.out.println("JavaFX getRotate() " + rotation);
+            // JavaFX rotations can be 0 to 360 CW or 0 to -360 CCW. Force 0 to 360 CW.
+            rotation = (rotation < 0) ? rotation + 360 : rotation;
+            double rotation180 = normalise(rotation, -180, 180);
+            System.out.println("Rotation 0..+360 " + rotation);
+            System.out.println("Rotation JavaFX +-180 " + rotation180);
+
         });
 
         sequentialRobot2.getChildren().add(rotateTransition);
@@ -144,6 +153,14 @@ public class Transitions extends Application {
         //sequentialRobot1.play();
         //sequentialRobot2.play();
 
+    }
+
+    public static double normalise(double value, double start, double end) {
+        double width = end - start;   //
+        double offsetValue = value - start;   // value relative to 0
+
+        return (offsetValue - (Math.floor(offsetValue / width) * width)) + start;
+        // + start to reset back to start of original range
     }
 
 }

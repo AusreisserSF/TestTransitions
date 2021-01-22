@@ -6,8 +6,8 @@ public class Main {
 
     public static void main(String[] args) {
 
-        // Application.launch(Transitions.class, args);
+        Application.launch(Transitions.class, args);
 
-        Application.launch(Curves.class, args);
+        //Application.launch(Curves.class, args);
     }
 }
