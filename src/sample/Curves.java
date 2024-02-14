@@ -25,21 +25,19 @@ public class Curves extends Application {
 
     public static final double ROBOT_WIDTH = 60; // pixels
     public static final double ROBOT_HEIGHT = 60;
-    public static final double WHEEL_WIDTH = 10;
-    public static final double WHEEL_HEIGHT = 20;
-    public static final double PHONE_WIDTH = 20;
-    public static final double PHONE_HEIGHT = 10;
 
     private enum Corners {TOP_LEFT, TOP_RIGHT, BOTTOM_RIGHT, BOTTOM_LEFT}
 
     @Override
     public void start(final Stage pStage) {
 
-        FieldFX fieldFX = new FieldFX();
+        //FieldFX fieldFX = new FieldFX();
+        FieldFXCenterStageBackdrop fieldFX = new FieldFXCenterStageBackdrop();
         Pane field = fieldFX.getField();
 
         pStage.setTitle("JavaFX CubicCurve");
-        pStage.setScene(new Scene(field, FieldFX.FIELD_WIDTH, FieldFX.FIELD_HEIGHT, Color.GRAY));
+        //pStage.setScene(new Scene(field, FieldFX.FIELD_WIDTH, FieldFX.FIELD_HEIGHT, Color.GRAY));
+        pStage.setScene(new Scene(field, FieldFXCenterStageBackdrop.FIELD_WIDTH, FieldFXCenterStageBackdrop.FIELD_HEIGHT, Color.GRAY));
         pStage.show();
 
         applyAnimation(field);
@@ -47,22 +45,14 @@ public class Curves extends Application {
 
     private void applyAnimation(Pane pField) {
 
-        Group robot = new Group();
-        final Rectangle robotBody = new Rectangle(120, 210, ROBOT_WIDTH, ROBOT_HEIGHT);
-        robotBody.setFill(Color.CRIMSON);
-        robotBody.setId("robotBodyId");
-        robot.getChildren().add(robotBody);
-
-        Rectangle robotPhone = new Rectangle(120 + (ROBOT_WIDTH / 2) - (PHONE_WIDTH / 2), 210, PHONE_WIDTH, PHONE_HEIGHT);
-        robotPhone.setArcHeight(5);
-        robotPhone.setArcWidth(5);
-        robotPhone.setFill(Color.BLACK);
-        robot.getChildren().add(robotPhone);
+        RobotFXCenterStage centerStageRobot = new RobotFXCenterStage("RED_F4", Color.RED,
+                new Point2D(100, 100), 0.0);
+        Group robot = centerStageRobot.getRobot();
 
         // Clue from https://stackoverflow.com/questions/53302083/javafx-animate-along-path-parallel-to-tangent
         // Counteracts pathTransition.setOrientation(PathTransition.OrientationType.ORTHOGONAL_TO_TANGENT);
         // which places the robot perpendicular to the path.
-        robot.getTransforms().add(new Rotate(90, 120 + (ROBOT_WIDTH / 2), 210 + (ROBOT_HEIGHT / 2)));
+        //robot.getTransforms().add(new Rotate(90, 120 + (ROBOT_WIDTH / 2), 210 + (ROBOT_HEIGHT / 2)));
         pField.getChildren().add(robot);
 
         /*
@@ -99,8 +89,8 @@ public class Curves extends Application {
         cPath1.getElements().add(moveTo1);
 
         // 90 degree curve; rotation after path transition is 359+; add 90 to get rotation of robot body
-        CubicCurveTo cc90 = new CubicCurveTo(150, 149.5, 150, 149.5, 240, 150);
-        cPath1.getElements().add(cc90);
+        //CubicCurveTo cc90 = new CubicCurveTo(150, 149.5, 150, 149.5, 240, 150);
+        //cPath1.getElements().add(cc90);
 
         // 45 degree curve
         //CubicCurveTo cc45 = new CubicCurveTo(150, 149.5, 150, 149.5, 250, 50);
@@ -125,7 +115,7 @@ public class Curves extends Application {
         seqTrans.getChildren().add(cpTrans1);
 
 
-        seqTrans.play();
+        //seqTrans.play();
 
         //translateAndRotate(group);
 
