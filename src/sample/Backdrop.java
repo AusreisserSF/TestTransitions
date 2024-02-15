@@ -8,7 +8,6 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
-import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -21,7 +20,7 @@ import java.util.Map;
 // https://www.infoworld.com/article/2074529/javafx-2-animation--path-transitions.html
 // and
 // https://docs.oracle.com/javafx/2/animations/basics.htm#CJAJJAGI
-public class Curves extends Application {
+public class Backdrop extends Application {
 
     private enum Corners {TOP_LEFT, TOP_RIGHT, BOTTOM_RIGHT, BOTTOM_LEFT}
 
@@ -53,6 +52,14 @@ public class Curves extends Application {
                 new Point2D(100, 100), 0.0);
         Group robot = centerStageRobot.getRobot();
         pFieldPane.getChildren().add(robot);
+
+        //**TODO Get the angle and distance from the camera to the
+        // selected AprilTag and display. Draw a line from the camera
+        // to the AprilTag. Get the angle and distance from the center
+        // of the robot to the selected AprilTag and display. Draw a
+        // line from the center of the robot to the AprilTag. Get the
+        // angle and distance from the device to the selected AprilTag
+        // and display. Draw a line from the device to the AprilTag.
 
         /*
         // Draw lines at 90 degrees.
@@ -94,7 +101,10 @@ public class Curves extends Application {
         //cPath1.getElements().add(lineTo);
 
         TranslateTransition tt = new TranslateTransition(Duration.millis(2000));
-        tt.setToX(200f);
+        tt.setToX(200f); // simple strafe
+        //**TODO Get the robot's Rectange by Id then get its centroid by:
+        //             Point2D centroid = computeRotatedCentroid(rbCoord.getX(), rbCoord.getY(), RobotFX.ROBOT_WIDTH, RobotFX.ROBOT_HEIGHT, robotRotation);
+        // then strafe so that the centroid is opposite AprilTag 3.
 
         pFieldPane.getChildren().add(cPath1);
 
