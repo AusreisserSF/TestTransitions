@@ -23,9 +23,6 @@ import java.util.Map;
 // https://docs.oracle.com/javafx/2/animations/basics.htm#CJAJJAGI
 public class Curves extends Application {
 
-    public static final double ROBOT_WIDTH = 60; // pixels
-    public static final double ROBOT_HEIGHT = 60;
-
     private enum Corners {TOP_LEFT, TOP_RIGHT, BOTTOM_RIGHT, BOTTOM_LEFT}
 
     @Override
@@ -33,27 +30,29 @@ public class Curves extends Application {
 
         //FieldFX fieldFX = new FieldFX();
         FieldFXCenterStageBackdrop fieldFX = new FieldFXCenterStageBackdrop();
-        Pane field = fieldFX.getField();
+        Pane fieldPane = fieldFX.getField();
 
-        pStage.setTitle("JavaFX CubicCurve");
+        pStage.setTitle("FTC Center Stage Backdrop and AprilTags");
         //pStage.setScene(new Scene(field, FieldFX.FIELD_WIDTH, FieldFX.FIELD_HEIGHT, Color.GRAY));
-        pStage.setScene(new Scene(field, FieldFXCenterStageBackdrop.FIELD_WIDTH, FieldFXCenterStageBackdrop.FIELD_HEIGHT, Color.GRAY));
+        pStage.setScene(new Scene(fieldPane, FieldFXCenterStageBackdrop.FIELD_WIDTH, FieldFXCenterStageBackdrop.FIELD_HEIGHT, Color.GRAY));
         pStage.show();
 
-        applyAnimation(field);
+        applyAnimation(fieldPane);
     }
 
-    private void applyAnimation(Pane pField) {
+    private void applyAnimation(Pane pFieldPane) {
+        //**TODO how to specify variable information: dimensions of the robot,
+        // position of the camera and device on the robot: XML, user input box,
+        // or drag-and-drop.
+        //**TODO How to specify the position of the robot on the field: command
+        // line, user input box, or drag-and-drop.
+        //**TODO How to specify the AprilTag target: command line or user input
+        // box
 
         RobotFXCenterStage centerStageRobot = new RobotFXCenterStage("RED_F4", Color.RED,
                 new Point2D(100, 100), 0.0);
         Group robot = centerStageRobot.getRobot();
-
-        // Clue from https://stackoverflow.com/questions/53302083/javafx-animate-along-path-parallel-to-tangent
-        // Counteracts pathTransition.setOrientation(PathTransition.OrientationType.ORTHOGONAL_TO_TANGENT);
-        // which places the robot perpendicular to the path.
-        //robot.getTransforms().add(new Rotate(90, 120 + (ROBOT_WIDTH / 2), 210 + (ROBOT_HEIGHT / 2)));
-        pField.getChildren().add(robot);
+        pFieldPane.getChildren().add(robot);
 
         /*
         // Draw lines at 90 degrees.
@@ -82,60 +81,33 @@ public class Curves extends Application {
         pField.getChildren().add(path45);
          */
 
-        SequentialTransition seqTrans = new SequentialTransition();
+       // SequentialTransition seqTrans = new SequentialTransition();
 
         final Path cPath1 = new Path();
-        MoveTo moveTo1 = new MoveTo(150, 240);
+        MoveTo moveTo1 = new MoveTo(200, 100);
         cPath1.getElements().add(moveTo1);
 
-        // 90 degree curve; rotation after path transition is 359+; add 90 to get rotation of robot body
-        //CubicCurveTo cc90 = new CubicCurveTo(150, 149.5, 150, 149.5, 240, 150);
-        //cPath1.getElements().add(cc90);
-
-        // 45 degree curve
-        //CubicCurveTo cc45 = new CubicCurveTo(150, 149.5, 150, 149.5, 250, 50);
-       //cPath1.getElements().add(cc45);
-
-        //**TODO After the 90 degree turn move forward some distance then
-        // make a 45 degree turn. Cannot start the 45 degree turn at the end of
-        // the LineTo.
 
         // Line at 45 degrees; rotation after path transition is 45.0; add 90 to get the actual 135 degree
         // rotation of the robot body.
         //LineTo lineTo = new LineTo(340, 250);
         //cPath1.getElements().add(lineTo);
 
-         //CubicCurveTo ccTo2 = new CubicCurveTo(382, 250, 382, 250, 300, 400);
-        // CubicCurveTo ccTo2 = new CubicCurveTo(490, 236, 490, 236, 300, 400);
-        //cPath1.getElements().add(ccTo2);
+        TranslateTransition tt = new TranslateTransition(Duration.millis(2000));
+        tt.setToX(200f);
 
-        pField.getChildren().add(cPath1);
+        pFieldPane.getChildren().add(cPath1);
 
-        final PathTransition cpTrans1 = generatePathTransition(robot, cPath1);
-        seqTrans.getChildren().add(cpTrans1);
+        //final PathTransition cpTrans1 = generatePathTransition(robot, cPath1);
+        //seqTrans.getChildren().add(cpTrans1);
 
 
-        //seqTrans.play();
+        SequentialTransition seqTrans = new SequentialTransition(robot, tt);
+        seqTrans.play();
 
         //translateAndRotate(group);
 
     }
-
-    private Path generateCurvyPath() {
-
-        Path path = new Path();
-        MoveTo moveTo = new MoveTo(150, 240);
-        path.getElements().add(moveTo);
-
-        // 90 degree curve
-        CubicCurveTo ccTo = new CubicCurveTo(150, 149.5, 150, 149.5, 240, 150);
-        path.getElements().add(ccTo);
-
-        // 45 degree curve
-        //path.getElements().add(new CubicCurveTo(150, 149.5, 150, 149.5, 250, 50));
-        return path;
-    }
-
 
     private Path generateLineTo() {
 
@@ -166,10 +138,10 @@ public class Curves extends Application {
             double robotRotation = pRobot.getRotate() + 90.0;
             System.out.println("Robot rotation after path " + robotRotation);
 
-            Point2D centroid = computeRotatedCentroid(rbCoord.getX(), rbCoord.getY(), ROBOT_WIDTH, ROBOT_HEIGHT, robotRotation);
+            Point2D centroid = computeRotatedCentroid(rbCoord.getX(), rbCoord.getY(), RobotFX.ROBOT_WIDTH, RobotFX.ROBOT_HEIGHT, robotRotation);
             System.out.println("Centroid x " + centroid.getX() + ", y " + centroid.getY());
 
-            Map<Corners, Point2D> cornerMap = robotBodyCornerCoordinates(centroid.getX(), centroid.getY(), ROBOT_WIDTH, ROBOT_HEIGHT, robotRotation);
+            Map<Corners, Point2D> cornerMap = robotBodyCornerCoordinates(centroid.getX(), centroid.getY(), RobotFX.ROBOT_WIDTH, RobotFX.ROBOT_HEIGHT, robotRotation);
             System.out.println("Top left x " + cornerMap.get(Corners.TOP_LEFT).getX() + " y " + cornerMap.get(Corners.TOP_LEFT).getY());
             System.out.println("Top right x " + cornerMap.get(Corners.TOP_RIGHT).getX() + " y " + cornerMap.get(Corners.TOP_RIGHT).getY());
             System.out.println("Bottom right x " + cornerMap.get(Corners.BOTTOM_RIGHT).getX() + " y " + cornerMap.get(Corners.BOTTOM_RIGHT).getY());

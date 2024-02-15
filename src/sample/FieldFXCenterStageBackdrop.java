@@ -4,7 +4,6 @@ import javafx.geometry.Insets;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
-import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
@@ -12,6 +11,7 @@ import javafx.scene.text.Text;
 import java.util.ArrayList;
 import java.util.List;
 
+//**TODO Consider making a 3x3 field with double-sized tiles.
 public class FieldFXCenterStageBackdrop {
 
     //## Note: in JavaFX pixel coordinates are of type double.
@@ -30,6 +30,10 @@ public class FieldFXCenterStageBackdrop {
     public static final double FIELD_WIDTH = FIELD_DIMENSIONS_MM / 6;
     public static final double TILE_DIMENSIONS = FIELD_WIDTH / 6;
     public static final double FIELD_HEIGHT = FIELD_DIMENSIONS_MM / 12; // partial field
+
+    //**TODO Expand to include the serrations on the backdrop, support the
+    // placement of a yellow pixel on the backdrop, and then show the
+    // movements of the robot and pixel delivery.
 
     // Identifiers for field objects.
     // Identifiers are used during animation to get a specific object via Pane.lookup().
@@ -63,32 +67,6 @@ public class FieldFXCenterStageBackdrop {
 
         field.setBackground(new Background(new BackgroundFill(Color.GRAY, CornerRadii.EMPTY, Insets.EMPTY)));
 
-        // Place invisible lines around the outside borders of the field.
-        // These will be used for collision detection.
-        Line northBoundary = new Line(0, 0, FIELD_WIDTH, 0);
-        northBoundary.setStrokeWidth(2.0);
-        northBoundary.setVisible(false);
-        field.getChildren().add(northBoundary);
-        collidables.add(northBoundary);
-
-        Line southBoundary = new Line(0, FIELD_HEIGHT, FIELD_WIDTH, FIELD_HEIGHT);
-        southBoundary.setStrokeWidth(2.0);
-        southBoundary.setVisible(false);
-        field.getChildren().add(southBoundary);
-        collidables.add(southBoundary);
-
-        Line westBoundary = new Line(0, 0, 0, FIELD_HEIGHT);
-        westBoundary.setStrokeWidth(2.0);
-        westBoundary.setVisible(false);
-        field.getChildren().add(westBoundary);
-        collidables.add(westBoundary);
-
-        Line eastBoundary = new Line(FIELD_WIDTH, 0, FIELD_WIDTH, FIELD_HEIGHT);
-        eastBoundary.setStrokeWidth(2.0);
-        eastBoundary.setVisible(false);
-        field.getChildren().add(eastBoundary);
-        collidables.add(eastBoundary);
-
         // Place horizontal and vertical lines on the field.
         // The lines represent the edges of the interlocking tiles.
         // See jewelsea's answer in https://stackoverflow.com/questions/11881834/what-are-a-lines-exact-dimensions-in-javafx-2
@@ -111,8 +89,6 @@ public class FieldFXCenterStageBackdrop {
             field.getChildren().add(hLine);
         }
 
-        //**TODO Place the two backdrops and the six AprilTags with labels.
-
         // Put down lines to mark the blue and red backdrops.
         // BLUE backdrop
         Rectangle blueBackdrop = new Rectangle(FieldFX.TILE_DIMENSIONS + 2, 0, FieldFX.TILE_DIMENSIONS - 4, FieldFX.TAPE_THICKNESS);
@@ -120,7 +96,6 @@ public class FieldFXCenterStageBackdrop {
         blueBackdrop.setFill(Color.BLACK);
         field.getChildren().add(blueBackdrop);
 
-        //**TODO Change triangles to rectangles
         // Put down 3 rectangles to mark the BLUE side AprilTags.
         Rectangle aprilTag1Rect = new Rectangle(12, 12);
         aprilTag1Rect.setFill(Color.WHITE);
@@ -129,6 +104,7 @@ public class FieldFXCenterStageBackdrop {
         aprilTag1Stack.setLayoutX(FieldFX.TILE_DIMENSIONS + 10);
         aprilTag1Stack.setLayoutY(6);
         aprilTag1Stack.getChildren().addAll(aprilTag1Rect, aprilTag1Text);
+        collidables.add(aprilTag1Rect);
         field.getChildren().add(aprilTag1Stack);
 
         Rectangle aprilTag2Rect = new Rectangle(12, 12);
@@ -138,6 +114,7 @@ public class FieldFXCenterStageBackdrop {
         aprilTag2Stack.setLayoutX(FieldFX.TILE_DIMENSIONS + (FieldFX.TILE_DIMENSIONS / 2) - 6);
         aprilTag2Stack.setLayoutY(6);
         aprilTag2Stack.getChildren().addAll(aprilTag2Rect, aprilTag2Text);
+        collidables.add(aprilTag2Rect);
         field.getChildren().add(aprilTag2Stack);
 
         Rectangle aprilTag3Rect = new Rectangle(12, 12);
@@ -147,6 +124,7 @@ public class FieldFXCenterStageBackdrop {
         aprilTag3Stack.setLayoutX((FieldFX.TILE_DIMENSIONS * 2) - 22);
         aprilTag3Stack.setLayoutY(6);
         aprilTag3Stack.getChildren().addAll(aprilTag3Rect, aprilTag3Text);
+        collidables.add(aprilTag3Rect);
         field.getChildren().add(aprilTag3Stack);
 
         // RED Backdrop
@@ -162,6 +140,7 @@ public class FieldFXCenterStageBackdrop {
         aprilTag4Stack.setLayoutX((FieldFX.TILE_DIMENSIONS * 4) + 10);
         aprilTag4Stack.setLayoutY(6);
         aprilTag4Stack.getChildren().addAll(aprilTag4Rect, aprilTag4Text);
+        collidables.add(aprilTag4Rect);
         field.getChildren().add(aprilTag4Stack);
 
         Rectangle aprilTag5Rect = new Rectangle(12, 12);
@@ -171,6 +150,7 @@ public class FieldFXCenterStageBackdrop {
         aprilTag5Stack.setLayoutX((FieldFX.TILE_DIMENSIONS * 4) + (FieldFX.TILE_DIMENSIONS / 2) - 6);
         aprilTag5Stack.setLayoutY(6);
         aprilTag5Stack.getChildren().addAll(aprilTag5Rect, aprilTag5Text);
+        collidables.add(aprilTag5Rect);
         field.getChildren().add(aprilTag5Stack);
 
         Rectangle aprilTag6Rect = new Rectangle(12, 12);
@@ -180,6 +160,7 @@ public class FieldFXCenterStageBackdrop {
         aprilTag6Stack.setLayoutX((FieldFX.TILE_DIMENSIONS * 5) - 22);
         aprilTag6Stack.setLayoutY(6);
         aprilTag6Stack.getChildren().addAll(aprilTag6Rect, aprilTag6Text);
+        collidables.add(aprilTag6Rect);
         field.getChildren().add(aprilTag6Stack);
     }
 

@@ -15,7 +15,7 @@ public abstract class RobotFX {
     public static final double ROBOT_HEIGHT = 60;
     public static final double WHEEL_WIDTH = 10;
     public static final double WHEEL_HEIGHT = 20;
-    public static final String ROBOT_GROUP_ID = "robotGroup";
+    public static final String ROBOT_GROUP_ID = "robotGroupId";
     public static final String ROBOT_BODY_ID = "robotBodyId";
 
     // The corners of the robot body.
