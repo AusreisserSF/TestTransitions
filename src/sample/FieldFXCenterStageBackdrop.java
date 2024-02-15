@@ -122,33 +122,32 @@ public class FieldFXCenterStageBackdrop {
 
         //**TODO Change triangles to rectangles
         // Put down 3 rectangles to mark the BLUE side AprilTags.
-        Rectangle aprilTag1Rect = new Rectangle(FieldFX.TILE_DIMENSIONS, 0, 10, 10);
+        Rectangle aprilTag1Rect = new Rectangle(12, 12);
         aprilTag1Rect.setFill(Color.WHITE);
-        //Text aprilTag1Text = new Text ("1");
-        //StackPane aprilTag1Stack = new StackPane();
-        //aprilTag1Stack.getChildren().addAll(aprilTag1Rect, aprilTag1Text);
-        field.getChildren().add(aprilTag1Rect);
+        Text aprilTag1Text = new Text ("1");
+        StackPane aprilTag1Stack = new StackPane();
+        aprilTag1Stack.setLayoutX(FieldFX.TILE_DIMENSIONS + 10);
+        aprilTag1Stack.setLayoutY(6);
+        aprilTag1Stack.getChildren().addAll(aprilTag1Rect, aprilTag1Text);
+        field.getChildren().add(aprilTag1Stack);
 
-        Polygon aprilTag1 = new Polygon();
-        aprilTag1.setId(APRIL_TAG_1_ID);
-        aprilTag1.getPoints().addAll((FieldFX.TILE_DIMENSIONS * 2) + 20, 0.0,
-                (FieldFX.TILE_DIMENSIONS * 2) + 30.0, 0.0,
-                (FieldFX.TILE_DIMENSIONS * 2) + 25.0, 10.0);
-        field.getChildren().add(aprilTag1);
+        Rectangle aprilTag2Rect = new Rectangle(12, 12);
+        aprilTag2Rect.setFill(Color.WHITE);
+        Text aprilTag2Text = new Text ("2");
+        StackPane aprilTag2Stack = new StackPane();
+        aprilTag2Stack.setLayoutX(FieldFX.TILE_DIMENSIONS + (FieldFX.TILE_DIMENSIONS / 2) - 6);
+        aprilTag2Stack.setLayoutY(6);
+        aprilTag2Stack.getChildren().addAll(aprilTag2Rect, aprilTag2Text);
+        field.getChildren().add(aprilTag2Stack);
 
-        Polygon aprilTag2 = new Polygon();
-        aprilTag2.setId(APRIL_TAG_2_ID);
-        aprilTag2.getPoints().addAll((FieldFX.TILE_DIMENSIONS * 2) + 50, 0.0,
-                (FieldFX.TILE_DIMENSIONS * 2) + 60.0, 0.0,
-                (FieldFX.TILE_DIMENSIONS * 2) + 55.0, 10.0);
-        field.getChildren().add(aprilTag2);
-
-        Polygon aprilTag3 = new Polygon();
-        aprilTag3.setId(APRIL_TAG_3_ID);
-        aprilTag3.getPoints().addAll((FieldFX.TILE_DIMENSIONS * 2) + 80, 0.0,
-                (FieldFX.TILE_DIMENSIONS * 2) + 90.0, 0.0,
-                (FieldFX.TILE_DIMENSIONS * 2) + 85.0, 10.0);
-        field.getChildren().add(aprilTag3);
+        Rectangle aprilTag3Rect = new Rectangle(12, 12);
+        aprilTag3Rect.setFill(Color.WHITE);
+        Text aprilTag3Text = new Text ("3");
+        StackPane aprilTag3Stack = new StackPane();
+        aprilTag3Stack.setLayoutX((FieldFX.TILE_DIMENSIONS * 2) - 22);
+        aprilTag3Stack.setLayoutY(6);
+        aprilTag3Stack.getChildren().addAll(aprilTag3Rect, aprilTag3Text);
+        field.getChildren().add(aprilTag3Stack);
 
         // RED Backdrop
         Rectangle redBackdrop = new Rectangle((FieldFX.TILE_DIMENSIONS * 4) + 2, 0, FieldFX.TILE_DIMENSIONS - 4, FieldFX.TAPE_THICKNESS);
@@ -156,38 +155,32 @@ public class FieldFXCenterStageBackdrop {
         redBackdrop.setFill(Color.BLACK);
         field.getChildren().add(redBackdrop);
 
-        // Put down 3 triangles to mark the RED side AprilTags.
-        Polygon aprilTag4 = new Polygon();
-        aprilTag4.setId(APRIL_TAG_4_ID);
-        aprilTag4.getPoints().addAll((FieldFX.TILE_DIMENSIONS * 3) + 10, 0.0,
-                (FieldFX.TILE_DIMENSIONS * 3) + 20.0, 0.0,
-                (FieldFX.TILE_DIMENSIONS * 3) + 15.0, 10.0);
-        field.getChildren().add(aprilTag4);
+        Rectangle aprilTag4Rect = new Rectangle(12, 12);
+        aprilTag4Rect.setFill(Color.WHITE);
+        Text aprilTag4Text = new Text ("4");
+        StackPane aprilTag4Stack = new StackPane();
+        aprilTag4Stack.setLayoutX((FieldFX.TILE_DIMENSIONS * 4) + 10);
+        aprilTag4Stack.setLayoutY(6);
+        aprilTag4Stack.getChildren().addAll(aprilTag4Rect, aprilTag4Text);
+        field.getChildren().add(aprilTag4Stack);
 
-        Polygon aprilTag5 = new Polygon();
-        aprilTag5.setId(APRIL_TAG_5_ID);
-        aprilTag5.getPoints().addAll((FieldFX.TILE_DIMENSIONS * 3) + 40, 0.0,
-                (FieldFX.TILE_DIMENSIONS * 3) + 50.0, 0.0,
-                (FieldFX.TILE_DIMENSIONS * 3) + 45.0, 10.0);
-        field.getChildren().add(aprilTag5);
+        Rectangle aprilTag5Rect = new Rectangle(12, 12);
+        aprilTag5Rect.setFill(Color.WHITE);
+        Text aprilTag5Text = new Text ("5");
+        StackPane aprilTag5Stack = new StackPane();
+        aprilTag5Stack.setLayoutX((FieldFX.TILE_DIMENSIONS * 4) + (FieldFX.TILE_DIMENSIONS / 2) - 6);
+        aprilTag5Stack.setLayoutY(6);
+        aprilTag5Stack.getChildren().addAll(aprilTag5Rect, aprilTag5Text);
+        field.getChildren().add(aprilTag5Stack);
 
-        Polygon aprilTag6 = new Polygon();
-        aprilTag6.setId(APRIL_TAG_6_ID);
-        aprilTag6.getPoints().addAll((FieldFX.TILE_DIMENSIONS * 3) + 70, 0.0,
-                (FieldFX.TILE_DIMENSIONS * 3) + 80.0, 0.0,
-                (FieldFX.TILE_DIMENSIONS * 3) + 75.0, 10.0);
-        field.getChildren().add(aprilTag6);
-
-        //**TODO TEST text in rectangle (AprilTag)
-        final Rectangle aprilTag = new Rectangle(100, 150, 10, 10);
-        aprilTag.setFill(Color.WHITE);
-        final Text text = new Text ("1");
-        final StackPane stack = new StackPane();
-        stack.getChildren().addAll(aprilTag, text);
-        field.getChildren().add(stack);
-
-        //stack.setLayoutX(30);
-        //stack.setLayoutY(30);
+        Rectangle aprilTag6Rect = new Rectangle(12, 12);
+        aprilTag6Rect.setFill(Color.WHITE);
+        Text aprilTag6Text = new Text ("6");
+        StackPane aprilTag6Stack = new StackPane();
+        aprilTag6Stack.setLayoutX((FieldFX.TILE_DIMENSIONS * 5) - 22);
+        aprilTag6Stack.setLayoutY(6);
+        aprilTag6Stack.getChildren().addAll(aprilTag6Rect, aprilTag6Text);
+        field.getChildren().add(aprilTag6Stack);
     }
 
 }
