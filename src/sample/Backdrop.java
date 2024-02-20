@@ -40,6 +40,10 @@ public class Backdrop extends Application {
     }
 
     private void applyAnimation(Pane pFieldPane) {
+        //**TODO Need to know whether the robot's front or back is
+        // facing the backdrop. Show 180 rotation?
+        //**TODO Deduce the alliance from the AprilTag number so we
+        // know what color to make the robot. Is OpMode needed?
         //**TODO how to specify variable information: dimensions of the robot,
         // position of the camera and device on the robot: XML, user input box,
         // or drag-and-drop.
@@ -61,56 +65,24 @@ public class Backdrop extends Application {
         // angle and distance from the device to the selected AprilTag
         // and display. Draw a line from the device to the AprilTag.
 
-        /*
-        // Draw lines at 90 degrees.
-        MoveTo mt = new MoveTo();
-        mt.setX(150.0f);
-        mt.setY(450.0f);
-
-        VLineTo vlt = new VLineTo(150.0);
-        HLineTo hlt = new HLineTo(300.0);
-
-        final Path path = new Path();
-        path.getElements().add(mt);
-        path.getElements().add(vlt);
-        path.getElements().add(hlt);
-        pField.getChildren().add(path);
-
-        // Draw a line at 45 degrees.
-        MoveTo mt45 = new MoveTo();
-        mt45.setX(150.0f);
-        mt45.setY(150.0f);
-        LineTo line45 = new LineTo(250.0, 50.0);
-
-        final Path path45 = new Path();
-        path.getElements().add(mt45);
-        path.getElements().add(line45);
-        pField.getChildren().add(path45);
-         */
-
-       // SequentialTransition seqTrans = new SequentialTransition();
-
-        final Path cPath1 = new Path();
-        MoveTo moveTo1 = new MoveTo(200, 100);
-        cPath1.getElements().add(moveTo1);
-
-
         // Line at 45 degrees; rotation after path transition is 45.0; add 90 to get the actual 135 degree
         // rotation of the robot body.
         //LineTo lineTo = new LineTo(340, 250);
         //cPath1.getElements().add(lineTo);
 
         TranslateTransition tt = new TranslateTransition(Duration.millis(2000));
+        tt.setNode(robot);
         tt.setToX(200f); // simple strafe
-        //**TODO Get the robot's Rectange by Id then get its centroid by:
+        tt.setOnFinished(event -> { //**TODO what is this doing?
+            robot.setLayoutX(robot.getLayoutX() + robot.getTranslateX());
+            robot.setLayoutY(robot.getLayoutY() + robot.getTranslateY());
+            robot.setTranslateX(0);
+            robot.setTranslateY(0);
+        });
+
+        //**TODO Get the robot's Rectangle by Id then get its centroid by:
         //             Point2D centroid = computeRotatedCentroid(rbCoord.getX(), rbCoord.getY(), RobotFX.ROBOT_WIDTH, RobotFX.ROBOT_HEIGHT, robotRotation);
-        // then strafe so that the centroid is opposite AprilTag 3.
-
-        pFieldPane.getChildren().add(cPath1);
-
-        //final PathTransition cpTrans1 = generatePathTransition(robot, cPath1);
-        //seqTrans.getChildren().add(cpTrans1);
-
+        // then strafe so that the centroid is opposite the centroid of AprilTag 3.
 
         SequentialTransition seqTrans = new SequentialTransition(robot, tt);
         seqTrans.play();

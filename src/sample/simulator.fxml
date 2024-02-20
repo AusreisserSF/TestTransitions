@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane id="BorderPane" fx:id="ftc_simulator_display" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="950.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.firstinspires.ftc.teamcode.auto.fx.Controller">
+    <center>
+        <GridPane id="Field" fx:id="field" gridLinesVisible="true" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="600.0" BorderPane.alignment="TOP_LEFT">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints maxHeight="-Infinity" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="-Infinity" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="-Infinity" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+        </GridPane>
+    </center>
+   <bottom>
+      <GridPane id="StartParameters" fx:id="start_parameters" gridLinesVisible="true" BorderPane.alignment="CENTER">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="460.0" minWidth="10.0" prefWidth="163.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="768.0" minWidth="10.0" prefWidth="767.0" />
+            <ColumnConstraints />
+            <ColumnConstraints />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+          <children>
+              <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="20.0" prefWidth="145.0" text="Startup Parameters" textAlignment="CENTER" GridPane.columnSpan="2147483647" GridPane.halignment="LEFT">
+                  <font>
+                      <Font size="24.0" />
+                  </font>
+              </Label>
+              <Label id="Dimensions" fx:id="robot_dimensions_id" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                  <font>
+                      <Font size="17.0" />
+                  </font></Label>
+
+              <Label id="Width" fx:id="robot_width_id" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                  <font>
+                      <Font size="17.0" />
+                  </font></Label>
+              <Label id="Height" fx:id="robot_height_id" GridPane.columnIndex="3" GridPane.rowIndex="1">
+                  <font>
+                      <Font size="17.0" />
+                  </font></Label>
+              <!-- Label id="OPM2Alliance" fx:id="opm2_alliance" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                  <font>
+                      <Font size="17.0" />
+                  </font></Label>
+              <Label id="OpposingAlliance" fx:id="opposing_alliance" GridPane.columnIndex="3" GridPane.rowIndex="1">
+                  <font>
+                      <Font size="17.0" />
+                  </font></Label>
+              <Label text="OpMode" GridPane.rowIndex="4">
+                  <font>
+                      <Font size="17.0" />
+                  </font></Label>
+              <Label text="Alliance" GridPane.rowIndex="1">
+                  <font>
+                      <Font size="17.0" />
+                  </font></Label>
+              <Label text="Alliance&#10;Total" GridPane.rowIndex="2">
+                  <font>
+                      <Font size="17.0" />
+                  </font></Label>
+              <Label text="Wobble&#10;Goal" GridPane.rowIndex="6">
+                  <font>
+                      <Font size="17.0" />
+                  </font></Label>
+              <TextField id="AllianceTotalScore" fx:id="alliance_total_score" editable="false" focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="50.0" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
+             <font>
+                <Font size="16.0" />
+             </font></TextField>
+              <TextField id="OPM1WobbleGoalScore" fx:id="opm1_wobble_goal_score" editable="false" focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="40.0" GridPane.columnIndex="1" GridPane.rowIndex="6" GridPane.valignment="BOTTOM">
+                  <font>
+                      <Font size="16.0" />
+                  </font></TextField>
+              <TextField id="OPM2WobbleGoalScore" fx:id="opm2_wobble_goal_score" editable="false" focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="40.0" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="6" GridPane.valignment="BOTTOM">
+             <font>
+                <Font size="16.0" />
+             </font></TextField>
+              <Label text="Low&#10;Tower" GridPane.rowIndex="7">
+                  <font>
+                      <Font size="17.0" />
+                  </font></Label>
+              <TextField id="OPM1LowTowerScore" fx:id="opm1_low_tower_score" editable="false" focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="40.0" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="7" GridPane.valignment="BOTTOM">
+             <font>
+                <Font size="16.0" />
+             </font></TextField>
+              <TextField id="OPM2LowTowerScore" fx:id="opm2_low_tower_score" editable="false" focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="40.0" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="7" GridPane.valignment="BOTTOM">
+             <font>
+                <Font size="14.0" />
+             </font></TextField>
+              <TextField id="OpposingTotalScore" fx:id="opposing_total_score" editable="false" focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="50.0" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
+             <font>
+                <Font size="16.0" />
+             </font></TextField>
+              <TextField id="OpposingLowTowerScore" fx:id="opposing_low_tower_score" editable="false" focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="40.0" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.rowIndex="7" GridPane.valignment="BOTTOM">
+             <font>
+                <Font size="16.0" />
+             </font></TextField>
+              <Label text="OpMode&#10;Total" GridPane.rowIndex="5">
+                  <font>
+                      <Font size="17.0" />
+                  </font></Label>
+              <TextField id="OPM1TotalScore" fx:id="opm1_total_score" editable="false" focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="40.0" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="5" GridPane.valignment="BOTTOM">
+             <font>
+                <Font size="16.0" />
+             </font></TextField>
+              <TextField id="OPM2TotalScore" fx:id="opm2_total_score" editable="false" focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="40.0" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="5" GridPane.valignment="BOTTOM">
+             <font>
+                <Font size="16.0" />
+             </font></TextField>
+          -->
+          </children>
+          <padding>
+              <Insets left="10.0" right="10.0" />
+          </padding>
+      </GridPane>
+   </bottom>
+</BorderPane>

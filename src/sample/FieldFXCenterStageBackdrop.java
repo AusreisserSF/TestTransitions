@@ -30,6 +30,8 @@ public class FieldFXCenterStageBackdrop {
     public static final double FIELD_WIDTH = FIELD_DIMENSIONS_MM / 6;
     public static final double TILE_DIMENSIONS = FIELD_WIDTH / 6;
     public static final double FIELD_HEIGHT = FIELD_DIMENSIONS_MM / 12; // partial field
+    public static final double APRIL_TAG_SIDE = 12.0;
+    public static final double APRIL_TAG_OFFSET_TO_CENTER = APRIL_TAG_SIDE / 2;
 
     //**TODO Expand to include the serrations on the backdrop, support the
     // placement of a yellow pixel on the backdrop, and then show the
@@ -97,7 +99,7 @@ public class FieldFXCenterStageBackdrop {
         field.getChildren().add(blueBackdrop);
 
         // Put down 3 rectangles to mark the BLUE side AprilTags.
-        Rectangle aprilTag1Rect = new Rectangle(12, 12);
+        Rectangle aprilTag1Rect = new Rectangle(APRIL_TAG_SIDE, APRIL_TAG_SIDE);
         aprilTag1Rect.setFill(Color.WHITE);
         Text aprilTag1Text = new Text ("1");
         StackPane aprilTag1Stack = new StackPane();
@@ -107,7 +109,7 @@ public class FieldFXCenterStageBackdrop {
         collidables.add(aprilTag1Rect);
         field.getChildren().add(aprilTag1Stack);
 
-        Rectangle aprilTag2Rect = new Rectangle(12, 12);
+        Rectangle aprilTag2Rect = new Rectangle(APRIL_TAG_SIDE, APRIL_TAG_SIDE);
         aprilTag2Rect.setFill(Color.WHITE);
         Text aprilTag2Text = new Text ("2");
         StackPane aprilTag2Stack = new StackPane();
@@ -117,7 +119,7 @@ public class FieldFXCenterStageBackdrop {
         collidables.add(aprilTag2Rect);
         field.getChildren().add(aprilTag2Stack);
 
-        Rectangle aprilTag3Rect = new Rectangle(12, 12);
+        Rectangle aprilTag3Rect = new Rectangle(APRIL_TAG_SIDE, APRIL_TAG_SIDE);
         aprilTag3Rect.setFill(Color.WHITE);
         Text aprilTag3Text = new Text ("3");
         StackPane aprilTag3Stack = new StackPane();
@@ -133,7 +135,7 @@ public class FieldFXCenterStageBackdrop {
         redBackdrop.setFill(Color.BLACK);
         field.getChildren().add(redBackdrop);
 
-        Rectangle aprilTag4Rect = new Rectangle(12, 12);
+        Rectangle aprilTag4Rect = new Rectangle(APRIL_TAG_SIDE, APRIL_TAG_SIDE);
         aprilTag4Rect.setFill(Color.WHITE);
         Text aprilTag4Text = new Text ("4");
         StackPane aprilTag4Stack = new StackPane();
@@ -143,7 +145,7 @@ public class FieldFXCenterStageBackdrop {
         collidables.add(aprilTag4Rect);
         field.getChildren().add(aprilTag4Stack);
 
-        Rectangle aprilTag5Rect = new Rectangle(12, 12);
+        Rectangle aprilTag5Rect = new Rectangle(APRIL_TAG_SIDE, APRIL_TAG_SIDE);
         aprilTag5Rect.setFill(Color.WHITE);
         Text aprilTag5Text = new Text ("5");
         StackPane aprilTag5Stack = new StackPane();
@@ -153,7 +155,7 @@ public class FieldFXCenterStageBackdrop {
         collidables.add(aprilTag5Rect);
         field.getChildren().add(aprilTag5Stack);
 
-        Rectangle aprilTag6Rect = new Rectangle(12, 12);
+        Rectangle aprilTag6Rect = new Rectangle(APRIL_TAG_SIDE, APRIL_TAG_SIDE);
         aprilTag6Rect.setFill(Color.WHITE);
         Text aprilTag6Text = new Text ("6");
         StackPane aprilTag6Stack = new StackPane();
