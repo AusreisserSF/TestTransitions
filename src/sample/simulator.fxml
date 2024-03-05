@@ -46,56 +46,48 @@
                       <Font size="18.0" />
                   </font>
               </Label>
-              <Label id="robot_dimensions" fx:id="robot_dimensions_id" text="Robot dimensions" GridPane.rowIndex="1">
+              <Label id="robot_dimensions" text="Robot dimensions" GridPane.rowIndex="1">
                   <font>
                       <Font size="17.0" />
                   </font></Label>
 
-              <Label id="camera_center_from_robot_center" fx:id="robot_width_id" text="Camera center from robot center" GridPane.rowIndex="2">
+              <Label id="camera_center_from_robot_center" text="Camera center from robot center" GridPane.rowIndex="2">
                   <font>
                       <Font size="17.0" />
                   </font></Label>
-              <Label id="camera_offset_from_robot_center" fx:id="robot_height_id" text="Camera offset from robot center" GridPane.rowIndex="3">
+              <Label id="camera_offset_from_robot_center" text="Camera offset from robot center" GridPane.rowIndex="3">
                   <font>
                       <Font size="17.0" />
                   </font></Label>
-            <Label id="device_offset_from_robot_center" fx:id="robot_height_id1" layoutX="10.0" layoutY="126.0" text="Device center from robot center" GridPane.rowIndex="4">
+            <Label id="device_offset_from_robot_center" layoutX="10.0" layoutY="126.0" text="Device center from robot center" GridPane.rowIndex="4">
                <font>
                   <Font size="17.0" />
                </font>
             </Label>
-            <Label id="Height" fx:id="robot_height_id11" layoutX="10.0" layoutY="162.0" text="Device offset from robot center" GridPane.rowIndex="5">
+            <Label id="Height" layoutX="10.0" layoutY="162.0" text="Device offset from robot center" GridPane.rowIndex="5">
                <font>
                   <Font size="17.0" />
                </font>
             </Label>
-            <Label id="robot_position_on_field" fx:id="robot_height_id111" layoutX="10.0" layoutY="16.0" text="Robot position on field (inches)" GridPane.rowIndex="6">
+            <Label id="robot_position_on_field" layoutX="10.0" layoutY="16.0" text="Robot position on field (inches)" GridPane.rowIndex="6">
                <font>
                   <Font size="17.0" />
                </font>
             </Label>
-            <Label id="robot_direction" fx:id="robot_height_id1111" layoutX="10.0" layoutY="16.0" text="Robot direction" GridPane.rowIndex="7">
+            <Label id="robot_direction" layoutX="10.0" layoutY="16.0" text="Robot direction" GridPane.rowIndex="7">
                <font>
                   <Font size="17.0" />
                </font>
             </Label>
-            <Label id="apriltag_id" fx:id="robot_height_id11111" layoutX="10.0" layoutY="241.0" text="AprilTag Id (1 - 6)" GridPane.rowIndex="8">
+            <Label id="apriltag_id" layoutX="10.0" layoutY="241.0" text="AprilTag Id (1 - 6)" GridPane.rowIndex="8">
                <font>
                   <Font size="17.0" />
                </font>
             </Label>
-            <Spinner editable="true" GridPane.columnIndex="1" GridPane.rowIndex="8" />
-            <ChoiceBox prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-            <TextField id="robot_width" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <TextField id="robot_height" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-              <!-- Label id="OPM2Alliance" fx:id="opm2_alliance" GridPane.columnIndex="2" GridPane.rowIndex="1">
-
-              <TextField id="AllianceTotalScore" fx:id="alliance_total_score" editable="false" focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="50.0" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
-             <font>
-                <Font size="16.0" />
-             </font></TextField>
-
-          -->
+            <Spinner id="april_tag_spinner" fx:id="april_tag_spinner_id" editable="true" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+            <ChoiceBox id="direction_choice" fx:id="direction_choice_id" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+            <TextField id="robot_width" fx:id="robot_width_id" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <TextField id="robot_height" fx:id="robot_height_id" GridPane.columnIndex="2" GridPane.rowIndex="1" />
           </children>
       </GridPane>
    </bottom>

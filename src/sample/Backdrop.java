@@ -2,15 +2,18 @@ package sample;
 
 import javafx.animation.*;
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -25,18 +28,26 @@ public class Backdrop extends Application {
     private enum Corners {TOP_LEFT, TOP_RIGHT, BOTTOM_RIGHT, BOTTOM_LEFT}
 
     @Override
-    public void start(final Stage pStage) {
+    public void start(final Stage pStage) throws IOException {
 
         //FieldFX fieldFX = new FieldFX();
         FieldFXCenterStageBackdrop fieldFX = new FieldFXCenterStageBackdrop();
         Pane fieldPane = fieldFX.getField();
 
+
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        fxmlLoader.setLocation(getClass().getResource("simulator.fxml"));
+        BorderPane root = fxmlLoader.load();
+        SimulatorController controller = fxmlLoader.getController();
+
+
         pStage.setTitle("FTC Center Stage Backdrop and AprilTags");
         //pStage.setScene(new Scene(field, FieldFX.FIELD_WIDTH, FieldFX.FIELD_HEIGHT, Color.GRAY));
-        pStage.setScene(new Scene(fieldPane, FieldFXCenterStageBackdrop.FIELD_WIDTH, FieldFXCenterStageBackdrop.FIELD_HEIGHT, Color.GRAY));
+        //pStage.setScene(new Scene(fieldPane, FieldFXCenterStageBackdrop.FIELD_WIDTH, FieldFXCenterStageBackdrop.FIELD_HEIGHT, Color.GRAY));
+        pStage.setScene(new Scene(root));
         pStage.show();
 
-        applyAnimation(fieldPane);
+        applyAnimation(root);
     }
 
     private void applyAnimation(Pane pFieldPane) {
