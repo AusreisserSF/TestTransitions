@@ -11,7 +11,6 @@ import javafx.scene.text.Text;
 import java.util.ArrayList;
 import java.util.List;
 
-//**TODO Consider making a 3x3 field with double-sized tiles.
 public class FieldFXCenterStageBackdrop {
 
     //## Note: in JavaFX pixel coordinates are of type double.
@@ -67,7 +66,7 @@ public class FieldFXCenterStageBackdrop {
 
     private void initializeField() {
 
-        field.setBackground(new Background(new BackgroundFill(Color.GRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+        // See FXML field.setBackground(new Background(new BackgroundFill(Color.GRAY, CornerRadii.EMPTY, Insets.EMPTY)));
 
         // Place horizontal and vertical lines on the field.
         // The lines represent the edges of the interlocking tiles.

@@ -30,8 +30,6 @@ public class FieldFX {
     public static final double TILE_DIMENSIONS = FIELD_WIDTH / 6;
     public static final double FIELD_HEIGHT = FIELD_DIMENSIONS_MM / 6;
 
-    public static final String THUMBS_DOWN_IMAGE = "/resources/Thumbs down (Microsoft) 30x30.png";
-
     protected final Pane field;
     protected final List<Shape> collidables = new ArrayList<>();
 
@@ -49,8 +47,6 @@ public class FieldFX {
     }
 
     private void initializeField() {
-
-        field.setBackground(new Background(new BackgroundFill(Color.GRAY, CornerRadii.EMPTY, Insets.EMPTY)));
 
         // Place invisible lines around the outside borders of the field.
         // These will be used for collision detection.

@@ -1,94 +1,128 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane id="BorderPane" fx:id="ftc_simulator_display" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="950.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.SimulatorController">
+<BorderPane id="BorderPane" fx:id="ftc_simulator_display" maxHeight="340.0" minWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.SimulatorController">
     <center>
-        <GridPane id="Field" fx:id="field" gridLinesVisible="true" minHeight="-Infinity" minWidth="-Infinity" prefHeight="310.0" prefWidth="951.0" BorderPane.alignment="TOP_LEFT">
+        <GridPane id="Field" fx:id="field" gridLinesVisible="true" minHeight="300.0" minWidth="600.0" style="-fx-background-color: #808080;" BorderPane.alignment="TOP_LEFT">
             <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="100.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="100.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="100.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="100.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="100.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="100.0" prefWidth="100.0" />
             </columnConstraints>
             <rowConstraints>
-                <RowConstraints maxHeight="-Infinity" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
-                <RowConstraints maxHeight="-Infinity" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
-                <RowConstraints maxHeight="-Infinity" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
             </rowConstraints>
         </GridPane>
     </center>
-   <bottom>
-      <GridPane id="StartParameters" fx:id="start_parameters" gridLinesVisible="true" prefHeight="293.0" prefWidth="983.0" BorderPane.alignment="CENTER">
-        <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="460.0" minWidth="10.0" percentWidth="27.0" prefWidth="100.0" />
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="460.0" minWidth="10.0" percentWidth="25.0" prefWidth="100.0" />
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="460.0" minWidth="10.0" percentWidth="47.0" prefWidth="100.0" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints maxHeight="166.0" minHeight="5.0" percentHeight="14.3" prefHeight="37.0" vgrow="SOMETIMES" />
-          <RowConstraints maxHeight="166.0" minHeight="5.0" percentHeight="14.3" prefHeight="37.0" vgrow="SOMETIMES" />
-          <RowConstraints maxHeight="166.0" minHeight="5.0" percentHeight="14.3" prefHeight="37.0" vgrow="SOMETIMES" />
-            <RowConstraints maxHeight="166.0" minHeight="5.0" percentHeight="14.3" prefHeight="37.0" vgrow="SOMETIMES" />
-            <RowConstraints maxHeight="166.0" minHeight="5.0" percentHeight="14.3" prefHeight="37.0" vgrow="SOMETIMES" />
-            <RowConstraints maxHeight="166.0" minHeight="5.0" percentHeight="14.3" prefHeight="37.0" vgrow="SOMETIMES" />
-            <RowConstraints maxHeight="166.0" minHeight="5.0" percentHeight="14.3" prefHeight="37.0" vgrow="SOMETIMES" />
-            <RowConstraints maxHeight="166.0" minHeight="5.0" percentHeight="14.3" prefHeight="37.0" vgrow="SOMETIMES" />
-            <RowConstraints maxHeight="166.0" minHeight="5.0" percentHeight="14.3" prefHeight="37.0" vgrow="SOMETIMES" />
-        </rowConstraints>
-          <children>
-              <Label id="startup_parameters" prefHeight="27.0" prefWidth="200.0" text="Startup Parameters" GridPane.columnSpan="2147483647" GridPane.halignment="LEFT">
-                  <font>
-                      <Font size="18.0" />
-                  </font>
-              </Label>
-              <Label id="robot_dimensions" text="Robot dimensions" GridPane.rowIndex="1">
-                  <font>
-                      <Font size="17.0" />
-                  </font></Label>
+    <bottom>
+        <GridPane id="StartParameters" fx:id="start_parameters" alignment="BASELINE_LEFT" gridLinesVisible="true" style="-fx-background-color: #DCDCDC;">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="460.0" minWidth="10.0" prefWidth="255.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="460.0" minWidth="10.0" prefWidth="175.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="460.0" minWidth="10.0" prefWidth="168.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints maxHeight="166.0" minHeight="5.0" prefHeight="21.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="166.0" minHeight="5.0" prefHeight="27.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="166.0" minHeight="5.0" prefHeight="27.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="166.0" minHeight="5.0" prefHeight="28.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="166.0" minHeight="5.0" prefHeight="28.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="166.0" minHeight="5.0" prefHeight="29.000030517578125" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="166.0" minHeight="5.0" prefHeight="29.000030517578153" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="166.0" minHeight="5.0" prefHeight="28.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="166.0" minHeight="5.0" prefHeight="28.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+            <children>
+                <Label id="startup_parameters" prefHeight="27.0" prefWidth="200.0" text="Startup Parameters" GridPane.columnSpan="2147483647" GridPane.halignment="LEFT">
+                    <font>
+                        <Font name="System Bold" size="16.0" />
+                    </font>
+               <GridPane.margin>
+                  <Insets left="2.0" />
+               </GridPane.margin>
+                </Label>
+                <Label id="robot_dimensions" text="Robot dimensions" GridPane.rowIndex="1">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+               <GridPane.margin>
+                  <Insets left="5.0" />
+               </GridPane.margin></Label>
 
-              <Label id="camera_center_from_robot_center" text="Camera center from robot center" GridPane.rowIndex="2">
-                  <font>
-                      <Font size="17.0" />
-                  </font></Label>
-              <Label id="camera_offset_from_robot_center" text="Camera offset from robot center" GridPane.rowIndex="3">
-                  <font>
-                      <Font size="17.0" />
-                  </font></Label>
-            <Label id="device_offset_from_robot_center" layoutX="10.0" layoutY="126.0" text="Device center from robot center" GridPane.rowIndex="4">
-               <font>
-                  <Font size="17.0" />
-               </font>
-            </Label>
-            <Label id="Height" layoutX="10.0" layoutY="162.0" text="Device offset from robot center" GridPane.rowIndex="5">
-               <font>
-                  <Font size="17.0" />
-               </font>
-            </Label>
-            <Label id="robot_position_on_field" layoutX="10.0" layoutY="16.0" text="Robot position on field (inches)" GridPane.rowIndex="6">
-               <font>
-                  <Font size="17.0" />
-               </font>
-            </Label>
-            <Label id="robot_direction" layoutX="10.0" layoutY="16.0" text="Robot direction" GridPane.rowIndex="7">
-               <font>
-                  <Font size="17.0" />
-               </font>
-            </Label>
-            <Label id="apriltag_id" layoutX="10.0" layoutY="241.0" text="AprilTag Id (1 - 6)" GridPane.rowIndex="8">
-               <font>
-                  <Font size="17.0" />
-               </font>
-            </Label>
-            <Spinner id="april_tag_spinner" fx:id="april_tag_spinner_id" editable="true" GridPane.columnIndex="1" GridPane.rowIndex="8" />
-            <ChoiceBox id="direction_choice" fx:id="direction_choice_id" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-            <TextField id="robot_width" fx:id="robot_width_id" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <TextField id="robot_height" fx:id="robot_height_id" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-          </children>
-      </GridPane>
-   </bottom>
+                <Label id="camera_center_from_robot_center" text="Camera center from robot center" GridPane.rowIndex="2">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+               <GridPane.margin>
+                  <Insets left="5.0" />
+               </GridPane.margin></Label>
+                <Label id="camera_offset_from_robot_center" text="Camera offset from robot center" GridPane.rowIndex="3">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+               <GridPane.margin>
+                  <Insets left="5.0" />
+               </GridPane.margin></Label>
+                <Label id="device_offset_from_robot_center" layoutX="10.0" layoutY="126.0" text="Device center from robot center" GridPane.rowIndex="4">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+               <GridPane.margin>
+                  <Insets left="5.0" />
+               </GridPane.margin>
+                </Label>
+                <Label id="Height" layoutX="10.0" layoutY="162.0" text="Device offset from robot center" GridPane.rowIndex="5">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+               <GridPane.margin>
+                  <Insets left="5.0" />
+               </GridPane.margin>
+                </Label>
+                <Label id="robot_position_on_field" layoutX="10.0" layoutY="16.0" text="Robot position on field (inches)" GridPane.rowIndex="6">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+               <GridPane.margin>
+                  <Insets left="5.0" />
+               </GridPane.margin>
+                </Label>
+                <Label id="robot_direction" layoutX="10.0" layoutY="16.0" text="Robot direction" GridPane.rowIndex="7">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+               <GridPane.margin>
+                  <Insets left="5.0" />
+               </GridPane.margin>
+                </Label>
+                <Label id="apriltag_id" layoutX="10.0" layoutY="241.0" text="AprilTag Id (1 - 6)" GridPane.rowIndex="8">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+               <GridPane.margin>
+                  <Insets left="5.0" />
+               </GridPane.margin>
+                </Label>
+                <Spinner id="april_tag_spinner" fx:id="april_tag_spinner_id" editable="true" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+                <ChoiceBox id="direction_choice" fx:id="direction_choice_id" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                <TextField id="robot_width" fx:id="robot_width_id" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                <TextField id="robot_height" fx:id="robot_height_id" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            </children>
+            <BorderPane.margin>
+                <Insets />
+            </BorderPane.margin>
+            <opaqueInsets>
+                <Insets />
+            </opaqueInsets>
+        </GridPane>
+    </bottom>
 </BorderPane>
