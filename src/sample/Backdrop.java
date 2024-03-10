@@ -7,6 +7,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
@@ -29,21 +30,14 @@ public class Backdrop extends Application {
 
     @Override
     public void start(final Stage pStage) throws IOException {
-
-        //FieldFX fieldFX = new FieldFX();
-        FieldFXCenterStageBackdrop fieldFX = new FieldFXCenterStageBackdrop();
-        Pane fieldPane = fieldFX.getField();
-
-
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(getClass().getResource("simulator.fxml"));
         BorderPane root = fxmlLoader.load();
         SimulatorController controller = fxmlLoader.getController();
-
+        GridPane field = controller.field;
+        FieldFXCenterStageBackdrop fieldFX = new FieldFXCenterStageBackdrop(field);
 
         pStage.setTitle("FTC Center Stage Backdrop and AprilTags");
-        //pStage.setScene(new Scene(field, FieldFX.FIELD_WIDTH, FieldFX.FIELD_HEIGHT, Color.GRAY));
-        //pStage.setScene(new Scene(fieldPane, FieldFXCenterStageBackdrop.FIELD_WIDTH, FieldFXCenterStageBackdrop.FIELD_HEIGHT, Color.GRAY));
         pStage.setScene(new Scene(root));
         pStage.show();
 

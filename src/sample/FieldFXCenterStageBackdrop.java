@@ -48,47 +48,19 @@ public class FieldFXCenterStageBackdrop {
     public static final String APRIL_TAG_5_ID = "aprilTag5Id";
     public static final String APRIL_TAG_6_ID = "aprilTag6Id";
 
-    protected final Pane field;
+    protected final GridPane field;
     protected final List<Shape> collidables = new ArrayList<>();
 
-    public FieldFXCenterStageBackdrop() {
-        field = new Pane();
+    public FieldFXCenterStageBackdrop(GridPane pField) {
+        field = pField;
         initializeField();
     }
 
-    public Pane getField() {
-        return field;
-    }
-
-    public List<Shape> getCollidables() {
+    public List<Shape> getFieldCollidables() {
         return collidables;
     }
 
     private void initializeField() {
-
-        // See FXML field.setBackground(new Background(new BackgroundFill(Color.GRAY, CornerRadii.EMPTY, Insets.EMPTY)));
-
-        // Place horizontal and vertical lines on the field.
-        // The lines represent the edges of the interlocking tiles.
-        // See jewelsea's answer in https://stackoverflow.com/questions/11881834/what-are-a-lines-exact-dimensions-in-javafx-2
-        Line vLine;
-        Line hLine;
-        for (int i = 1; i < 6; i++) {
-            // vertical
-            vLine = new Line(TILE_DIMENSIONS * i, 0, TILE_DIMENSIONS * i, FIELD_HEIGHT - 2);
-            vLine.setStroke(Color.DIMGRAY);
-            vLine.setStrokeWidth(2.0);
-            field.getChildren().add(vLine);
-        }
-
-        // Center Stage: partial field: three tiles
-        for (int i = 1; i < 3; i++) {
-            // horizontal
-            hLine = new Line(0, TILE_DIMENSIONS * i, FIELD_WIDTH - 3, TILE_DIMENSIONS * i);
-            hLine.setStroke(Color.DIMGRAY);
-            hLine.setStrokeWidth(3.0);
-            field.getChildren().add(hLine);
-        }
 
         // Put down lines to mark the blue and red backdrops.
         // BLUE backdrop
