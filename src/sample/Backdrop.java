@@ -34,7 +34,7 @@ public class Backdrop extends Application {
         fxmlLoader.setLocation(getClass().getResource("simulator.fxml"));
         BorderPane root = fxmlLoader.load();
         SimulatorController controller = fxmlLoader.getController();
-        GridPane field = controller.field;
+        Pane field = controller.field;
         FieldFXCenterStageBackdrop fieldFX = new FieldFXCenterStageBackdrop(field);
 
         pStage.setTitle("FTC Center Stage Backdrop and AprilTags");

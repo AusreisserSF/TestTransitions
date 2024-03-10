@@ -6,6 +6,7 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 
 public class SimulatorController {
 
@@ -13,7 +14,7 @@ public class SimulatorController {
     public BorderPane ftc_center_stage_display;
 
     @FXML
-    public GridPane field;
+    public Pane field;
 
     @FXML
     public Spinner april_tag_spinner_id;

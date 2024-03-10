@@ -1,6 +1,5 @@
 package sample;
 
-import javafx.geometry.Insets;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -24,11 +23,16 @@ public class FieldFXCenterStageBackdrop {
     // just use 141.7" per side or 3600mm. Then scale down to 1/6 for
     // pixels per side.
     // By convention the width is the distance across the wall facing the audience.
+    //**TODO TEMP change all dimensions to hardcoded pixels; later - get values
+    // from the GirdPane layout ...
     public static final double MM_PER_INCH = 25.4;
-    public static final double FIELD_DIMENSIONS_MM = 3600;
-    public static final double FIELD_WIDTH = FIELD_DIMENSIONS_MM / 6;
-    public static final double TILE_DIMENSIONS = FIELD_WIDTH / 6;
-    public static final double FIELD_HEIGHT = FIELD_DIMENSIONS_MM / 12; // partial field
+    public static final double TAPE_THICKNESS = Math.floor((2 * MM_PER_INCH) / 6);
+    public static final double FIELD_DIMENSIONS = 600;
+    public static final double TILE_DIMENSIONS = FIELD_DIMENSIONS / 6;
+    public static final double FIELD_WIDTH = TILE_DIMENSIONS * 6;
+    public static final double FIELD_HEIGHT = TILE_DIMENSIONS * 3;
+    public static final double BACKDROP_LINE_HEIGHT = 10.0;
+    public static final double BACKDROP_LINE_Y = 40.0;
     public static final double APRIL_TAG_SIDE = 12.0;
     public static final double APRIL_TAG_OFFSET_TO_CENTER = APRIL_TAG_SIDE / 2;
 
@@ -48,10 +52,10 @@ public class FieldFXCenterStageBackdrop {
     public static final String APRIL_TAG_5_ID = "aprilTag5Id";
     public static final String APRIL_TAG_6_ID = "aprilTag6Id";
 
-    protected final GridPane field;
+    protected final Pane field;
     protected final List<Shape> collidables = new ArrayList<>();
 
-    public FieldFXCenterStageBackdrop(GridPane pField) {
+    public FieldFXCenterStageBackdrop(Pane pField) {
         field = pField;
         initializeField();
     }
@@ -62,9 +66,34 @@ public class FieldFXCenterStageBackdrop {
 
     private void initializeField() {
 
+        // Place horizontal and vertical lines on the field.
+        // The lines represent the edges of the interlocking tiles.
+        // See jewelsea's answer in https://stackoverflow.com/questions/11881834/what-are-a-lines-exact-dimensions-in-javafx-2
+        Line vLine;
+        Line hLine;
+        for (int i = 1; i < 6; i++) {
+            // vertical
+            vLine = new Line(TILE_DIMENSIONS * i, 0, TILE_DIMENSIONS * i, FIELD_HEIGHT - 2);
+            vLine.setStroke(Color.DIMGRAY);
+            vLine.setStrokeWidth(2.0);
+            field.getChildren().add(vLine);
+        }
+
+        // Center Stage: partial field: three tiles
+        for (int i = 1; i < 3; i++) {
+            // horizontal
+            hLine = new Line(0, TILE_DIMENSIONS * i, FIELD_WIDTH - 3, TILE_DIMENSIONS * i);
+            hLine.setStroke(Color.DIMGRAY);
+            hLine.setStrokeWidth(3.0);
+            field.getChildren().add(hLine);
+        }
+
+        //**TODO Place the Backstage tape lines according to the field assembly guide.
+        //**TODO Place the lines that represent the backdrops the equivalent of 10.5"
+        // away from the top wall.
         // Put down lines to mark the blue and red backdrops.
         // BLUE backdrop
-        Rectangle blueBackdrop = new Rectangle(FieldFX.TILE_DIMENSIONS + 2, 0, FieldFX.TILE_DIMENSIONS - 4, FieldFX.TAPE_THICKNESS);
+        Rectangle blueBackdrop = new Rectangle(TILE_DIMENSIONS, 0, TILE_DIMENSIONS, 10);
         blueBackdrop.setId(BLUE_BACKDROP_ID);
         blueBackdrop.setFill(Color.BLACK);
         field.getChildren().add(blueBackdrop);
@@ -74,7 +103,7 @@ public class FieldFXCenterStageBackdrop {
         aprilTag1Rect.setFill(Color.WHITE);
         Text aprilTag1Text = new Text ("1");
         StackPane aprilTag1Stack = new StackPane();
-        aprilTag1Stack.setLayoutX(FieldFX.TILE_DIMENSIONS + 10);
+        aprilTag1Stack.setLayoutX(TILE_DIMENSIONS + 10);
         aprilTag1Stack.setLayoutY(6);
         aprilTag1Stack.getChildren().addAll(aprilTag1Rect, aprilTag1Text);
         collidables.add(aprilTag1Rect);
@@ -84,7 +113,7 @@ public class FieldFXCenterStageBackdrop {
         aprilTag2Rect.setFill(Color.WHITE);
         Text aprilTag2Text = new Text ("2");
         StackPane aprilTag2Stack = new StackPane();
-        aprilTag2Stack.setLayoutX(FieldFX.TILE_DIMENSIONS + (FieldFX.TILE_DIMENSIONS / 2) - 6);
+        aprilTag2Stack.setLayoutX(TILE_DIMENSIONS + (TILE_DIMENSIONS / 2) - 6);
         aprilTag2Stack.setLayoutY(6);
         aprilTag2Stack.getChildren().addAll(aprilTag2Rect, aprilTag2Text);
         collidables.add(aprilTag2Rect);
@@ -94,14 +123,14 @@ public class FieldFXCenterStageBackdrop {
         aprilTag3Rect.setFill(Color.WHITE);
         Text aprilTag3Text = new Text ("3");
         StackPane aprilTag3Stack = new StackPane();
-        aprilTag3Stack.setLayoutX((FieldFX.TILE_DIMENSIONS * 2) - 22);
+        aprilTag3Stack.setLayoutX((TILE_DIMENSIONS * 2) - 22);
         aprilTag3Stack.setLayoutY(6);
         aprilTag3Stack.getChildren().addAll(aprilTag3Rect, aprilTag3Text);
         collidables.add(aprilTag3Rect);
         field.getChildren().add(aprilTag3Stack);
 
         // RED Backdrop
-        Rectangle redBackdrop = new Rectangle((FieldFX.TILE_DIMENSIONS * 4) + 2, 0, FieldFX.TILE_DIMENSIONS - 4, FieldFX.TAPE_THICKNESS);
+        Rectangle redBackdrop = new Rectangle((TILE_DIMENSIONS * 4), 0, TILE_DIMENSIONS, 10);
         redBackdrop.setId(RED_BACKDROP_ID);
         redBackdrop.setFill(Color.BLACK);
         field.getChildren().add(redBackdrop);
@@ -110,7 +139,7 @@ public class FieldFXCenterStageBackdrop {
         aprilTag4Rect.setFill(Color.WHITE);
         Text aprilTag4Text = new Text ("4");
         StackPane aprilTag4Stack = new StackPane();
-        aprilTag4Stack.setLayoutX((FieldFX.TILE_DIMENSIONS * 4) + 10);
+        aprilTag4Stack.setLayoutX((TILE_DIMENSIONS * 4) + 10);
         aprilTag4Stack.setLayoutY(6);
         aprilTag4Stack.getChildren().addAll(aprilTag4Rect, aprilTag4Text);
         collidables.add(aprilTag4Rect);
@@ -120,7 +149,7 @@ public class FieldFXCenterStageBackdrop {
         aprilTag5Rect.setFill(Color.WHITE);
         Text aprilTag5Text = new Text ("5");
         StackPane aprilTag5Stack = new StackPane();
-        aprilTag5Stack.setLayoutX((FieldFX.TILE_DIMENSIONS * 4) + (FieldFX.TILE_DIMENSIONS / 2) - 6);
+        aprilTag5Stack.setLayoutX((TILE_DIMENSIONS * 4) + (TILE_DIMENSIONS / 2) - 6);
         aprilTag5Stack.setLayoutY(6);
         aprilTag5Stack.getChildren().addAll(aprilTag5Rect, aprilTag5Text);
         collidables.add(aprilTag5Rect);
@@ -130,7 +159,7 @@ public class FieldFXCenterStageBackdrop {
         aprilTag6Rect.setFill(Color.WHITE);
         Text aprilTag6Text = new Text ("6");
         StackPane aprilTag6Stack = new StackPane();
-        aprilTag6Stack.setLayoutX((FieldFX.TILE_DIMENSIONS * 5) - 22);
+        aprilTag6Stack.setLayoutX((TILE_DIMENSIONS * 5) - 22);
         aprilTag6Stack.setLayoutY(6);
         aprilTag6Stack.getChildren().addAll(aprilTag6Rect, aprilTag6Text);
         collidables.add(aprilTag6Rect);

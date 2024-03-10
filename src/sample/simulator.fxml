@@ -7,21 +7,8 @@
 
 <BorderPane id="BorderPane" fx:id="ftc_center_stage_display" maxHeight="340.0" minWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.SimulatorController">
     <center>
-        <GridPane id="Field" fx:id="field" gridLinesVisible="true" minHeight="300.0" minWidth="600.0" style="-fx-background-color: #808080;" BorderPane.alignment="TOP_LEFT">
-            <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="100.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="100.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="100.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="100.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="100.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="100.0" prefWidth="100.0" />
-            </columnConstraints>
-            <rowConstraints>
-                <RowConstraints minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
-            </rowConstraints>
-        </GridPane>
+        <Pane id="Field" fx:id="field" minHeight="300.0" minWidth="600.0" style="-fx-background-color: #808080;" BorderPane.alignment="TOP_LEFT">
+        </Pane>
     </center>
     <bottom>
         <GridPane id="StartParameters" fx:id="start_parameters" alignment="BASELINE_LEFT" gridLinesVisible="true" style="-fx-background-color: #DCDCDC;">
