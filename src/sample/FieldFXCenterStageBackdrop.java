@@ -5,6 +5,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
+import javafx.scene.shape.StrokeLineJoin;
 import javafx.scene.text.Text;
 
 import java.util.ArrayList;
@@ -90,7 +91,6 @@ public class FieldFXCenterStageBackdrop {
             field.getChildren().add(hLine);
         }
 
-        // away from the top wall.
         // Put down lines to mark the blue and red backdrops.
         // BLUE backdrop
         Rectangle blueBackdrop = new Rectangle(TILE_DIMENSIONS, 0, TILE_DIMENSIONS, BACKDROP_HEIGHT);
@@ -176,12 +176,14 @@ public class FieldFXCenterStageBackdrop {
                 TILE_DIMENSIONS - TAPE_WIDTH, TILE_DIMENSIONS * 3, 0);
         backstageAngledLineBlue.setStroke(Color.BLUE);
         backstageAngledLineBlue.setStrokeWidth(TAPE_WIDTH);
+        backstageAngledLineBlue.setStrokeLineJoin(StrokeLineJoin.MITER);
         field.getChildren().add(backstageAngledLineBlue);
 
         Line backstageAngledLineRed = new Line(TILE_DIMENSIONS * 3,
                 0, TILE_DIMENSIONS * 4 - BACKSTAGE_BOUNDARY_TO_ANGLE, TILE_DIMENSIONS - TAPE_WIDTH);
-        backstageAngledLineRed.setStroke(Color.BLUE);
+        backstageAngledLineRed.setStroke(Color.RED);
         backstageAngledLineRed.setStrokeWidth(TAPE_WIDTH);
+        backstageAngledLineRed.setStrokeLineJoin(StrokeLineJoin.MITER);
         field.getChildren().add(backstageAngledLineRed);
 
         Line backstageBoundaryRed = new Line(TILE_DIMENSIONS * 4 - BACKSTAGE_BOUNDARY_TO_ANGLE, TILE_DIMENSIONS - TAPE_WIDTH,

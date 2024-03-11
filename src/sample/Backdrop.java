@@ -28,6 +28,10 @@ public class Backdrop extends Application {
 
     private enum Corners {TOP_LEFT, TOP_RIGHT, BOTTOM_RIGHT, BOTTOM_LEFT}
 
+    //**TODO Do you really need device center from robot center?
+    //**TODO Accommodate turning towards a target; need a selection for this - strafeTo vs AngleTo
+    //**TODO change display for just one backdrop - will show angles better.
+    //**TODO Show all positions in FTC field coordinates
     @Override
     public void start(final Stage pStage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader();
@@ -35,7 +39,7 @@ public class Backdrop extends Application {
         BorderPane root = fxmlLoader.load();
         SimulatorController controller = fxmlLoader.getController();
         Pane field = controller.field;
-        FieldFXCenterStageBackdrop fieldFX = new FieldFXCenterStageBackdrop(field);
+        FieldFXCenterStageBackdrop fieldCenterStageBackdrop = new FieldFXCenterStageBackdrop(field);
 
         pStage.setTitle("FTC Center Stage Backdrop and AprilTags");
         pStage.setScene(new Scene(root));
@@ -56,7 +60,7 @@ public class Backdrop extends Application {
         // line, user input box, or drag-and-drop.
         //**TODO How to specify the AprilTag target: command line or user input
         // box
-//**TODO Don't need OpMode
+        //**TODO Don't need OpMode - user selects AprilTag
         RobotFXCenterStage centerStageRobot = new RobotFXCenterStage("RED_F4", Color.GREEN,
                 new Point2D(0, 200), 0.0);
         Group robot = centerStageRobot.getRobot();
