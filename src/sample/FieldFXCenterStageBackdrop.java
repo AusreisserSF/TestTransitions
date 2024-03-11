@@ -25,16 +25,18 @@ public class FieldFXCenterStageBackdrop {
     // By convention the width is the distance across the wall facing the audience.
     //**TODO TEMP change all dimensions to hardcoded pixels; later - get values
     // from the GirdPane layout ...
-    public static final double MM_PER_INCH = 25.4;
-    public static final double TAPE_THICKNESS = Math.floor((2 * MM_PER_INCH) / 6);
-    public static final double FIELD_DIMENSIONS = 600;
-    public static final double TILE_DIMENSIONS = FIELD_DIMENSIONS / 6;
+
+    public static final double FIELD_DIMENSIONS_MM = 3600;
+    public static final double FIELD_DIMENSIONS_PX = FIELD_DIMENSIONS_MM / 6; // pixels
+    public static final double TILE_DIMENSIONS = FIELD_DIMENSIONS_PX / 6;
     public static final double FIELD_WIDTH = TILE_DIMENSIONS * 6;
     public static final double FIELD_HEIGHT = TILE_DIMENSIONS * 3;
-    public static final double BACKDROP_LINE_HEIGHT = 10.0;
-    public static final double BACKDROP_LINE_Y = 40.0;
+    public static final double PX_PER_INCH = 25.4 / 6;
+    public static final double TAPE_WIDTH = Math.floor((2 * PX_PER_INCH));
+    public static final double BACKDROP_HEIGHT = PX_PER_INCH * 10.75;
     public static final double APRIL_TAG_SIDE = 12.0;
-    public static final double APRIL_TAG_OFFSET_TO_CENTER = APRIL_TAG_SIDE / 2;
+    public static final double APRIL_TAG_OFFSET = APRIL_TAG_SIDE + 8; // from the bottom of the backdrop
+    public static final double BACKSTAGE_BOUNDARY_TO_ANGLE = PX_PER_INCH * 10.75;
 
     //**TODO Expand to include the serrations on the backdrop, support the
     // placement of a yellow pixel on the backdrop, and then show the
@@ -88,12 +90,10 @@ public class FieldFXCenterStageBackdrop {
             field.getChildren().add(hLine);
         }
 
-        //**TODO Place the Backstage tape lines according to the field assembly guide.
-        //**TODO Place the lines that represent the backdrops the equivalent of 10.5"
         // away from the top wall.
         // Put down lines to mark the blue and red backdrops.
         // BLUE backdrop
-        Rectangle blueBackdrop = new Rectangle(TILE_DIMENSIONS, 0, TILE_DIMENSIONS, 10);
+        Rectangle blueBackdrop = new Rectangle(TILE_DIMENSIONS, 0, TILE_DIMENSIONS, BACKDROP_HEIGHT);
         blueBackdrop.setId(BLUE_BACKDROP_ID);
         blueBackdrop.setFill(Color.BLACK);
         field.getChildren().add(blueBackdrop);
@@ -104,7 +104,7 @@ public class FieldFXCenterStageBackdrop {
         Text aprilTag1Text = new Text ("1");
         StackPane aprilTag1Stack = new StackPane();
         aprilTag1Stack.setLayoutX(TILE_DIMENSIONS + 10);
-        aprilTag1Stack.setLayoutY(6);
+        aprilTag1Stack.setLayoutY(BACKDROP_HEIGHT - APRIL_TAG_OFFSET);
         aprilTag1Stack.getChildren().addAll(aprilTag1Rect, aprilTag1Text);
         collidables.add(aprilTag1Rect);
         field.getChildren().add(aprilTag1Stack);
@@ -114,7 +114,7 @@ public class FieldFXCenterStageBackdrop {
         Text aprilTag2Text = new Text ("2");
         StackPane aprilTag2Stack = new StackPane();
         aprilTag2Stack.setLayoutX(TILE_DIMENSIONS + (TILE_DIMENSIONS / 2) - 6);
-        aprilTag2Stack.setLayoutY(6);
+        aprilTag2Stack.setLayoutY(BACKDROP_HEIGHT - APRIL_TAG_OFFSET);
         aprilTag2Stack.getChildren().addAll(aprilTag2Rect, aprilTag2Text);
         collidables.add(aprilTag2Rect);
         field.getChildren().add(aprilTag2Stack);
@@ -124,13 +124,13 @@ public class FieldFXCenterStageBackdrop {
         Text aprilTag3Text = new Text ("3");
         StackPane aprilTag3Stack = new StackPane();
         aprilTag3Stack.setLayoutX((TILE_DIMENSIONS * 2) - 22);
-        aprilTag3Stack.setLayoutY(6);
+        aprilTag3Stack.setLayoutY(BACKDROP_HEIGHT - APRIL_TAG_OFFSET);
         aprilTag3Stack.getChildren().addAll(aprilTag3Rect, aprilTag3Text);
         collidables.add(aprilTag3Rect);
         field.getChildren().add(aprilTag3Stack);
 
         // RED Backdrop
-        Rectangle redBackdrop = new Rectangle((TILE_DIMENSIONS * 4), 0, TILE_DIMENSIONS, 10);
+        Rectangle redBackdrop = new Rectangle((TILE_DIMENSIONS * 4), 0, TILE_DIMENSIONS, BACKDROP_HEIGHT);
         redBackdrop.setId(RED_BACKDROP_ID);
         redBackdrop.setFill(Color.BLACK);
         field.getChildren().add(redBackdrop);
@@ -140,7 +140,7 @@ public class FieldFXCenterStageBackdrop {
         Text aprilTag4Text = new Text ("4");
         StackPane aprilTag4Stack = new StackPane();
         aprilTag4Stack.setLayoutX((TILE_DIMENSIONS * 4) + 10);
-        aprilTag4Stack.setLayoutY(6);
+        aprilTag4Stack.setLayoutY(BACKDROP_HEIGHT - APRIL_TAG_OFFSET);
         aprilTag4Stack.getChildren().addAll(aprilTag4Rect, aprilTag4Text);
         collidables.add(aprilTag4Rect);
         field.getChildren().add(aprilTag4Stack);
@@ -150,7 +150,7 @@ public class FieldFXCenterStageBackdrop {
         Text aprilTag5Text = new Text ("5");
         StackPane aprilTag5Stack = new StackPane();
         aprilTag5Stack.setLayoutX((TILE_DIMENSIONS * 4) + (TILE_DIMENSIONS / 2) - 6);
-        aprilTag5Stack.setLayoutY(6);
+        aprilTag5Stack.setLayoutY(BACKDROP_HEIGHT - APRIL_TAG_OFFSET);
         aprilTag5Stack.getChildren().addAll(aprilTag5Rect, aprilTag5Text);
         collidables.add(aprilTag5Rect);
         field.getChildren().add(aprilTag5Stack);
@@ -160,10 +160,35 @@ public class FieldFXCenterStageBackdrop {
         Text aprilTag6Text = new Text ("6");
         StackPane aprilTag6Stack = new StackPane();
         aprilTag6Stack.setLayoutX((TILE_DIMENSIONS * 5) - 22);
-        aprilTag6Stack.setLayoutY(6);
+        aprilTag6Stack.setLayoutY(BACKDROP_HEIGHT - APRIL_TAG_OFFSET);
         aprilTag6Stack.getChildren().addAll(aprilTag6Rect, aprilTag6Text);
         collidables.add(aprilTag6Rect);
         field.getChildren().add(aprilTag6Stack);
+
+        // Place the Backstage tape lines according to the field assembly guide.
+        Line backstageBoundaryBlue = new Line(0, TILE_DIMENSIONS - TAPE_WIDTH,
+                TILE_DIMENSIONS * 2 + BACKSTAGE_BOUNDARY_TO_ANGLE, TILE_DIMENSIONS - TAPE_WIDTH);
+        backstageBoundaryBlue.setStroke(Color.BLUE);
+        backstageBoundaryBlue.setStrokeWidth(TAPE_WIDTH);
+        field.getChildren().add(backstageBoundaryBlue);
+
+        Line backstageAngledLineBlue = new Line(TILE_DIMENSIONS * 2 + BACKSTAGE_BOUNDARY_TO_ANGLE,
+                TILE_DIMENSIONS - TAPE_WIDTH, TILE_DIMENSIONS * 3, 0);
+        backstageAngledLineBlue.setStroke(Color.BLUE);
+        backstageAngledLineBlue.setStrokeWidth(TAPE_WIDTH);
+        field.getChildren().add(backstageAngledLineBlue);
+
+        Line backstageAngledLineRed = new Line(TILE_DIMENSIONS * 3,
+                0, TILE_DIMENSIONS * 4 - BACKSTAGE_BOUNDARY_TO_ANGLE, TILE_DIMENSIONS - TAPE_WIDTH);
+        backstageAngledLineRed.setStroke(Color.BLUE);
+        backstageAngledLineRed.setStrokeWidth(TAPE_WIDTH);
+        field.getChildren().add(backstageAngledLineRed);
+
+        Line backstageBoundaryRed = new Line(TILE_DIMENSIONS * 4 - BACKSTAGE_BOUNDARY_TO_ANGLE, TILE_DIMENSIONS - TAPE_WIDTH,
+                TILE_DIMENSIONS * 6, TILE_DIMENSIONS - TAPE_WIDTH);
+        backstageBoundaryRed.setStroke(Color.RED);
+        backstageBoundaryRed.setStrokeWidth(TAPE_WIDTH);
+        field.getChildren().add(backstageBoundaryRed);
     }
 
 }

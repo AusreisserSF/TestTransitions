@@ -56,9 +56,9 @@ public class Backdrop extends Application {
         // line, user input box, or drag-and-drop.
         //**TODO How to specify the AprilTag target: command line or user input
         // box
-
-        RobotFXCenterStage centerStageRobot = new RobotFXCenterStage("RED_F4", Color.RED,
-                new Point2D(100, 100), 0.0);
+//**TODO Don't need OpMode
+        RobotFXCenterStage centerStageRobot = new RobotFXCenterStage("RED_F4", Color.GREEN,
+                new Point2D(0, 200), 0.0);
         Group robot = centerStageRobot.getRobot();
         pFieldPane.getChildren().add(robot);
 
@@ -77,7 +77,7 @@ public class Backdrop extends Application {
 
         TranslateTransition tt = new TranslateTransition(Duration.millis(2000));
         tt.setNode(robot);
-        tt.setToX(200f); // simple strafe
+        tt.setToX(150f); // simple strafe
         tt.setOnFinished(event -> { //**TODO what is this doing?
             robot.setLayoutX(robot.getLayoutX() + robot.getTranslateX());
             robot.setLayoutY(robot.getLayoutY() + robot.getTranslateY());

@@ -27,7 +27,7 @@ public class RobotFXCenterStage extends RobotFX {
         // a grabber, etc.
         Circle deviceOnRobot = new Circle(pRobotBodyScreenCoordinates.getX() + 8, pRobotBodyScreenCoordinates.getY() + 8, 6);
         deviceOnRobot.setId(robot.getId() + "_" + DEVICE_ON_ROBOT_ID);
-        deviceOnRobot.setFill(Color.GREEN);
+        deviceOnRobot.setFill(Color.YELLOW);
         robot.getChildren().add(deviceOnRobot);
     }
 
