@@ -39,7 +39,7 @@ public class Backdrop extends Application {
         BorderPane root = fxmlLoader.load();
         SimulatorController controller = fxmlLoader.getController();
         Pane field = controller.field;
-        FieldFXCenterStageBackdropLG fieldCenterStageBackdrop = new FieldFXCenterStageBackdropLG(RobotConstants.Alliance.RED, field);
+        FieldFXCenterStageBackdropLG fieldCenterStageBackdrop = new FieldFXCenterStageBackdropLG(RobotConstants.Alliance.BLUE, field);
 
         pStage.setTitle("FTC Center Stage Backdrop and AprilTags");
         pStage.setScene(new Scene(root));
