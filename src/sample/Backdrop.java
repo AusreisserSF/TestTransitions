@@ -35,17 +35,17 @@ public class Backdrop extends Application {
     @Override
     public void start(final Stage pStage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader();
-        fxmlLoader.setLocation(getClass().getResource("simulator.fxml"));
+        fxmlLoader.setLocation(getClass().getResource("simulatorLG.fxml"));
         BorderPane root = fxmlLoader.load();
         SimulatorController controller = fxmlLoader.getController();
         Pane field = controller.field;
-        FieldFXCenterStageBackdrop fieldCenterStageBackdrop = new FieldFXCenterStageBackdrop(field);
+        FieldFXCenterStageBackdropLG fieldCenterStageBackdrop = new FieldFXCenterStageBackdropLG(RobotConstants.Alliance.RED, field);
 
         pStage.setTitle("FTC Center Stage Backdrop and AprilTags");
         pStage.setScene(new Scene(root));
         pStage.show();
 
-        applyAnimation(root);
+        //applyAnimation(root);
     }
 
     private void applyAnimation(Pane pFieldPane) {
@@ -61,6 +61,7 @@ public class Backdrop extends Application {
         //**TODO How to specify the AprilTag target: command line or user input
         // box
         //**TODO Don't need OpMode - user selects AprilTag
+        //**TODO Pass in scaling factor for tile, robot size; e.g. 100px squares vs 200
         RobotFXCenterStage centerStageRobot = new RobotFXCenterStage("RED_F4", Color.GREEN,
                 new Point2D(0, 200), 0.0);
         Group robot = centerStageRobot.getRobot();
