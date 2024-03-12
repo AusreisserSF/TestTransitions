@@ -45,7 +45,7 @@ public class Backdrop extends Application {
         pStage.setScene(new Scene(root));
         pStage.show();
 
-        //applyAnimation(root);
+        applyAnimation(root);
     }
 
     private void applyAnimation(Pane pFieldPane) {
@@ -62,8 +62,8 @@ public class Backdrop extends Application {
         // box
         //**TODO Don't need OpMode - user selects AprilTag
         //**TODO Pass in scaling factor for tile, robot size; e.g. 100px squares vs 200
-        RobotFXCenterStage centerStageRobot = new RobotFXCenterStage("RED_F4", Color.GREEN,
-                new Point2D(0, 200), 0.0);
+        RobotFXCenterStageLG centerStageRobot = new RobotFXCenterStageLG("RED_F4", Color.GREEN,
+                new Point2D(100, 300), 0.0);
         Group robot = centerStageRobot.getRobot();
         pFieldPane.getChildren().add(robot);
 
@@ -80,6 +80,7 @@ public class Backdrop extends Application {
         //LineTo lineTo = new LineTo(340, 250);
         //cPath1.getElements().add(lineTo);
 
+        /*
         TranslateTransition tt = new TranslateTransition(Duration.millis(2000));
         tt.setNode(robot);
         tt.setToX(150f); // simple strafe
@@ -98,6 +99,8 @@ public class Backdrop extends Application {
         seqTrans.play();
 
         //translateAndRotate(group);
+
+         */
 
     }
 

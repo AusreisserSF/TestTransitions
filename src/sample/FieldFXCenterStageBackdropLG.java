@@ -41,7 +41,7 @@ public class FieldFXCenterStageBackdropLG {
     public static final double VIEW_WIDTH = TILE_DIMENSIONS * 3; // number of tiles to show horizontally
     public static final double VIEW_HEIGHT = TILE_DIMENSIONS * 3; // nuber of tiles to show vertically
 
-    public static final double TAPE_WIDTH = PX_PER_INCH * 2;
+    public static final double TAPE_WIDTH = PX_PER_INCH * 1;
     public static final double BACKDROP_HEIGHT = PX_PER_INCH * 10.75;
     public static final double APRIL_TAG_WIDTH = PX_PER_INCH * 2.5;
     public static final double APRIL_TAG_HEIGHT = PX_PER_INCH * 3.0;

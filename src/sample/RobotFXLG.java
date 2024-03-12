@@ -10,17 +10,12 @@ public abstract class RobotFXLG {
 
     // The size of the robot is 14" square = 356mm; at 1/6 scale = 60 pixels per side
     // By convention the width is the distance across the front of the robot.
-    public static final double VIEW_SCALE = 3;
 
-    //**TODO Why not define all dimensions in terms of PX_PER_INCH or PX_PER_MM?
-    public static final double PX_PER_INCH = 25.4 / VIEW_SCALE;
-
-    public static final double ROBOT_WIDTH_INCHES = 14.0;
-    public static final double ROBOT_HEIGHT_INCHES = 14.0;
-    public static final double ROBOT_WIDTH = 60; // pixels
-    public static final double ROBOT_HEIGHT = 60;
-    public static final double WHEEL_WIDTH = 10;
-    public static final double WHEEL_HEIGHT = 20;
+    public static final double ROBOT_WIDTH = FieldFXCenterStageBackdropLG.PX_PER_INCH * 14.0; // pixels
+    public static final double ROBOT_HEIGHT = FieldFXCenterStageBackdropLG.PX_PER_INCH * 14.0;
+    public static final double WHEEL_WIDTH = FieldFXCenterStageBackdropLG.PX_PER_INCH * 2;
+    public static final double WHEEL_HEIGHT = FieldFXCenterStageBackdropLG.PX_PER_INCH * 4;
+    public static final double WHEEL_OFFSET_Y = FieldFXCenterStageBackdropLG.PX_PER_INCH * 1;
     public static final String ROBOT_GROUP_ID = "robotGroupId";
     public static final String ROBOT_BODY_ID = "robotBodyId";
 
@@ -43,25 +38,25 @@ public abstract class RobotFXLG {
         robotBody.setFill(pRobotBodyColor);
         robot.getChildren().add(robotBody);
 
-        Rectangle robotWheelLF = new Rectangle(pRobotBodyScreenCoordinates.getX() - WHEEL_WIDTH, pRobotBodyScreenCoordinates.getY() + 5, WHEEL_WIDTH, WHEEL_HEIGHT);
+        Rectangle robotWheelLF = new Rectangle(pRobotBodyScreenCoordinates.getX() - WHEEL_WIDTH, pRobotBodyScreenCoordinates.getY() + WHEEL_OFFSET_Y, WHEEL_WIDTH, WHEEL_HEIGHT);
         robotWheelLF.setArcHeight(5);
         robotWheelLF.setArcWidth(5);
         robotWheelLF.setFill(Color.BLACK);
         robot.getChildren().add(robotWheelLF);
 
-        Rectangle robotWheelRF = new Rectangle(pRobotBodyScreenCoordinates.getX() + ROBOT_WIDTH, pRobotBodyScreenCoordinates.getY() + 5, WHEEL_WIDTH, WHEEL_HEIGHT);
+        Rectangle robotWheelRF = new Rectangle(pRobotBodyScreenCoordinates.getX() + ROBOT_WIDTH, pRobotBodyScreenCoordinates.getY() + WHEEL_OFFSET_Y, WHEEL_WIDTH, WHEEL_HEIGHT);
         robotWheelRF.setArcHeight(5);
         robotWheelRF.setArcWidth(5);
         robotWheelRF.setFill(Color.BLACK);
         robot.getChildren().add(robotWheelRF);
 
-        Rectangle robotWheelLR = new Rectangle(pRobotBodyScreenCoordinates.getX() - 10, pRobotBodyScreenCoordinates.getY() + ROBOT_HEIGHT - WHEEL_HEIGHT - 5, WHEEL_WIDTH, WHEEL_HEIGHT);
+        Rectangle robotWheelLR = new Rectangle(pRobotBodyScreenCoordinates.getX() - WHEEL_WIDTH, pRobotBodyScreenCoordinates.getY() + ROBOT_HEIGHT - WHEEL_HEIGHT - WHEEL_OFFSET_Y, WHEEL_WIDTH, WHEEL_HEIGHT);
         robotWheelLR.setArcHeight(5);
         robotWheelLR.setArcWidth(5);
         robotWheelLR.setFill(Color.BLACK);
         robot.getChildren().add(robotWheelLR);
 
-        Rectangle robotWheelRR = new Rectangle(pRobotBodyScreenCoordinates.getX() + ROBOT_WIDTH, pRobotBodyScreenCoordinates.getY() + ROBOT_HEIGHT - WHEEL_HEIGHT - 5, WHEEL_WIDTH, WHEEL_HEIGHT);
+        Rectangle robotWheelRR = new Rectangle(pRobotBodyScreenCoordinates.getX() + ROBOT_WIDTH, pRobotBodyScreenCoordinates.getY() + ROBOT_HEIGHT - WHEEL_HEIGHT - WHEEL_OFFSET_Y, WHEEL_WIDTH, WHEEL_HEIGHT);
         robotWheelRR.setArcHeight(5);
         robotWheelRR.setArcWidth(5);
         robotWheelRR.setFill(Color.BLACK);
