@@ -6,10 +6,10 @@
 <?import javafx.scene.text.*?>
 
 <BorderPane id="BorderPane" fx:id="ftc_center_stage_display" maxHeight="600.0" minWidth="900.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.SimulatorController">
-    <center>
-        <Pane id="Field" fx:id="field" minHeight="600.0" minWidth="600.0" style="-fx-background-color: #808080;" BorderPane.alignment="TOP_LEFT">
+    <left>
+        <Pane id="Field" fx:id="field" minHeight="600.0" minWidth="600.0" style="-fx-background-color: #808080;" BorderPane.alignment="CENTER">
         </Pane>
-    </center>
+    </left>
     <right>
         <GridPane id="StartParameters" fx:id="start_parameters" alignment="BASELINE_LEFT" gridLinesVisible="true" style="-fx-background-color: #DCDCDC;">
             <columnConstraints>
