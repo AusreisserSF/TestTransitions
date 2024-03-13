@@ -83,7 +83,7 @@ public class FieldFXCenterStageBackdropLG {
     }
 
     private void initializeField() {
-
+//**TODO Don't use PX_PER_INCH when you mean BORDER_SIZE (which can be PX_PER_INCH * 1)
         field.setBorder(new Border(new BorderStroke(Color.BLACK,
                 BorderStrokeStyle.SOLID, CornerRadii.EMPTY,
                 new BorderWidths(PX_PER_INCH, PX_PER_INCH, PX_PER_INCH, PX_PER_INCH))));
@@ -151,15 +151,15 @@ public class FieldFXCenterStageBackdropLG {
             field.getChildren().add(aprilTag3Stack);
 
             // Place the Backstage tape lines according to the field assembly guide.
-            Line backstageBoundaryBlue = new Line(0, TILE_DIMENSIONS - TAPE_WIDTH,
-                    TILE_DIMENSIONS * 2 + BACKSTAGE_BOUNDARY_TO_ANGLE, TILE_DIMENSIONS - TAPE_WIDTH);
+            Line backstageBoundaryBlue = new Line(PX_PER_INCH, TILE_DIMENSIONS,
+                    PX_PER_INCH + (TILE_DIMENSIONS * 2) + BACKSTAGE_BOUNDARY_TO_ANGLE, TILE_DIMENSIONS);
             backstageBoundaryBlue.setStroke(Color.BLUE);
             backstageBoundaryBlue.setStrokeWidth(TAPE_WIDTH);
             backstageBoundaryBlue.setStrokeLineJoin(StrokeLineJoin.MITER);
             field.getChildren().add(backstageBoundaryBlue);
 
-            Line backstageAngledLineBlue = new Line(TILE_DIMENSIONS * 2 + BACKSTAGE_BOUNDARY_TO_ANGLE,
-                    TILE_DIMENSIONS - TAPE_WIDTH, TILE_DIMENSIONS * 3, 0);
+            Line backstageAngledLineBlue = new Line(PX_PER_INCH + (TILE_DIMENSIONS * 2) + BACKSTAGE_BOUNDARY_TO_ANGLE,
+                    TILE_DIMENSIONS, TILE_DIMENSIONS * 3, PX_PER_INCH);
             backstageAngledLineBlue.setStroke(Color.BLUE);
             backstageAngledLineBlue.setStrokeWidth(TAPE_WIDTH);
             backstageAngledLineBlue.setStrokeLineJoin(StrokeLineJoin.MITER);

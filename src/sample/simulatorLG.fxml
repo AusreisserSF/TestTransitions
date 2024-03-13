@@ -5,13 +5,13 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane id="BorderPane" fx:id="ftc_center_stage_display" maxHeight="600.0" minWidth="900.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.SimulatorController">
+<BorderPane id="BorderPane" fx:id="ftc_center_stage_display" maxHeight="600.0" maxWidth="950.0" minHeight="600.0" minWidth="950.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.SimulatorController">
     <left>
-        <Pane id="Field" fx:id="field" minHeight="600.0" minWidth="600.0" style="-fx-background-color: #808080;" BorderPane.alignment="CENTER_LEFT">
+        <Pane id="Field" fx:id="field" maxHeight="600.0" maxWidth="600.0" minHeight="600.0" minWidth="600.0" style="-fx-background-color: #808080;" BorderPane.alignment="CENTER_LEFT">
         </Pane>
     </left>
     <right>
-        <GridPane id="StartParameters" fx:id="start_parameters" alignment="CENTER_RIGHT" gridLinesVisible="true" style="-fx-background-color: #DCDCDC;">
+        <GridPane id="StartParameters" fx:id="start_parameters" alignment="CENTER_RIGHT" gridLinesVisible="true" maxHeight="600.0" maxWidth="350.0" minHeight="600.0" minWidth="350.0" style="-fx-background-color: #DCDCDC;">
             <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="460.0" minWidth="10.0" prefWidth="255.0" />
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="460.0" minWidth="10.0" prefWidth="175.0" />
@@ -45,14 +45,14 @@
                   <Insets left="5.0" />
                </GridPane.margin></Label>
 
-                <Label id="camera_center_from_robot_center" text="Camera center from robot center" GridPane.rowIndex="2">
+                <Label id="camera_center_from_robot_center" text="Camera center from robot center" wrapText="true" GridPane.rowIndex="2">
                     <font>
                         <Font size="14.0" />
                     </font>
                <GridPane.margin>
                   <Insets left="5.0" />
                </GridPane.margin></Label>
-                <Label id="camera_offset_from_robot_center" text="Camera offset from robot center" GridPane.rowIndex="3">
+                <Label id="camera_offset_from_robot_center" text="Camera offset from robot center" wrapText="true" GridPane.rowIndex="3">
                     <font>
                         <Font size="14.0" />
                     </font>
@@ -67,7 +67,7 @@
                   <Insets left="5.0" />
                </GridPane.margin>
                 </Label>
-                <Label id="Height" layoutX="10.0" layoutY="162.0" text="Device offset from robot center" GridPane.rowIndex="5">
+                <Label id="Height" layoutX="10.0" layoutY="162.0" text="Device offset from robot center" wrapText="true" GridPane.rowIndex="5">
                     <font>
                         <Font size="14.0" />
                     </font>
@@ -75,7 +75,7 @@
                   <Insets left="5.0" />
                </GridPane.margin>
                 </Label>
-                <Label id="robot_position_on_field" layoutX="10.0" layoutY="16.0" text="Robot position on field (inches)" GridPane.rowIndex="6">
+                <Label id="robot_position_on_field" layoutX="10.0" layoutY="16.0" text="Robot position on field (x, y in pixels)" wrapText="true" GridPane.rowIndex="6">
                     <font>
                         <Font size="14.0" />
                     </font>
@@ -91,7 +91,7 @@
                   <Insets left="5.0" />
                </GridPane.margin>
                 </Label>
-                <Label id="apriltag_id" layoutX="10.0" layoutY="241.0" text="AprilTag Id (1 - 6)" GridPane.rowIndex="8">
+                <Label id="apriltag_id" layoutX="10.0" layoutY="241.0" text="AprilTag Id" GridPane.rowIndex="8">
                     <font>
                         <Font size="14.0" />
                     </font>
