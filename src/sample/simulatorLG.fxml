@@ -7,11 +7,11 @@
 
 <BorderPane id="BorderPane" fx:id="ftc_center_stage_display" maxHeight="600.0" minWidth="900.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.SimulatorController">
     <left>
-        <Pane id="Field" fx:id="field" minHeight="600.0" minWidth="600.0" style="-fx-background-color: #808080;" BorderPane.alignment="CENTER">
+        <Pane id="Field" fx:id="field" minHeight="600.0" minWidth="600.0" style="-fx-background-color: #808080;" BorderPane.alignment="CENTER_LEFT">
         </Pane>
     </left>
     <right>
-        <GridPane id="StartParameters" fx:id="start_parameters" alignment="BASELINE_LEFT" gridLinesVisible="true" style="-fx-background-color: #DCDCDC;">
+        <GridPane id="StartParameters" fx:id="start_parameters" alignment="CENTER_RIGHT" gridLinesVisible="true" style="-fx-background-color: #DCDCDC;">
             <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="460.0" minWidth="10.0" prefWidth="255.0" />
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="460.0" minWidth="10.0" prefWidth="175.0" />

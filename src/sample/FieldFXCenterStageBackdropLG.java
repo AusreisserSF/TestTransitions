@@ -1,7 +1,6 @@
 package sample;
 
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
@@ -46,10 +45,12 @@ public class FieldFXCenterStageBackdropLG {
     public static final double APRIL_TAG_WIDTH = PX_PER_INCH * 2.5;
     public static final double APRIL_TAG_HEIGHT = PX_PER_INCH * 3.0;
     public static final double APRIL_TAG_OFFSET = APRIL_TAG_HEIGHT + (PX_PER_INCH * 1.0); // from the bottom of the backdrop
+
+    //**TODO These should be in a Group with the backstop ...
     public final double APRIL_TAG_LEFT = PX_PER_INCH * 2.0;
     public final double APRIL_TAG_CENTER = (TILE_DIMENSIONS / 2) - (APRIL_TAG_WIDTH /2);
     public final double APRIL_TAG_RIGHT = TILE_DIMENSIONS - (APRIL_TAG_WIDTH + (PX_PER_INCH * 2.0));
-    public static final double BACKSTAGE_BOUNDARY_TO_ANGLE = PX_PER_INCH * 10.75;
+    public static final double BACKSTAGE_BOUNDARY_TO_ANGLE = PX_PER_INCH + (PX_PER_INCH * 10.75);
 
     //**TODO Expand to include the serrations on the backdrop, support the
     // placement of a yellow pixel on the backdrop, and then show the
@@ -83,40 +84,19 @@ public class FieldFXCenterStageBackdropLG {
 
     private void initializeField() {
 
-        // Place black lines around the outside borders of the field.
-        // These will be used for collision detection.
-        Line northBoundary = new Line(0, 0, VIEW_WIDTH, 0);
-        northBoundary.setStrokeWidth(FIELD_OUTSIDE_BORDER_WIDTH);
-        northBoundary.setStroke(Color.BLACK);
-        field.getChildren().add(northBoundary);
-        collidables.add(northBoundary);
-
-        Line southBoundary = new Line(0, VIEW_HEIGHT, VIEW_WIDTH, VIEW_HEIGHT);
-        southBoundary.setStrokeWidth(FIELD_OUTSIDE_BORDER_WIDTH);
-        southBoundary.setStroke(Color.BLACK);
-        field.getChildren().add(southBoundary);
-        collidables.add(southBoundary);
-
-        Line westBoundary = new Line(0, 0, 0, VIEW_HEIGHT);
-        westBoundary.setStrokeWidth(FIELD_OUTSIDE_BORDER_WIDTH);
-        westBoundary.setStroke(Color.BLACK);
-        field.getChildren().add(westBoundary);
-        collidables.add(westBoundary);
-
-        Line eastBoundary = new Line(VIEW_WIDTH, 0, VIEW_WIDTH, VIEW_HEIGHT);
-        eastBoundary.setStrokeWidth(FIELD_OUTSIDE_BORDER_WIDTH);
-        eastBoundary.setStroke(Color.BLACK);
-        field.getChildren().add(eastBoundary);
-        collidables.add(eastBoundary);
+        field.setBorder(new Border(new BorderStroke(Color.BLACK,
+                BorderStrokeStyle.SOLID, CornerRadii.EMPTY,
+                new BorderWidths(PX_PER_INCH, PX_PER_INCH, PX_PER_INCH, PX_PER_INCH))));
 
         // Place horizontal and vertical lines on the field.
         // The lines represent the edges of the interlocking tiles.
         // See jewelsea's answer in https://stackoverflow.com/questions/11881834/what-are-a-lines-exact-dimensions-in-javafx-2
         Line vLine;
         Line hLine;
-        for (int i = 1; i < 3; i++) {
+        for (int i = 1; i < 4; i++) {
             // vertical
-            vLine = new Line(TILE_DIMENSIONS * i, 0, TILE_DIMENSIONS * i, VIEW_HEIGHT);
+            vLine = new Line(TILE_DIMENSIONS * i, PX_PER_INCH,
+                    TILE_DIMENSIONS * i, VIEW_HEIGHT - (PX_PER_INCH * 2));
             vLine.setStroke(Color.DIMGRAY);
             vLine.setStrokeWidth(3.0); //**TODO Do not hardcode
             field.getChildren().add(vLine);
@@ -125,7 +105,7 @@ public class FieldFXCenterStageBackdropLG {
         // Center Stage: partial field: three tiles
         for (int i = 1; i < 3; i++) {
             // horizontal
-            hLine = new Line(0, TILE_DIMENSIONS * i, VIEW_WIDTH, TILE_DIMENSIONS * i);
+            hLine = new Line(PX_PER_INCH, (TILE_DIMENSIONS * i) + PX_PER_INCH, VIEW_WIDTH - (PX_PER_INCH * 2), (TILE_DIMENSIONS * i) + PX_PER_INCH);
             hLine.setStroke(Color.DIMGRAY);
             hLine.setStrokeWidth(3.0);
             field.getChildren().add(hLine);
@@ -175,6 +155,7 @@ public class FieldFXCenterStageBackdropLG {
                     TILE_DIMENSIONS * 2 + BACKSTAGE_BOUNDARY_TO_ANGLE, TILE_DIMENSIONS - TAPE_WIDTH);
             backstageBoundaryBlue.setStroke(Color.BLUE);
             backstageBoundaryBlue.setStrokeWidth(TAPE_WIDTH);
+            backstageBoundaryBlue.setStrokeLineJoin(StrokeLineJoin.MITER);
             field.getChildren().add(backstageBoundaryBlue);
 
             Line backstageAngledLineBlue = new Line(TILE_DIMENSIONS * 2 + BACKSTAGE_BOUNDARY_TO_ANGLE,
@@ -233,6 +214,7 @@ public class FieldFXCenterStageBackdropLG {
                 TILE_DIMENSIONS * 2, TILE_DIMENSIONS - TAPE_WIDTH);
         backstageBoundaryRed.setStroke(Color.RED);
         backstageBoundaryRed.setStrokeWidth(TAPE_WIDTH);
+        backstageBoundaryRed.setStrokeLineJoin(StrokeLineJoin.MITER);
         field.getChildren().add(backstageBoundaryRed);
         }
     }
