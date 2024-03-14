@@ -44,11 +44,18 @@ public class Backdrop extends Application {
         BorderPane root = fxmlLoader.load();
         SimulatorController controller = fxmlLoader.getController();
         Pane field = controller.field;
-        FieldFXCenterStageBackdropLG fieldCenterStageBackdrop = new FieldFXCenterStageBackdropLG(RobotConstants.Alliance.BLUE, field);
+
 
         pStage.setTitle("FTC Center Stage Backdrop and AprilTags");
-        pStage.setScene(new Scene(root));
+        Scene rootScene = new Scene(root);
+        pStage.setScene(rootScene);
         pStage.show();
+
+        String allianceString = allianceSelectionDialog(pStage);
+        RobotConstants.Alliance alliance = RobotConstants.Alliance.valueOf(allianceString);
+
+        FieldFXCenterStageBackdropLG fieldCenterStageBackdrop = new FieldFXCenterStageBackdropLG(alliance, field);
+        pStage.setScene(rootScene);
 
         applyAnimation(root);
     }
@@ -85,7 +92,6 @@ public class Backdrop extends Application {
         // Create a scene for the dialog and show it.
         Scene dialogScene = new Scene(dialogTilePane, 200, 200);
         pStage.setScene(dialogScene);
-        pStage.show();
 
         return allianceSelection;
     }
