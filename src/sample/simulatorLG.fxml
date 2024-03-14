@@ -59,7 +59,7 @@
                <GridPane.margin>
                   <Insets left="5.0" />
                </GridPane.margin></Label>
-                <Label id="device_offset_from_robot_center" layoutX="10.0" layoutY="126.0" text="Device center from robot center" GridPane.rowIndex="4">
+                <Label id="device_offset_from_robot_center" layoutX="10.0" layoutY="126.0" text="Device center from robot center" wrapText="true" GridPane.rowIndex="4">
                     <font>
                         <Font size="14.0" />
                     </font>
@@ -75,7 +75,7 @@
                   <Insets left="5.0" />
                </GridPane.margin>
                 </Label>
-                <Label id="robot_position_on_field" layoutX="10.0" layoutY="16.0" text="Robot position on field (x, y in pixels)" wrapText="true" GridPane.rowIndex="6">
+                <Label id="robot_position_on_field" layoutX="10.0" layoutY="16.0" text="Robot position opposite backdrop (x, y in pixels)" wrapText="true" GridPane.rowIndex="6">
                     <font>
                         <Font size="14.0" />
                     </font>
@@ -83,7 +83,7 @@
                   <Insets left="5.0" />
                </GridPane.margin>
                 </Label>
-                <Label id="robot_direction" layoutX="10.0" layoutY="16.0" text="Robot direction" GridPane.rowIndex="7">
+                <Label id="robot_approach" layoutX="10.0" layoutY="16.0" text="Robot approach to backdrop" wrapText="true" GridPane.rowIndex="8">
                     <font>
                         <Font size="14.0" />
                     </font>
@@ -91,7 +91,7 @@
                   <Insets left="5.0" />
                </GridPane.margin>
                 </Label>
-                <Label id="apriltag_id" layoutX="10.0" layoutY="241.0" text="AprilTag Id" GridPane.rowIndex="8">
+                <Label id="apriltag_id" layoutX="10.0" layoutY="241.0" text="AprilTag Id" GridPane.rowIndex="7">
                     <font>
                         <Font size="14.0" />
                     </font>
@@ -99,8 +99,8 @@
                   <Insets left="5.0" />
                </GridPane.margin>
                 </Label>
-                <Spinner id="april_tag_spinner" fx:id="april_tag_spinner_id" editable="true" GridPane.columnIndex="1" GridPane.rowIndex="8" />
-                <ChoiceBox id="direction_choice" fx:id="direction_choice_id" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                <Spinner id="april_tag_spinner" fx:id="april_tag_spinner_id" editable="true" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                <ChoiceBox id="approach_choice" fx:id="approach_choice_id" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="8" />
                 <TextField id="robot_width" fx:id="robot_width_id" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                 <TextField id="robot_height" fx:id="robot_height_id" GridPane.columnIndex="2" GridPane.rowIndex="1" />
             </children>

@@ -2,13 +2,18 @@ package sample;
 
 import javafx.animation.*;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.stage.Stage;
@@ -46,6 +51,43 @@ public class Backdrop extends Application {
         pStage.show();
 
         applyAnimation(root);
+    }
+
+    private String allianceSelectionDialog(Stage pStage) {
+        Button okButton = new Button("OK");
+
+        // Items for the dialog.
+        String alliances[] = { "BLUE", "RED"};
+        ChoiceDialog allianceDialog = new ChoiceDialog(alliances[0], alliances);
+
+        allianceDialog.setHeaderText("Select alliance, fill in start parameters, hit play");
+        allianceDialog.setContentText("Please select your alliance");
+        allianceDialog.showAndWait();
+
+        // get the selected item
+        String allianceSelection = (String) allianceDialog.getSelectedItem();
+
+        // action event
+        EventHandler<ActionEvent> event = new EventHandler<ActionEvent>()
+        {
+            public void handle(ActionEvent e) {
+                allianceDialog.show();
+            }
+        };
+
+        // When the OK button is pressed.
+        okButton.setOnAction(event);
+
+        // Creat a pane for the button.
+        TilePane dialogTilePane = new TilePane();
+        dialogTilePane.getChildren().add(okButton);
+
+        // Create a scene for the dialog and show it.
+        Scene dialogScene = new Scene(dialogTilePane, 200, 200);
+        pStage.setScene(dialogScene);
+        pStage.show();
+
+        return allianceSelection;
     }
 
     private void applyAnimation(Pane pFieldPane) {
