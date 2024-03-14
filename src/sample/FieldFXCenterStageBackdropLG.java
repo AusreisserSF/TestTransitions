@@ -22,31 +22,29 @@ public class FieldFXCenterStageBackdropLG {
     // outside edges of the field."
     // But for the simulation, instead of 141" or 3581.4mm per side we'll
     // just use 141.7" per side or 3600mm.
-    //**TODO Then scale down to 1/6 for pixels per side.
+    //**TODO Then scale down to 1/6 for pixels per side, i.e. 100px/tile
     // By convention the width is the distance across the wall facing the audience.
 
     //**TODO For the CenterStage backdrop show a closeup view of 3 x 3 tiles
     public static final double PIXEL_SCALE = 6;
-    public static final double VIEW_SCALE = 2;
-
-    //**TODO Why not define all dimensions in terms of PX_PER_INCH or PX_PER_MM?
+    public static final double VIEW_SCALE = 2; //**TODO 200px/tile
 
     public static final double FIELD_DIMENSIONS_IN = 141.7;
     public static final double FIELD_DIMENSIONS_MM = 3600;
     public static final double FIELD_DIMENSIONS_PX = FIELD_DIMENSIONS_MM / PIXEL_SCALE; // pixels
     public static final double PX_PER_INCH = (FIELD_DIMENSIONS_PX / FIELD_DIMENSIONS_IN) * VIEW_SCALE;
-    public static final double FIELD_OUTSIDE_BORDER_WIDTH = PX_PER_INCH * 1;
+    public static final double FIELD_OUTSIDE_BORDER_SIZE = PX_PER_INCH * 1;
     public static final double TILE_DIMENSIONS = FIELD_DIMENSIONS_PX / (PIXEL_SCALE / VIEW_SCALE);
     public static final double VIEW_WIDTH = TILE_DIMENSIONS * 3; // number of tiles to show horizontally
     public static final double VIEW_HEIGHT = TILE_DIMENSIONS * 3; // nuber of tiles to show vertically
 
-    public static final double TAPE_WIDTH = PX_PER_INCH * 1;
+    public static final double TAPE_WIDTH = PX_PER_INCH * 1; // looks better at 1"
     public static final double BACKDROP_HEIGHT = PX_PER_INCH * 10.75;
     public static final double APRIL_TAG_WIDTH = PX_PER_INCH * 2.5;
     public static final double APRIL_TAG_HEIGHT = PX_PER_INCH * 3.0;
     public static final double APRIL_TAG_OFFSET = APRIL_TAG_HEIGHT + (PX_PER_INCH * 1.0); // from the bottom of the backdrop
 
-    //**TODO These should be in a Group with the backstop ...
+    //**TODO These should be in a Group with the backstop ... advantage?
     public final double APRIL_TAG_LEFT = PX_PER_INCH * 2.0;
     public final double APRIL_TAG_CENTER = (TILE_DIMENSIONS / 2) - (APRIL_TAG_WIDTH / 2);
     public final double APRIL_TAG_RIGHT = TILE_DIMENSIONS - (APRIL_TAG_WIDTH + (PX_PER_INCH * 2.0));
@@ -63,7 +61,6 @@ public class FieldFXCenterStageBackdropLG {
     public static final String APRIL_TAG_1_ID = "aprilTag1Id";
     public static final String APRIL_TAG_2_ID = "aprilTag2Id";
     public static final String APRIL_TAG_3_ID = "aprilTag3Id";
-    public static final String RED_BACKDROP_ID = "redBackdropId";
     public static final String APRIL_TAG_4_ID = "aprilTag4Id";
     public static final String APRIL_TAG_5_ID = "aprilTag5Id";
     public static final String APRIL_TAG_6_ID = "aprilTag6Id";
@@ -83,11 +80,11 @@ public class FieldFXCenterStageBackdropLG {
     }
 
     private void initializeField() {
-        //**TODO Don't use PX_PER_INCH when you mean BORDER_SIZE (which can be PX_PER_INCH * 1)
         //**TODO Once you work out the spacing move setBorder to the end.
         field.setBorder(new Border(new BorderStroke(Color.BLACK,
                 BorderStrokeStyle.SOLID, CornerRadii.EMPTY,
-                new BorderWidths(PX_PER_INCH, PX_PER_INCH, PX_PER_INCH, PX_PER_INCH))));
+                new BorderWidths(FIELD_OUTSIDE_BORDER_SIZE, FIELD_OUTSIDE_BORDER_SIZE,
+                        FIELD_OUTSIDE_BORDER_SIZE, FIELD_OUTSIDE_BORDER_SIZE))));
 
         // Place horizontal and vertical lines on the field.
         // The lines represent the edges of the interlocking tiles.

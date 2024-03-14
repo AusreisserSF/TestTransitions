@@ -11,11 +11,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -29,7 +30,7 @@ import java.util.Map;
 // https://www.infoworld.com/article/2074529/javafx-2-animation--path-transitions.html
 // and
 // https://docs.oracle.com/javafx/2/animations/basics.htm#CJAJJAGI
-public class Backdrop extends Application {
+public class CenterStageBackdrop extends Application {
 
     private enum Corners {TOP_LEFT, TOP_RIGHT, BOTTOM_RIGHT, BOTTOM_LEFT}
 
@@ -55,6 +56,32 @@ public class Backdrop extends Application {
         RobotConstants.Alliance alliance = RobotConstants.Alliance.valueOf(allianceString);
 
         FieldFXCenterStageBackdropLG fieldCenterStageBackdrop = new FieldFXCenterStageBackdropLG(alliance, field);
+
+        // Show the alliance id in its color.
+        controller.alliance_id.setText(allianceString);
+        controller.alliance_id.setFont(Font.font("System", FontWeight.BOLD, 14));
+        Color allianceColor = (alliance == RobotConstants.Alliance.BLUE) ? Color.BLUE : Color.RED;
+        controller.alliance_id.setTextFill(allianceColor); // or jewelsea setStyle("-fx-text-inner-color: red;");
+
+        // Show the robot on the field ina default starting position.
+        //**TODO how to specify variable information: dimensions of the robot,
+        // position of the camera and device on the robot: user input box on
+        // startup, then drag-and-drop OR choose a default position then drag-
+        // and-drop.
+        //**TODO How to specify the position of the robot in front of the
+        // backdrop: user input box on startup, then drag-and-drop OR choose
+        // a default position then drag-and-drop.
+        //**TODO Don't need OpMode - user selects AprilTag
+        //**TODO Pass in scaling factor for tile, robot size; e.g. 100px squares vs 200
+        RobotFXCenterStageLG centerStageRobot = new RobotFXCenterStageLG("RED_F4", Color.GREEN,
+                new Point2D(100, 300), 90.0);
+        Group robot = centerStageRobot.getRobot();
+        field.getChildren().add(robot);
+
+        //**TODO Show the play button grayed out -- here?
+        // See PlayPauseButton in FTCAutoSimulator but we need play and stop
+
+
         pStage.setScene(rootScene);
 
         applyAnimation(root);
@@ -97,23 +124,6 @@ public class Backdrop extends Application {
     }
 
     private void applyAnimation(Pane pFieldPane) {
-        //**TODO Need to know whether the robot's front or back is
-        // facing the backdrop. Show 180 rotation?
-        //**TODO Deduce the alliance from the AprilTag number so we
-        // know what color to make the robot. Is OpMode needed?
-        //**TODO how to specify variable information: dimensions of the robot,
-        // position of the camera and device on the robot: XML, user input box,
-        // or drag-and-drop.
-        //**TODO How to specify the position of the robot on the field: command
-        // line, user input box, or drag-and-drop.
-        //**TODO How to specify the AprilTag target: command line or user input
-        // box
-        //**TODO Don't need OpMode - user selects AprilTag
-        //**TODO Pass in scaling factor for tile, robot size; e.g. 100px squares vs 200
-        RobotFXCenterStageLG centerStageRobot = new RobotFXCenterStageLG("RED_F4", Color.GREEN,
-                new Point2D(100, 300), 0.0);
-        Group robot = centerStageRobot.getRobot();
-        pFieldPane.getChildren().add(robot);
 
         //**TODO Get the angle and distance from the camera to the
         // selected AprilTag and display. Draw a line from the camera
