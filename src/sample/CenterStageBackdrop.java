@@ -5,6 +5,7 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -75,7 +76,8 @@ public class CenterStageBackdrop extends Application {
         //**TODO Pass in scaling factor for tile, robot size; e.g. 100px squares vs 200
         RobotFXCenterStageLG centerStageRobot = new RobotFXCenterStageLG("RED_F4", Color.GREEN,
                 new Point2D(FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5,
-                        FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5), 90.0);
+                        FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5),
+                0.0);
         Group robot = centerStageRobot.getRobot();
         field.getChildren().add(robot);
 
@@ -126,21 +128,38 @@ public class CenterStageBackdrop extends Application {
 
         // controlX1, controlX2, controly1, controly2, endX, endY
         Path path = new Path();
-        path.getElements().add(new MoveTo(0,0));
-       // path.getElements().add(new MoveTo(FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5,
-       //         FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5));
 
-        LineTo lineTo = new LineTo(340, 250);
-        path.getElements().add(lineTo);
+        //!! Who knew that this adjustment is necessary?
+        // https://stackoverflow.com/questions/29594707/moving-a-button-to-specified-coordinates-in-javafx-with-a-path-transition-using
+        // But if the initial rotation is 90.0 instead of 0.0 the starting position is not correct.
+        // Instead of getLayoutBounds() you have to use getBoundsInParent().
+        double xOffsetInParent = pRobot.getBoundsInParent().getWidth() / 2;
+        double yOffsetInParent = pRobot.getBoundsInParent().getHeight() / 2;
+        path.getElements().add(new MoveTo(FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5 + xOffsetInParent,
+                FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5 + yOffsetInParent));
 
-        //path.getElements().add(new CubicCurveTo(400, 300, 300, 300, 200, 200));
+        //**TODO TEMP for reference ...
+        Bounds layoutBounds = pRobot.getLayoutBounds();
+        Bounds localBounds = pRobot.getBoundsInLocal();
+        Bounds parentBounds = pRobot.getBoundsInParent();
+
+        //LineTo lineTo = new LineTo(400 + xOffsetInParent, 200 + yOffsetInParent);
+        //path.getElements().add(lineTo);
+
+        path.getElements().add(new CubicCurveTo(400 + xOffsetInParent, 300 + xOffsetInParent, 300 + yOffsetInParent, 300 + yOffsetInParent, 200 + xOffsetInParent, 200 + yOffsetInParent));
         //path.getElements().add(new CubicCurveTo(0, 120, 0, 240, 380, 240));
+
+        //**TODO As a demonstration what I really want to do is apply a
+        // RotationTransition from 90.0 to 0.0 at the same time as the
+        // PathTransition CubicCurveTo. This should be possible with a
+        // ParallelTransition.
+
         PathTransition pathTransition = new PathTransition();
         pathTransition.setDuration(Duration.millis(3000));
         pathTransition.setPath(path);
         pathTransition.setNode(pRobot);
-       // pathTransition.setOrientation(PathTransition.OrientationType.ORTHOGONAL_TO_TANGENT);
-       pathTransition.setCycleCount(Timeline.INDEFINITE);
+        //pathTransition.setOrientation(PathTransition.OrientationType.ORTHOGONAL_TO_TANGENT);
+        pathTransition.setCycleCount(Timeline.INDEFINITE);
         pathTransition.setAutoReverse(true);
         pathTransition.play();
 
@@ -162,7 +181,7 @@ public class CenterStageBackdrop extends Application {
         TranslateTransition tt = new TranslateTransition(Duration.millis(2000));
         tt.setNode(robot);
         tt.setToX(150f); // simple strafe
-        tt.setOnFinished(event -> { //**TODO what is this doing?
+        tt.setOnFinished(event -> { //**TODO See OneNote - stackoverflow answer from jewelsea
             robot.setLayoutX(robot.getLayoutX() + robot.getTranslateX());
             robot.setLayoutY(robot.getLayoutY() + robot.getTranslateY());
             robot.setTranslateX(0);
