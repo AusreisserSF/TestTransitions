@@ -74,24 +74,28 @@ public class CenterStageBackdrop extends Application {
         //**TODO Don't need OpMode - user selects AprilTag
         //**TODO Pass in scaling factor for tile, robot size; e.g. 100px squares vs 200
         RobotFXCenterStageLG centerStageRobot = new RobotFXCenterStageLG("RED_F4", Color.GREEN,
-                new Point2D(100, 300), 90.0);
+                new Point2D(FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5,
+                        FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5), 90.0);
         Group robot = centerStageRobot.getRobot();
         field.getChildren().add(robot);
 
         //**TODO Show the play button grayed out -- here?
         // See PlayPauseButton in FTCAutoSimulator but we need play and stop
 
+        //**TODO Class to parse startup parameters - user hits the play button
+        // when done. Need test for all parameters set. Disallow changes after
+        // the play button has been set.
 
         pStage.setScene(rootScene);
 
-        applyAnimation(root);
+        applyAnimation(root, robot);
     }
 
     private String allianceSelectionDialog(Stage pStage) {
         Button okButton = new Button("OK");
 
         // Items for the dialog.
-        String alliances[] = { "BLUE", "RED"};
+        String alliances[] = {"BLUE", "RED"};
         ChoiceDialog allianceDialog = new ChoiceDialog(alliances[0], alliances);
 
         allianceDialog.setHeaderText("Select alliance, fill in start parameters, hit play");
@@ -102,12 +106,7 @@ public class CenterStageBackdrop extends Application {
         String allianceSelection = (String) allianceDialog.getSelectedItem();
 
         // action event
-        EventHandler<ActionEvent> event = new EventHandler<ActionEvent>()
-        {
-            public void handle(ActionEvent e) {
-                allianceDialog.show();
-            }
-        };
+        EventHandler<ActionEvent> event = e -> allianceDialog.show();
 
         // When the OK button is pressed.
         okButton.setOnAction(event);
@@ -123,7 +122,28 @@ public class CenterStageBackdrop extends Application {
         return allianceSelection;
     }
 
-    private void applyAnimation(Pane pFieldPane) {
+    private void applyAnimation(Pane pFieldPane, Group pRobot) {
+
+        // controlX1, controlX2, controly1, controly2, endX, endY
+        Path path = new Path();
+        path.getElements().add(new MoveTo(0,0));
+       // path.getElements().add(new MoveTo(FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5,
+       //         FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5));
+
+        LineTo lineTo = new LineTo(340, 250);
+        path.getElements().add(lineTo);
+
+        //path.getElements().add(new CubicCurveTo(400, 300, 300, 300, 200, 200));
+        //path.getElements().add(new CubicCurveTo(0, 120, 0, 240, 380, 240));
+        PathTransition pathTransition = new PathTransition();
+        pathTransition.setDuration(Duration.millis(3000));
+        pathTransition.setPath(path);
+        pathTransition.setNode(pRobot);
+       // pathTransition.setOrientation(PathTransition.OrientationType.ORTHOGONAL_TO_TANGENT);
+       pathTransition.setCycleCount(Timeline.INDEFINITE);
+        pathTransition.setAutoReverse(true);
+        pathTransition.play();
+
 
         //**TODO Get the angle and distance from the camera to the
         // selected AprilTag and display. Draw a line from the camera
