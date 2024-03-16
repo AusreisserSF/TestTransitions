@@ -5,7 +5,6 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -47,13 +46,12 @@ public class CenterStageBackdrop extends Application {
         SimulatorController controller = fxmlLoader.getController();
         Pane field = controller.field;
 
-
         pStage.setTitle("FTC Center Stage Backdrop and AprilTags");
         Scene rootScene = new Scene(root);
         pStage.setScene(rootScene);
         pStage.show();
 
-        String allianceString = allianceSelectionDialog(pStage);
+        String allianceString = allianceSelection(pStage);
         RobotConstants.Alliance alliance = RobotConstants.Alliance.valueOf(allianceString);
 
         FieldFXCenterStageBackdropLG fieldCenterStageBackdrop = new FieldFXCenterStageBackdropLG(alliance, field);
@@ -76,12 +74,27 @@ public class CenterStageBackdrop extends Application {
         //**TODO Pass in scaling factor for tile, robot size; e.g. 100px squares vs 200
         //**TODO When you use the Point2D below the body of the robot is lined up with
         // the grid at y400 but the wheels are above the grid line. Fix this ...
-        RobotFXCenterStageLG centerStageRobot = new RobotFXCenterStageLG("RED_F4", Color.GREEN,
+
+        //**TODO Are you sure that a Group is the right container for the robot?
+        //**TODO DIFFERENT for BLUE and RED ... Here it looks like the position is of the
+        // upper left corner of the robot; Paths use the center point.
+        //**TODO Maybe the initial position has to anticipate the 90 degree rotation ...
+        RobotFXCenterStageLG centerStageRobot;
+        if (alliance == RobotConstants.Alliance.BLUE) {
+            centerStageRobot = new RobotFXCenterStageLG(
                 new Point2D(FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5,
                         FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5),
-                90.0);
+                90.0, Color.GREEN);
+    } else { // RED
+            centerStageRobot = new RobotFXCenterStageLG(
+                    new Point2D(FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + (FieldFXCenterStageBackdropLG.TILE_DIMENSIONS - (RobotFXLG.ROBOT_BODY_WIDTH + (RobotFXLG.WHEEL_WIDTH * 2))) - FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5,
+                            FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5),
+                    -90.0, Color.GREEN);
+        }
+
         Group robot = centerStageRobot.getRobot();
         field.getChildren().add(robot);
+
 
         //**TODO Show the play button grayed out -- here?
         // See PlayPauseButton in FTCAutoSimulator but we need play and stop
@@ -92,10 +105,11 @@ public class CenterStageBackdrop extends Application {
 
         pStage.setScene(rootScene);
 
-        applyAnimation(root, robot);
+        applyAnimation(root, robot, alliance);
     }
 
-    private String allianceSelectionDialog(Stage pStage) {
+    //**TODO Change to RadioButton and ToggleGroup? See YouTube "Random code" tutorials ...
+    private String allianceSelection(Stage pStage) {
         Button okButton = new Button("OK");
 
         // Items for the dialog.
@@ -126,7 +140,7 @@ public class CenterStageBackdrop extends Application {
         return allianceSelection;
     }
 
-    private void applyAnimation(Pane pFieldPane, Group pRobot) {
+    private void applyAnimation(Pane pFieldPane, Group pRobot, RobotConstants.Alliance pAlliance) {
 
         //## As a demonstration start the robot facing inward from the BLUE
         // alliance wall and make the robot follow a CubicCurve path while
@@ -136,23 +150,28 @@ public class CenterStageBackdrop extends Application {
         // https://stackoverflow.com/questions/29594707/moving-a-button-to-specified-coordinates-in-javafx-with-a-path-transition-using
         // But if the initial rotation is 90.0 instead of 0.0 the starting position is not correct.
         // Instead of getLayoutBounds() you have to use getBoundsInParent().
-        double xOffsetInParent = pRobot.getBoundsInParent().getWidth() / 2;
-        double yOffsetInParent = pRobot.getBoundsInParent().getHeight() / 2;
+        //double xOffsetInParent = pRobot.getBoundsInParent().getWidth() / 2;
+        //double yOffsetInParent = pRobot.getBoundsInParent().getHeight() / 2;
 
         //!! However, I noticed the use of localToScene(() in some code below -
-        // this is more like it.
+        // this is more like it. By the way, this is the *center* of the robot.
         Point2D loc = pRobot.localToScene(pRobot.getBoundsInParent().getCenterX(), pRobot.getBoundsInParent().getCenterY());
 
-        // Path constructor parameters: controlX1, controlX2, controly1, controly2, endX, endY
         Path path = new Path();
-        /*
-        path.getElements().add(new MoveTo(FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5 + xOffsetInParent,
-                FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5 + yOffsetInParent));
-        path.getElements().add(new CubicCurveTo(400 + xOffsetInParent, 300 + xOffsetInParent, 300 + yOffsetInParent, 300 + yOffsetInParent, 200 + xOffsetInParent, 200 + yOffsetInParent));
-         */
-
         path.getElements().add(new MoveTo(loc.getX(), loc.getY()));
-        path.getElements().add(new CubicCurveTo(400, 300, 300, 300, 200, 275));
+
+        //**TODO The curves are a proof-of-concept. They will be different depending
+        // on the user's selection for the final position in front of the backdrop.
+        // CubicCurveTo constructor parameters: controlX1, controlX2, controly1, controly2, endX, endY
+        float rotation;
+        if (pAlliance == RobotConstants.Alliance.BLUE) {
+            path.getElements().add(new CubicCurveTo(400, 300, 300, 300, 200, 275));
+            rotation = -90.0f;
+        }
+        else { // RED
+            path.getElements().add(new CubicCurveTo(200, 300, 300, 300, 400, 275));
+            rotation = 90.0f;
+        }
 
         PathTransition pathTransition = new PathTransition();
         pathTransition.setDuration(Duration.millis(3000));
@@ -161,7 +180,7 @@ public class CenterStageBackdrop extends Application {
 
         RotateTransition rotateTransition =
                 new RotateTransition(Duration.millis(3000), pRobot);
-        rotateTransition.setByAngle(-90f);
+        rotateTransition.setByAngle(rotation);
 
         // Follow the cubic curve and rotate in parallel.
         ParallelTransition parallelT = new ParallelTransition(pathTransition, rotateTransition);
