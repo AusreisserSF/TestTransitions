@@ -74,10 +74,12 @@ public class CenterStageBackdrop extends Application {
         // a default position then drag-and-drop.
         //**TODO Don't need OpMode - user selects AprilTag
         //**TODO Pass in scaling factor for tile, robot size; e.g. 100px squares vs 200
+        //**TODO When you use the Point2D below the body of the robot is lined up with
+        // the grid at y400 but the wheels are above the grid line. Fix this ...
         RobotFXCenterStageLG centerStageRobot = new RobotFXCenterStageLG("RED_F4", Color.GREEN,
                 new Point2D(FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5,
                         FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5),
-                0.0);
+                90.0);
         Group robot = centerStageRobot.getRobot();
         field.getChildren().add(robot);
 
@@ -126,8 +128,9 @@ public class CenterStageBackdrop extends Application {
 
     private void applyAnimation(Pane pFieldPane, Group pRobot) {
 
-        // controlX1, controlX2, controly1, controly2, endX, endY
-        Path path = new Path();
+        //## As a demonstration start the robot facing inward from the BLUE
+        // alliance wall and make the robot follow a CubicCurve path while
+        // simultaneously rotating -90 degrees to face the backdrop.
 
         //!! Who knew that this adjustment is necessary?
         // https://stackoverflow.com/questions/29594707/moving-a-button-to-specified-coordinates-in-javafx-with-a-path-transition-using
@@ -135,34 +138,42 @@ public class CenterStageBackdrop extends Application {
         // Instead of getLayoutBounds() you have to use getBoundsInParent().
         double xOffsetInParent = pRobot.getBoundsInParent().getWidth() / 2;
         double yOffsetInParent = pRobot.getBoundsInParent().getHeight() / 2;
+
+        //!! However, I noticed the use of localToScene(() in some code below -
+        // this is more like it.
+        Point2D loc = pRobot.localToScene(pRobot.getBoundsInParent().getCenterX(), pRobot.getBoundsInParent().getCenterY());
+
+        // Path constructor parameters: controlX1, controlX2, controly1, controly2, endX, endY
+        Path path = new Path();
+        /*
         path.getElements().add(new MoveTo(FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5 + xOffsetInParent,
                 FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5 + yOffsetInParent));
-
-        //**TODO TEMP for reference ...
-        Bounds layoutBounds = pRobot.getLayoutBounds();
-        Bounds localBounds = pRobot.getBoundsInLocal();
-        Bounds parentBounds = pRobot.getBoundsInParent();
-
-        //LineTo lineTo = new LineTo(400 + xOffsetInParent, 200 + yOffsetInParent);
-        //path.getElements().add(lineTo);
-
         path.getElements().add(new CubicCurveTo(400 + xOffsetInParent, 300 + xOffsetInParent, 300 + yOffsetInParent, 300 + yOffsetInParent, 200 + xOffsetInParent, 200 + yOffsetInParent));
-        //path.getElements().add(new CubicCurveTo(0, 120, 0, 240, 380, 240));
+         */
 
-        //**TODO As a demonstration what I really want to do is apply a
-        // RotationTransition from 90.0 to 0.0 at the same time as the
-        // PathTransition CubicCurveTo. This should be possible with a
-        // ParallelTransition.
+        path.getElements().add(new MoveTo(loc.getX(), loc.getY()));
+        path.getElements().add(new CubicCurveTo(400, 300, 300, 300, 200, 275));
 
         PathTransition pathTransition = new PathTransition();
         pathTransition.setDuration(Duration.millis(3000));
         pathTransition.setPath(path);
         pathTransition.setNode(pRobot);
-        //pathTransition.setOrientation(PathTransition.OrientationType.ORTHOGONAL_TO_TANGENT);
-        pathTransition.setCycleCount(Timeline.INDEFINITE);
-        pathTransition.setAutoReverse(true);
-        pathTransition.play();
 
+        RotateTransition rotateTransition =
+                new RotateTransition(Duration.millis(3000), pRobot);
+        rotateTransition.setByAngle(-90f);
+
+        // Follow the cubic curve and rotate in parallel.
+        ParallelTransition parallelT = new ParallelTransition(pathTransition, rotateTransition);
+        parallelT.setCycleCount(5);
+        parallelT.setAutoReverse(true);
+        parallelT.setOnFinished(event -> { //**TODO See OneNote - stackoverflow answer from jewelsea
+            pRobot.setLayoutX(pRobot.getLayoutX() + pRobot.getTranslateX());
+            pRobot.setLayoutY(pRobot.getLayoutY() + pRobot.getTranslateY());
+            pRobot.setTranslateX(0);
+            pRobot.setTranslateY(0);
+        });
+        parallelT.play();
 
         //**TODO Get the angle and distance from the camera to the
         // selected AprilTag and display. Draw a line from the camera
@@ -171,11 +182,6 @@ public class CenterStageBackdrop extends Application {
         // line from the center of the robot to the AprilTag. Get the
         // angle and distance from the device to the selected AprilTag
         // and display. Draw a line from the device to the AprilTag.
-
-        // Line at 45 degrees; rotation after path transition is 45.0; add 90 to get the actual 135 degree
-        // rotation of the robot body.
-        //LineTo lineTo = new LineTo(340, 250);
-        //cPath1.getElements().add(lineTo);
 
         /*
         TranslateTransition tt = new TranslateTransition(Duration.millis(2000));
@@ -186,31 +192,25 @@ public class CenterStageBackdrop extends Application {
             robot.setLayoutY(robot.getLayoutY() + robot.getTranslateY());
             robot.setTranslateX(0);
             robot.setTranslateY(0);
+
+            // But mixed in with the above also do this:
+            Rectangle robotBody = (Rectangle) pRobot.lookup("#robotBodyId");
+            Point2D rbCoord = robotBody.localToScene(robotBody.getX(), robotBody.getY());
+            System.out.println("Position after path following x " + rbCoord.getX() + ", y " + rbCoord.getY());
+            System.out.println("JavaFX rotation after path " + pRobot.getRotate());
+
+            double robotRotation = pRobot.getRotate() + 90.0;
+            System.out.println("Robot rotation after path " + robotRotation);
+
+            Point2D centroid = computeRotatedCentroid(rbCoord.getX(), rbCoord.getY(), RobotFX.ROBOT_WIDTH, RobotFX.ROBOT_HEIGHT, robotRotation);
+            System.out.println("Centroid x " + centroid.getX() + ", y " + centroid.getY());
         });
 
         //**TODO Get the robot's Rectangle by Id then get its centroid by:
         //             Point2D centroid = computeRotatedCentroid(rbCoord.getX(), rbCoord.getY(), RobotFX.ROBOT_WIDTH, RobotFX.ROBOT_HEIGHT, robotRotation);
         // then strafe so that the centroid is opposite the centroid of AprilTag 3.
-
-        SequentialTransition seqTrans = new SequentialTransition(robot, tt);
-        seqTrans.play();
-
-        //translateAndRotate(group);
-
          */
 
-    }
-
-    private Path generateLineTo() {
-
-        Path path = new Path();
-        MoveTo moveTo = new MoveTo(150, 240);
-        path.getElements().add(moveTo);
-
-        // 90 degree curve
-        LineTo lineTo = new LineTo(150, 150);
-        path.getElements().add(lineTo);
-        return path;
     }
 
     private PathTransition generatePathTransition(Group pRobot, final Path path) {
@@ -234,10 +234,10 @@ public class CenterStageBackdrop extends Application {
             System.out.println("Centroid x " + centroid.getX() + ", y " + centroid.getY());
 
             Map<Corners, Point2D> cornerMap = robotBodyCornerCoordinates(centroid.getX(), centroid.getY(), RobotFX.ROBOT_WIDTH, RobotFX.ROBOT_HEIGHT, robotRotation);
-            System.out.println("Top left x " + cornerMap.get(Corners.TOP_LEFT).getX() + " y " + cornerMap.get(Corners.TOP_LEFT).getY());
-            System.out.println("Top right x " + cornerMap.get(Corners.TOP_RIGHT).getX() + " y " + cornerMap.get(Corners.TOP_RIGHT).getY());
-            System.out.println("Bottom right x " + cornerMap.get(Corners.BOTTOM_RIGHT).getX() + " y " + cornerMap.get(Corners.BOTTOM_RIGHT).getY());
-            System.out.println("Bottom left x " + cornerMap.get(Corners.BOTTOM_LEFT).getX() + " y " + cornerMap.get(Corners.BOTTOM_LEFT).getY());
+            System.out.println("Robot body top left " + cornerMap.get(Corners.TOP_LEFT).getX() + " y " + cornerMap.get(Corners.TOP_LEFT).getY());
+            System.out.println("Top right " + cornerMap.get(Corners.TOP_RIGHT).getX() + " y " + cornerMap.get(Corners.TOP_RIGHT).getY());
+            System.out.println("Bottom right " + cornerMap.get(Corners.BOTTOM_RIGHT).getX() + " y " + cornerMap.get(Corners.BOTTOM_RIGHT).getY());
+            System.out.println("Bottom left " + cornerMap.get(Corners.BOTTOM_LEFT).getX() + " y " + cornerMap.get(Corners.BOTTOM_LEFT).getY());
 
             // https://stackoverflow.com/questions/26513747/efficient-way-to-find-min-value-in-map
             // Obtain the entry with the minimum value:
