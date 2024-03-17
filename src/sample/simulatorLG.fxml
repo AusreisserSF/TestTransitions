@@ -9,14 +9,13 @@
             minWidth="950.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="sample.SimulatorController">
     <left>
-        <Pane id="Field" fx:id="field" maxHeight="600.0" maxWidth="600.0" minHeight="600.0" minWidth="600.0"
+        <Pane fx:id="field" maxHeight="600.0" maxWidth="600.0" minHeight="600.0" minWidth="600.0"
               style="-fx-background-color: #808080;" BorderPane.alignment="CENTER_LEFT">
         </Pane>
     </left>
     <right>
-        <GridPane id="StartParameters" fx:id="start_parameters" alignment="CENTER_RIGHT" gridLinesVisible="true"
-                  maxHeight="600.0" maxWidth="350.0" minHeight="600.0" minWidth="350.0"
-                  style="-fx-background-color: #DCDCDC;">
+        <GridPane fx:id="start_parameters" alignment="CENTER_RIGHT" gridLinesVisible="true" maxHeight="600.0"
+                  maxWidth="350.0" minHeight="600.0" minWidth="350.0" style="-fx-background-color: #DCDCDC;">
             <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="460.0" minWidth="10.0" prefWidth="255.0"/>
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="460.0" minWidth="10.0" prefWidth="175.0"/>
@@ -34,8 +33,8 @@
                 <RowConstraints maxHeight="166.0" minHeight="5.0" prefHeight="28.0" vgrow="SOMETIMES"/>
             </rowConstraints>
             <children>
-                <Label id="startup_parameters" prefHeight="27.0" prefWidth="200.0" text="Startup Parameters"
-                       GridPane.columnSpan="2147483647" GridPane.halignment="LEFT">
+                <Label prefHeight="27.0" prefWidth="200.0" text="Startup Parameters" GridPane.columnSpan="2147483647"
+                       GridPane.halignment="LEFT">
                     <font>
                         <Font name="System Bold" size="16.0"/>
                     </font>
@@ -43,8 +42,7 @@
                         <Insets left="2.0"/>
                     </GridPane.margin>
                 </Label>
-                <Label id="alliance" fx:id="alliance_id" prefWidth="150.0" GridPane.columnIndex="1"
-                       GridPane.rowIndex="0">
+                <Label fx:id="alliance_id" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
                     <font>
                         <Font size="14.0"/>
                     </font>
@@ -52,7 +50,7 @@
                         <Insets left="5.0"/>
                     </GridPane.margin>
                 </Label>
-                <Label id="robot_dimensions" text="Robot dimensions" GridPane.rowIndex="1">
+                <Label text="Robot dimensions" GridPane.rowIndex="1">
                     <font>
                         <Font size="14.0"/>
                     </font>
@@ -60,9 +58,7 @@
                         <Insets left="5.0"/>
                     </GridPane.margin>
                 </Label>
-
-                <Label id="camera_center_from_robot_center" text="Camera center from robot center" wrapText="true"
-                       GridPane.rowIndex="2">
+                <Label text="Camera center from robot center" wrapText="true" GridPane.rowIndex="2">
                     <font>
                         <Font size="14.0"/>
                     </font>
@@ -70,8 +66,7 @@
                         <Insets left="5.0"/>
                     </GridPane.margin>
                 </Label>
-                <Label id="camera_offset_from_robot_center" text="Camera offset from robot center" wrapText="true"
-                       GridPane.rowIndex="3">
+                <Label text="Camera offset from robot center" wrapText="true" GridPane.rowIndex="3">
                     <font>
                         <Font size="14.0"/>
                     </font>
@@ -79,8 +74,8 @@
                         <Insets left="5.0"/>
                     </GridPane.margin>
                 </Label>
-                <Label id="device_offset_from_robot_center" layoutX="10.0" layoutY="126.0"
-                       text="Device center from robot center" wrapText="true" GridPane.rowIndex="4">
+                <Label layoutX="10.0" layoutY="126.0" text="Device center from robot center" wrapText="true"
+                       GridPane.rowIndex="4">
                     <font>
                         <Font size="14.0"/>
                     </font>
@@ -88,7 +83,7 @@
                         <Insets left="5.0"/>
                     </GridPane.margin>
                 </Label>
-                <Label id="Height" layoutX="10.0" layoutY="162.0" text="Device offset from robot center" wrapText="true"
+                <Label layoutX="10.0" layoutY="162.0" text="Device offset from robot center" wrapText="true"
                        GridPane.rowIndex="5">
                     <font>
                         <Font size="14.0"/>
@@ -97,8 +92,8 @@
                         <Insets left="5.0"/>
                     </GridPane.margin>
                 </Label>
-                <Label id="robot_position_on_field" layoutX="10.0" layoutY="16.0"
-                       text="Robot position opposite backdrop (x, y in pixels)" wrapText="true" GridPane.rowIndex="6">
+                <Label layoutX="10.0" layoutY="16.0" text="Robot position opposite backdrop (x, y inches)"
+                       wrapText="true" GridPane.rowIndex="6">
                     <font>
                         <Font size="14.0"/>
                     </font>
@@ -106,8 +101,8 @@
                         <Insets left="5.0"/>
                     </GridPane.margin>
                 </Label>
-                <Label id="robot_approach" layoutX="10.0" layoutY="16.0" text="Robot approach to backdrop"
-                       wrapText="true" GridPane.rowIndex="8">
+                <Label layoutX="10.0" layoutY="16.0" text="Robot approach to backdrop" wrapText="true"
+                       GridPane.rowIndex="8">
                     <font>
                         <Font size="14.0"/>
                     </font>
@@ -115,7 +110,7 @@
                         <Insets left="5.0"/>
                     </GridPane.margin>
                 </Label>
-                <Label id="apriltag_id" layoutX="10.0" layoutY="241.0" text="AprilTag Id" GridPane.rowIndex="7">
+                <Label layoutX="10.0" layoutY="241.0" text="AprilTag Id" GridPane.rowIndex="7">
                     <font>
                         <Font size="14.0"/>
                     </font>
@@ -123,12 +118,25 @@
                         <Insets left="5.0"/>
                     </GridPane.margin>
                 </Label>
-                <Spinner id="april_tag_spinner" fx:id="april_tag_spinner_id" editable="true" GridPane.columnIndex="1"
-                         GridPane.rowIndex="7"/>
-                <ChoiceBox id="approach_choice" fx:id="approach_choice_id" prefWidth="150.0" GridPane.columnIndex="1"
-                           GridPane.rowIndex="8"/>
-                <TextField id="robot_width" fx:id="robot_width_id" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-                <TextField id="robot_height" fx:id="robot_height_id" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+
+                <TextField fx:id="robot_width_id" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                <TextField fx:id="robot_height_id" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+                <TextField fx:id="camera_center_from_robot_center_id" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                <TextField fx:id="camera_offset_from_robot_center_id" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                <TextField fx:id="device_center_from_robot_center_id" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                <TextField fx:id="device_offset_from_robot_center_id" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                <TextField fx:id="position_x_id" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                <TextField fx:id="position_y_id" GridPane.columnIndex="2" GridPane.rowIndex="6"/>
+                <Spinner fx:id="april_tag_spinner_id" editable="true" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+
+                <RadioButton fx:id="strafe_to_id" selected="true" text="Strafe to" GridPane.columnIndex="1"
+                             GridPane.rowIndex="8">
+                    <toggleGroup>
+                        <ToggleGroup fx:id="approach_toggle"/>
+                    </toggleGroup>
+                </RadioButton>
+                <RadioButton fx:id="turn_to_id" text="Turn to" toggleGroup="$approach_toggle" GridPane.columnIndex="2"
+                             GridPane.rowIndex="8"/>
             </children>
             <BorderPane.margin>
                 <Insets/>

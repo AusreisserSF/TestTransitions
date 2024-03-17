@@ -108,7 +108,7 @@ public class CenterStageBackdrop extends Application {
         applyAnimation(root, robot, alliance);
     }
 
-    //**TODO Change to RadioButton and ToggleGroup? See YouTube "Random code" tutorials ...
+    //**TODO Change to RadioButton and ToggleGroup. See YouTube "Random code" tutorials ...
     private String allianceSelection(Stage pStage) {
         Button okButton = new Button("OK");
 
@@ -138,6 +138,16 @@ public class CenterStageBackdrop extends Application {
         pStage.setScene(dialogScene);
 
         return allianceSelection;
+    }
+
+    //**TODO Note that some parameters are dependent on others, e.g
+    // are dependent on the robot's dimensions.
+    private void validateStartupParameters() {
+        /*
+        <TextField id="robot_width" fx:id="robot_width_id" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <TextField id="robot_height" fx:id="robot_height_id" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+
+         */
     }
 
     private void applyAnimation(Pane pFieldPane, Group pRobot, RobotConstants.Alliance pAlliance) {
