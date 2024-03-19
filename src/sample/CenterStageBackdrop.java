@@ -10,6 +10,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceDialog;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.TilePane;
@@ -25,6 +26,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 // Combination of
 // https://www.infoworld.com/article/2074529/javafx-2-animation--path-transitions.html
@@ -95,6 +97,11 @@ public class CenterStageBackdrop extends Application {
         Group robot = centerStageRobot.getRobot();
         field.getChildren().add(robot);
 
+        //**TODO Add a Submit button to the first row of the startup parameters.
+        // Keep the Play button grayed out until the user hits the Submit button
+        // and all parameters have been validated. Then gray out the submit button
+        // and enable the Play button.
+
 
         //**TODO Show the play button grayed out -- here?
         // See PlayPauseButton in FTCAutoSimulator but we need play and stop
@@ -108,15 +115,35 @@ public class CenterStageBackdrop extends Application {
         applyAnimation(root, robot, alliance);
     }
 
-    //**TODO Change to RadioButton and ToggleGroup. See YouTube "Random code" tutorials ...
-    private String allianceSelection(Stage pStage) {
+    //**TODO What I really want is a RadioButtonDialog, which doesn't exist.
+    private String allianceSelection(Stage pStage) throws IOException {
+        /*
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        fxmlLoader.setLocation(getClass().getResource("allianceToggle.fxml"));
+        AnchorPane root = fxmlLoader.load();
+        AllianceToggleController controller = fxmlLoader.getController();
+
+        AtomicReference<RobotConstants.Alliance> selectedAlliance =
+                new AtomicReference<>(RobotConstants.Alliance.BLUE);
+        controller.ok_button_id.setOnAction(e -> {
+                if (controller.blue_alliance_id.isSelected())
+                    selectedAlliance.set(RobotConstants.Alliance.BLUE);
+                else selectedAlliance.set(RobotConstants.Alliance.RED);
+        });
+
+        Scene allianceSelectionScene = new Scene(root);
+        pStage.setScene(allianceSelectionScene);
+
+        return selectedAlliance.get().toString();
+        */
+
         Button okButton = new Button("OK");
 
         // Items for the dialog.
         String alliances[] = {"BLUE", "RED"};
         ChoiceDialog allianceDialog = new ChoiceDialog(alliances[0], alliances);
 
-        allianceDialog.setHeaderText("Select alliance, fill in start parameters, hit play");
+        allianceDialog.setHeaderText("Select alliance and confirm, fill in start parameters and set, hit play");
         allianceDialog.setContentText("Please select your alliance");
         allianceDialog.showAndWait();
 
@@ -129,7 +156,7 @@ public class CenterStageBackdrop extends Application {
         // When the OK button is pressed.
         okButton.setOnAction(event);
 
-        // Creat a pane for the button.
+        // Create a pane for the button.
         TilePane dialogTilePane = new TilePane();
         dialogTilePane.getChildren().add(okButton);
 
