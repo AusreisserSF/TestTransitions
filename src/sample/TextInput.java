@@ -19,12 +19,9 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.converter.DoubleStringConverter;
 
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 
 public class TextInput extends Application {
-    private final ObjectProperty<Double> valueProperty = new SimpleObjectProperty<>(0.0);
-
     public static final double MIN_ROBOT_WIDTH = 8.0;
     public static final double MAX_ROBOT_WIDTH = 18.0;
 
@@ -46,6 +43,7 @@ public class TextInput extends Application {
 
         public TestPane() {
             TextField textField = new TextField();
+            ObjectProperty<Double> valueProperty = new SimpleObjectProperty<>(0.0);
 
             TextFormatter<Double> textFormatter = new TextFormatter<>(new DoubleStringConverter());
             textFormatter.valueProperty().bindBidirectional(valueProperty);
@@ -62,15 +60,13 @@ public class TextInput extends Application {
             setCenter(new VBox(10,
                     new HBox(6, new Text("TextField 1"), textField),
                     new HBox(6, new Text("TextField 2"), new TextField())));
-
-            //System.out.println("Validated parameter: " + validatedParameter);
         }
 
         // Based on this answer from Fabian --
         // https://stackoverflow.com/questions/50102818/shared-changelistener-vs-multiple-changelisteners
         private class PredicateChangeListener implements ChangeListener<Double> {
             private final Predicate<Double> changePredicate;
-            private String errorMsg;
+            private final String errorMsg;
 
             PredicateChangeListener(Predicate<Double> pChangePredicate, String pErrorMsg) {
                 changePredicate = pChangePredicate;

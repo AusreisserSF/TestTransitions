@@ -36,6 +36,8 @@ public class CenterStageBackdrop extends Application {
 
     private enum Corners {TOP_LEFT, TOP_RIGHT, BOTTOM_RIGHT, BOTTOM_LEFT}
 
+    SimulatorController controller;
+
     //**TODO Do you really need device center from robot center?
     //**TODO Accommodate turning towards a target; need a selection for this - strafeTo vs AngleTo
     //**TODO change display for just one backdrop - will show angles better.
@@ -45,16 +47,17 @@ public class CenterStageBackdrop extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(getClass().getResource("simulatorLG.fxml"));
         BorderPane root = fxmlLoader.load();
-        SimulatorController controller = fxmlLoader.getController();
+        controller = fxmlLoader.getController();
         Pane field = controller.field;
 
         pStage.setTitle("FTC Center Stage Backdrop and AprilTags");
         Scene rootScene = new Scene(root);
         pStage.setScene(rootScene);
-        pStage.show();
+        pStage.show(); // show the empty field
 
         String allianceString = allianceSelection(pStage);
         RobotConstants.Alliance alliance = RobotConstants.Alliance.valueOf(allianceString);
+        pStage.setScene(rootScene); // reset to primary Pane
 
         FieldFXCenterStageBackdropLG fieldCenterStageBackdrop = new FieldFXCenterStageBackdropLG(alliance, field);
 
@@ -97,44 +100,25 @@ public class CenterStageBackdrop extends Application {
         Group robot = centerStageRobot.getRobot();
         field.getChildren().add(robot);
 
-        //**TODO Add a Submit button to the first row of the startup parameters.
-        // Keep the Play button grayed out until the user hits the Submit button
-        // and all parameters have been validated. Then gray out the submit button
-        // and enable the Play button.
-
-
-        //**TODO Show the play button grayed out -- here?
-        // See PlayPauseButton in FTCAutoSimulator but we need play and stop
-
-        //**TODO Class to parse startup parameters - user hits the play button
+        //**TODO Parse startup parameters - user hits the play button
         // when done. Need test for all parameters set. Disallow changes after
         // the play button has been set.
+        validateStartupParameters();
 
-        pStage.setScene(rootScene);
-
+        //**TODO Show the play button now?
+        // See PlayPauseButton in FTCAutoSimulator but we need play and stop
         applyAnimation(root, robot, alliance);
     }
 
     //**TODO What I really want is a RadioButtonDialog, which doesn't exist.
+    // But it looks like you may be able make a custom Dialog with
+    // RadioButton(s)/Toggle group inside it. But this will take some work.
     private String allianceSelection(Stage pStage) throws IOException {
         /*
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(getClass().getResource("allianceToggle.fxml"));
         AnchorPane root = fxmlLoader.load();
         AllianceToggleController controller = fxmlLoader.getController();
-
-        AtomicReference<RobotConstants.Alliance> selectedAlliance =
-                new AtomicReference<>(RobotConstants.Alliance.BLUE);
-        controller.ok_button_id.setOnAction(e -> {
-                if (controller.blue_alliance_id.isSelected())
-                    selectedAlliance.set(RobotConstants.Alliance.BLUE);
-                else selectedAlliance.set(RobotConstants.Alliance.RED);
-        });
-
-        Scene allianceSelectionScene = new Scene(root);
-        pStage.setScene(allianceSelectionScene);
-
-        return selectedAlliance.get().toString();
         */
 
         Button okButton = new Button("OK");
@@ -143,7 +127,7 @@ public class CenterStageBackdrop extends Application {
         String alliances[] = {"BLUE", "RED"};
         ChoiceDialog allianceDialog = new ChoiceDialog(alliances[0], alliances);
 
-        allianceDialog.setHeaderText("Select alliance and confirm, fill in start parameters and set, hit play");
+        allianceDialog.setHeaderText("Select alliance and confirm, fill in start parameters, hit Play");
         allianceDialog.setContentText("Please select your alliance");
         allianceDialog.showAndWait();
 
@@ -170,11 +154,8 @@ public class CenterStageBackdrop extends Application {
     //**TODO Note that some parameters are dependent on others, e.g
     // are dependent on the robot's dimensions.
     private void validateStartupParameters() {
-        /*
-        <TextField id="robot_width" fx:id="robot_width_id" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-        <TextField id="robot_height" fx:id="robot_height_id" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+        StartParameterValidation startParameterValidation = new StartParameterValidation(controller);
 
-         */
     }
 
     private void applyAnimation(Pane pFieldPane, Group pRobot, RobotConstants.Alliance pAlliance) {
