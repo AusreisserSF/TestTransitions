@@ -12,6 +12,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceDialog;
+import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.TilePane;
@@ -97,16 +98,20 @@ public class CenterStageBackdrop extends Application {
                     -90.0, Color.GREEN);
         }
 
-        // Parse and validate the start parameters.
+        // Parse and validate the start parameters that have a range of double values.
         startParameterValidation = new StartParameterValidation(controller);
 
-        //**TODO Show the play button now? Do not start the animation until
+        SpinnerValueFactory.IntegerSpinnerValueFactory spinnerValueFactory;
+        if (alliance == RobotConstants.Alliance.BLUE)
+            spinnerValueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 3);
+        else // RED
+            spinnerValueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(4, 6);
+        controller.april_tag_spinner_id.setValueFactory(spinnerValueFactory);
+
+        // Show the play button now but do not start the animation until
         // all start parameters have been validated.
-        // See PlayPauseButton in FTCAutoSimulator but we need play and stop
         Button playButton = setPlayButton(field, alliance);
         EventHandler<ActionEvent> event = e -> {
-            //**TODO Only place the robot on the field and start the animation
-            // if all of the start parameters have been entered.
             if (!startParameterValidation.allStartParametersValid()) {
                 Alert errorAlert = new Alert(Alert.AlertType.ERROR);
                 errorAlert.setHeaderText("Invalid request to Play the animation");

@@ -31,7 +31,7 @@ public class StartParameterValidation {
 
         public StartParameterValidation(SimulatorController pSimulatorController) {
 
-            //**TODO One listener for each start parameter.
+            //**TODO One listener for each start parameter with a range of double values.
             startParameters.put(StartParameter.ROBOT_BODY_WIDTH, new StartParameterInfo(0.0, false));
             PredicateChangeListener widthListener = (new PredicateChangeListener(
                     widthP -> {
