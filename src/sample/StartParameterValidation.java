@@ -29,6 +29,10 @@ public class StartParameterValidation {
 
         public StartParameterValidation(SimulatorController pSimulatorController) {
 
+            //**TODO STOPPED HERE 3/20/2024 If I don't enter a value for the width
+            // the animation runs but when I close the application window I get a
+            // NPE here on widthP.
+
             //**TODO One listener for each start parameter.
             startParameters.put(StartParameter.ROBOT_BODY_WIDTH, new StartParameterInfo(0.0, false));
             PredicateChangeListener widthListener = (new PredicateChangeListener(

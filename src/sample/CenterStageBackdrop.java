@@ -10,7 +10,6 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceDialog;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.TilePane;
@@ -26,7 +25,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 // Combination of
 // https://www.infoworld.com/article/2074529/javafx-2-animation--path-transitions.html
@@ -37,6 +35,7 @@ public class CenterStageBackdrop extends Application {
     private enum Corners {TOP_LEFT, TOP_RIGHT, BOTTOM_RIGHT, BOTTOM_LEFT}
 
     SimulatorController controller;
+    StartParameterValidation startParameterValidation;
 
     //**TODO Do you really need device center from robot center?
     //**TODO Accommodate turning towards a target; need a selection for this - strafeTo vs AngleTo
@@ -97,16 +96,19 @@ public class CenterStageBackdrop extends Application {
                     -90.0, Color.GREEN);
         }
 
+        // Parse and validate the start parameters.
+        startParameterValidation = new StartParameterValidation(controller);
+
+        //**TODO Show the play button now? Do not start the animation until
+        // all start parameters have been validated.
+        // See PlayPauseButton in FTCAutoSimulator but we need play and stop
+        setPlayButton(field, alliance);
+
+        //**TODO You can't show the robot until you get the start parameters,
+        // i.e. after the Play button is hit.
         Group robot = centerStageRobot.getRobot();
         field.getChildren().add(robot);
 
-        //**TODO Parse startup parameters - user hits the play button
-        // when done. Need test for all parameters set. Disallow changes after
-        // the play button has been set.
-        validateStartupParameters();
-
-        //**TODO Show the play button now?
-        // See PlayPauseButton in FTCAutoSimulator but we need play and stop
         applyAnimation(root, robot, alliance);
     }
 
@@ -153,9 +155,32 @@ public class CenterStageBackdrop extends Application {
 
     //**TODO Note that some parameters are dependent on others, e.g
     // are dependent on the robot's dimensions.
-    private void validateStartupParameters() {
+    private void validateStartParameters() {
         StartParameterValidation startParameterValidation = new StartParameterValidation(controller);
 
+    }
+
+    //**TODO From FTCAutoSimulator/RobotSimulator
+        // Set up the play/pause/stop button.
+    private void setPlayButton(Pane pFieldPane, RobotConstants.Alliance pAlliance) {
+        Button playButton = new Button("Play");
+        playButton.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
+
+        // Position the button on the opposite side of the field from
+        // the selected alliance.
+        final double buttonOffsetX = 50;
+        final double buttonOffsetY = 50;
+
+        playButton.setLayoutY(FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 3 - buttonOffsetY);
+        if (pAlliance == RobotConstants.Alliance.BLUE)
+            playButton.setLayoutX((FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 3) - FieldFXCenterStageBackdropLG.FIELD_OUTSIDE_BORDER_SIZE - buttonOffsetX);
+        else
+            playButton.setLayoutX(FieldFXCenterStageBackdropLG.FIELD_OUTSIDE_BORDER_SIZE + buttonOffsetX);
+
+        pFieldPane.getChildren().add(playButton);
+
+        // Set up listeners for the play/pause button.
+        //**TODO new PlayPauseButton(playPauseButton, controller, pSTCollection);
     }
 
     private void applyAnimation(Pane pFieldPane, Group pRobot, RobotConstants.Alliance pAlliance) {
