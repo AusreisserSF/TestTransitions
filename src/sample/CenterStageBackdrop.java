@@ -5,9 +5,11 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.layout.BorderPane;
@@ -37,10 +39,8 @@ public class CenterStageBackdrop extends Application {
     SimulatorController controller;
     StartParameterValidation startParameterValidation;
 
-    //**TODO Do you really need device center from robot center?
-    //**TODO Accommodate turning towards a target; need a selection for this - strafeTo vs AngleTo
-    //**TODO change display for just one backdrop - will show angles better.
-    //**TODO Show all positions in FTC field coordinates
+    //**TODO Do you really need device center from robot center? Yes, for visualization.
+    //**TODO Show all positions in FTC field coordinates? Or at least report the field coordinates.
     @Override
     public void start(final Stage pStage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader();
@@ -56,6 +56,7 @@ public class CenterStageBackdrop extends Application {
 
         String allianceString = allianceSelection(pStage);
         RobotConstants.Alliance alliance = RobotConstants.Alliance.valueOf(allianceString);
+        //**TODO Or send the primary Scene to allianceSelection and let it restore
         pStage.setScene(rootScene); // reset to primary Pane
 
         FieldFXCenterStageBackdropLG fieldCenterStageBackdrop = new FieldFXCenterStageBackdropLG(alliance, field);
@@ -102,14 +103,25 @@ public class CenterStageBackdrop extends Application {
         //**TODO Show the play button now? Do not start the animation until
         // all start parameters have been validated.
         // See PlayPauseButton in FTCAutoSimulator but we need play and stop
-        setPlayButton(field, alliance);
+        Button playButton = setPlayButton(field, alliance);
+        EventHandler<ActionEvent> event = e -> {
+            //**TODO Only place the robot on the field and start the animation
+            // if all of the start parameters have been entered.
+            if (!startParameterValidation.allStartParametersValid()) {
+                Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                errorAlert.setHeaderText("Invalid request to Play the animation");
+                errorAlert.setContentText("Not all start parameters have been set correctly");
+                errorAlert.showAndWait();
+                return;
+            }
 
-        //**TODO You can't show the robot until you get the start parameters,
-        // i.e. after the Play button is hit.
-        Group robot = centerStageRobot.getRobot();
-        field.getChildren().add(robot);
+            Group robot = centerStageRobot.getRobot();
+            field.getChildren().add(robot);
 
-        applyAnimation(root, robot, alliance);
+            applyAnimation(robot, alliance);
+        };
+
+        playButton.setOnAction(event);
     }
 
     //**TODO What I really want is a RadioButtonDialog, which doesn't exist.
@@ -161,13 +173,15 @@ public class CenterStageBackdrop extends Application {
     }
 
     //**TODO From FTCAutoSimulator/RobotSimulator
-        // Set up the play/pause/stop button.
-    private void setPlayButton(Pane pFieldPane, RobotConstants.Alliance pAlliance) {
+        // Set up the Play button.
+    private Button setPlayButton(Pane pFieldPane, RobotConstants.Alliance pAlliance) {
         Button playButton = new Button("Play");
         playButton.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
 
         // Position the button on the opposite side of the field from
         // the selected alliance.
+        //**TODO Get the offsets from the button itself.
+        Bounds buttonBoundsLocal = playButton.getBoundsInLocal();
         final double buttonOffsetX = 50;
         final double buttonOffsetY = 50;
 
@@ -179,11 +193,10 @@ public class CenterStageBackdrop extends Application {
 
         pFieldPane.getChildren().add(playButton);
 
-        // Set up listeners for the play/pause button.
-        //**TODO new PlayPauseButton(playPauseButton, controller, pSTCollection);
+        return playButton;
     }
 
-    private void applyAnimation(Pane pFieldPane, Group pRobot, RobotConstants.Alliance pAlliance) {
+    private void applyAnimation(Group pRobot, RobotConstants.Alliance pAlliance) {
 
         //## As a demonstration start the robot facing inward from the BLUE
         // alliance wall and make the robot follow a CubicCurve path while

@@ -13,6 +13,8 @@ import javafx.scene.control.TextFormatter;
 import javafx.util.converter.DoubleStringConverter;
 
 import java.util.EnumMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 //**TODO For the animation the robot's wheels are shown outside
@@ -40,7 +42,7 @@ public class StartParameterValidation {
                             return true;
 
                         StartParameterInfo widthInfo = startParameters.get(StartParameter.ROBOT_BODY_WIDTH);
-                        widthInfo.setValue(widthP);
+                        widthInfo.setParameterValue(widthP);
                         boolean widthValid = widthP >= MIN_ROBOT_BODY_WIDTH && widthP <= MAX_ROBOT_BODY_WIDTH;
                         widthInfo.setValidity(widthValid);
                         return widthValid;
@@ -48,6 +50,14 @@ public class StartParameterValidation {
                     "The width of the robot must be between 8.0 and 18.0 inches"));
 
             validateStartParameter(pSimulatorController.robot_width_id, widthListener);
+        }
+
+        public boolean allStartParametersValid() {
+            boolean allValid = true;
+            Optional<Map.Entry<StartParameter, StartParameterInfo>> invalidEntry = startParameters.entrySet().stream()
+                    .filter(e -> !e.getValue().getValidity())
+                    .findAny();
+            return invalidEntry.isEmpty(); // returns true if there are no invalid entries
         }
 
         private void validateStartParameter(TextField pTextField,
@@ -61,30 +71,29 @@ public class StartParameterValidation {
         }
 
         public static class StartParameterInfo {
-            private double value;
+            private double parameterValue;
             private boolean valid;
 
-            public StartParameterInfo(double pValue, boolean pValid) {
-                value = pValue;
+            public StartParameterInfo(double pParameterValue, boolean pValid) {
+                parameterValue = pParameterValue;
                 valid = pValid;
             }
 
-            public void setValue(double pValue) {
-                value = pValue;
+            public void setParameterValue(double pValue) {
+                parameterValue = pValue;
             }
 
             public void setValidity(boolean pValid) {
                 valid = pValid;
             }
 
-            public double getValue() {
-                return value;
+            public double getParameterValue() {
+                return parameterValue;
             }
 
             public boolean getValidity() {
                 return valid;
             }
-
         }
 
         // Based on this answer from Fabian --
