@@ -123,7 +123,7 @@ public class CenterStageBackdrop extends Application {
             Group robot = centerStageRobot.getRobot();
             field.getChildren().add(robot);
 
-            applyAnimation(robot, alliance);
+            applyAnimation(field, robot, alliance);
         };
 
         playButton.setOnAction(event);
@@ -201,7 +201,7 @@ public class CenterStageBackdrop extends Application {
         return playButton;
     }
 
-    private void applyAnimation(Group pRobot, RobotConstants.Alliance pAlliance) {
+    private void applyAnimation(Pane pField, Group pRobot, RobotConstants.Alliance pAlliance) {
 
         //## As a demonstration start the robot facing inward from the BLUE
         // alliance wall and make the robot follow a CubicCurve path while
@@ -252,8 +252,26 @@ public class CenterStageBackdrop extends Application {
             pRobot.setLayoutY(pRobot.getLayoutY() + pRobot.getTranslateY());
             pRobot.setTranslateX(0);
             pRobot.setTranslateY(0);
+
+            //**TODO STOPPED HERE 3/21/2024 ... You can't for parallelT.play() to
+            // complete; further action must be taken here. But it's a good question -
+            // how do you run an animation, do some processing (as here), and then
+            // run another animation without nesting?
+            Rectangle cameraOnRobot = (Rectangle) pRobot.lookup("#" + pRobot.getId() + "_" + RobotFXCenterStageLG.CAMERA_ON_ROBOT_ID);
+            Point2D cameraCoord = cameraOnRobot.localToScene(cameraOnRobot.getX(), cameraOnRobot.getY());
+
+            // Get the coordinates of the target AprilTag.
+            Integer targetAprilTag = (Integer) controller.april_tag_spinner_id.getValue();
+            Rectangle aprilTag = (Rectangle) pField.lookup("#" + FieldFXCenterStageBackdropLG.APRIL_TAG_ID + Integer.toString(targetAprilTag));
+            Point2D aprilTagCoord = aprilTag.localToScene(aprilTag.getX(), aprilTag.getY());
+
+            // Draw a line from the camera to the target AprilTag.
+            System.out.println("Ready to draw a line");
+
         });
         parallelT.play();
+
+
 
         //**TODO Get the angle and distance from the camera to the
         // selected AprilTag and display. Draw a line from the camera

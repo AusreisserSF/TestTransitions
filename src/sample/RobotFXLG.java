@@ -15,13 +15,14 @@ public abstract class RobotFXLG {
     public static final double WHEEL_WIDTH = FieldFXCenterStageBackdropLG.PX_PER_INCH * 2;
     public static final double WHEEL_HEIGHT = FieldFXCenterStageBackdropLG.PX_PER_INCH * 4;
     public static final double WHEEL_OFFSET_Y = FieldFXCenterStageBackdropLG.PX_PER_INCH * 1;
-    public static final String ROBOT_GROUP_ID = "robotGroupId";
+    public static final String ROBOT_ID = "robotGroup";
 
     protected final Group robot;
 
     public RobotFXLG(Point2D pRobotScreenCoordinates,
                      double pInitialHeading, Color pRobotBodyColor) {
         robot = new Group();
+        robot.setId(ROBOT_ID);
 
         Rectangle robotBody = new Rectangle(pRobotScreenCoordinates.getX() + WHEEL_WIDTH, pRobotScreenCoordinates.getY(), ROBOT_BODY_WIDTH, ROBOT_BODY_HEIGHT);
         robotBody.setArcHeight(15);

@@ -9,6 +9,7 @@ public class RobotFXCenterStageLG extends RobotFXLG {
 
     public static final double CAMERA_WIDTH = FieldFXCenterStageBackdropLG.PX_PER_INCH * 3;
     public static final double CAMERA_HEIGHT = FieldFXCenterStageBackdropLG.PX_PER_INCH * 2;
+    public static final String CAMERA_ON_ROBOT_ID = "cameraOnRobotId";
     public static final String DEVICE_ON_ROBOT_ID = "deviceOnRobotId";
 
     public RobotFXCenterStageLG(Point2D pRobotScreenCoordinates,
@@ -16,11 +17,12 @@ public class RobotFXCenterStageLG extends RobotFXLG {
         super(pRobotScreenCoordinates, pInitialHeading, pRobotBodyColor);
 
         // Place the camera on the robot.
-        Rectangle robotCamera = new Rectangle(pRobotScreenCoordinates.getX() + WHEEL_WIDTH + RobotFXLG.ROBOT_BODY_WIDTH - (CAMERA_WIDTH + FieldFXCenterStageBackdropLG.PX_PER_INCH), pRobotScreenCoordinates.getY() + FieldFXCenterStageBackdropLG.PX_PER_INCH, CAMERA_WIDTH, CAMERA_HEIGHT);
-        robotCamera.setArcHeight(5);
-        robotCamera.setArcWidth(5);
-        robotCamera.setFill(Color.BLACK);
-        robot.getChildren().add(robotCamera);
+        Rectangle cameraOnRobot = new Rectangle(pRobotScreenCoordinates.getX() + WHEEL_WIDTH + RobotFXLG.ROBOT_BODY_WIDTH - (CAMERA_WIDTH + FieldFXCenterStageBackdropLG.PX_PER_INCH), pRobotScreenCoordinates.getY() + FieldFXCenterStageBackdropLG.PX_PER_INCH, CAMERA_WIDTH, CAMERA_HEIGHT);
+        cameraOnRobot.setId(robot.getId() + "_" + CAMERA_ON_ROBOT_ID);
+        cameraOnRobot.setArcHeight(5);
+        cameraOnRobot.setArcWidth(5);
+        cameraOnRobot.setFill(Color.BLACK);
+        robot.getChildren().add(cameraOnRobot);
 
         // Show a device mounted on the robot. The device may be a shooter, a delivery arm,
         // a grabber, etc.

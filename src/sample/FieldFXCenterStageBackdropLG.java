@@ -58,12 +58,13 @@ public class FieldFXCenterStageBackdropLG {
     // Identifiers are used during animation to get a specific object via Pane.lookup().
     // Reference: https://stackoverflow.com/questions/34861690/javafx-scene-lookup-returning-null
     public static final String BACKDROP_ID = "backdropId";
-    public static final String APRIL_TAG_1_ID = "aprilTag1Id";
-    public static final String APRIL_TAG_2_ID = "aprilTag2Id";
-    public static final String APRIL_TAG_3_ID = "aprilTag3Id";
-    public static final String APRIL_TAG_4_ID = "aprilTag4Id";
-    public static final String APRIL_TAG_5_ID = "aprilTag5Id";
-    public static final String APRIL_TAG_6_ID = "aprilTag6Id";
+    public static final String APRIL_TAG_ID = "aprilTagId";
+    public static final String APRIL_TAG_1_ID = "aprilTagId1";
+    public static final String APRIL_TAG_2_ID = "aprilTagId2";
+    public static final String APRIL_TAG_3_ID = "aprilTagId3";
+    public static final String APRIL_TAG_4_ID = "aprilTagId4";
+    public static final String APRIL_TAG_5_ID = "aprilTagId5";
+    public static final String APRIL_TAG_6_ID = "aprilTagId6";
 
     private final RobotConstants.Alliance alliance;
     private final Pane field;
@@ -148,8 +149,11 @@ public class FieldFXCenterStageBackdropLG {
         // Put down lines to mark the blue and red backdrops.
         // BLUE backdrop
         if (alliance == RobotConstants.Alliance.BLUE) {
+            aprilTagLeftRect.setId(APRIL_TAG_1_ID);
             aprilTagLeftStack.getChildren().add(new Text("1"));
+            aprilTagCenterRect.setId(APRIL_TAG_2_ID);
             aprilTagCenterStack.getChildren().add(new Text("2"));
+            aprilTagRightRect.setId(APRIL_TAG_3_ID);
             aprilTagRightStack.getChildren().add(new Text("3"));
 
             // Place the Backstage tape lines according to the field assembly guide.
@@ -170,8 +174,11 @@ public class FieldFXCenterStageBackdropLG {
 
         // RED Backdrop
         if (alliance == RobotConstants.Alliance.RED) {
+            aprilTagLeftRect.setId(APRIL_TAG_4_ID);
             aprilTagLeftStack.getChildren().add(new Text("4"));
+            aprilTagCenterRect.setId(APRIL_TAG_5_ID);
             aprilTagCenterStack.getChildren().add(new Text("5"));
+            aprilTagRightRect.setId(APRIL_TAG_6_ID);
             aprilTagRightStack.getChildren().add(new Text("6"));
 
             Line backstageAngledLineRed = new Line(0,

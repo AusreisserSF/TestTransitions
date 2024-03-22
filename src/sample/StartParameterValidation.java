@@ -54,8 +54,8 @@ public class StartParameterValidation {
 
         public boolean allStartParametersValid() {
             boolean allValid = true;
-            Optional<Map.Entry<StartParameter, StartParameterInfo>> invalidEntry = startParameters.entrySet().stream()
-                    .filter(e -> !e.getValue().getValidity())
+            Optional<StartParameterInfo> invalidEntry = startParameters.values().stream()
+                    .filter(e -> !e.getValidity())
                     .findAny();
             return invalidEntry.isEmpty(); // returns true if there are no invalid entries
         }
