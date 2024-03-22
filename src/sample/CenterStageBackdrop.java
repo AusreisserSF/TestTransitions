@@ -245,8 +245,8 @@ public class CenterStageBackdrop extends Application {
 
         // Follow the cubic curve and rotate in parallel.
         ParallelTransition parallelT = new ParallelTransition(pathTransition, rotateTransition);
-        parallelT.setCycleCount(5);
-        parallelT.setAutoReverse(true);
+        //parallelT.setCycleCount(5);
+        //parallelT.setAutoReverse(true);
         parallelT.setOnFinished(event -> { //**TODO See OneNote - stackoverflow answer from jewelsea
             pRobot.setLayoutX(pRobot.getLayoutX() + pRobot.getTranslateX());
             pRobot.setLayoutY(pRobot.getLayoutY() + pRobot.getTranslateY());
@@ -265,8 +265,20 @@ public class CenterStageBackdrop extends Application {
             Rectangle aprilTag = (Rectangle) pField.lookup("#" + FieldFXCenterStageBackdropLG.APRIL_TAG_ID + Integer.toString(targetAprilTag));
             Point2D aprilTagCoord = aprilTag.localToScene(aprilTag.getX(), aprilTag.getY());
 
+            // The returned coordinates of the objects are those of the upper left-hand
+            // corner. We want to draw a line from the face of the camera to the center
+            // of the AprilTag.
+            double cameraFaceX = cameraCoord.getX() + cameraOnRobot.getWidth() / 2;
+            double cameraFaceY = cameraCoord.getY();
+            double aprilTagCenterX = aprilTagCoord.getX() + aprilTag.getWidth() / 2;
+            double aprilTagCenterY = aprilTagCoord.getY() + aprilTag.getHeight() / 2;
+
             // Draw a line from the camera to the target AprilTag.
-            System.out.println("Ready to draw a line");
+            Line line = new Line(cameraFaceX, cameraFaceY, aprilTagCenterX, aprilTagCenterY);
+            line.setStroke(Color.FUCHSIA);
+            line.getStrokeDashArray().addAll(10.0);
+            line.setStrokeWidth(3.0);
+            pField.getChildren().add(line);
 
         });
         parallelT.play();
