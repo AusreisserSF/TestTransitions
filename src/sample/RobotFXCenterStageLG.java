@@ -12,12 +12,12 @@ public class RobotFXCenterStageLG extends RobotFXLG {
     public static final String CAMERA_ON_ROBOT_ID = "cameraOnRobotId";
     public static final String DEVICE_ON_ROBOT_ID = "deviceOnRobotId";
 
-    public RobotFXCenterStageLG(Point2D pRobotScreenCoordinates,
-                                double pInitialHeading, Color pRobotBodyColor) {
-        super(pRobotScreenCoordinates, pInitialHeading, pRobotBodyColor);
+    public RobotFXCenterStageLG(double pRobotBodyWidth, double pRobotBodyHeight, Color pRobotBodyColor,
+                                Point2D pRobotScreenCoordinates, double pInitialHeading) {
+        super(pRobotBodyWidth, pRobotBodyHeight, pRobotBodyColor, pRobotScreenCoordinates, pInitialHeading);
 
         // Place the camera on the robot.
-        Rectangle cameraOnRobot = new Rectangle(pRobotScreenCoordinates.getX() + WHEEL_WIDTH + RobotFXLG.ROBOT_BODY_WIDTH - (CAMERA_WIDTH + FieldFXCenterStageBackdropLG.PX_PER_INCH), pRobotScreenCoordinates.getY() + FieldFXCenterStageBackdropLG.PX_PER_INCH, CAMERA_WIDTH, CAMERA_HEIGHT);
+        Rectangle cameraOnRobot = new Rectangle(pRobotScreenCoordinates.getX() + WHEEL_WIDTH + (pRobotBodyWidth * FieldFXCenterStageBackdropLG.PX_PER_INCH) - (CAMERA_WIDTH + FieldFXCenterStageBackdropLG.PX_PER_INCH), pRobotScreenCoordinates.getY() + FieldFXCenterStageBackdropLG.PX_PER_INCH, CAMERA_WIDTH, CAMERA_HEIGHT);
         cameraOnRobot.setId(robot.getId() + "_" + CAMERA_ON_ROBOT_ID);
         cameraOnRobot.setArcHeight(5);
         cameraOnRobot.setArcWidth(5);
@@ -28,7 +28,9 @@ public class RobotFXCenterStageLG extends RobotFXLG {
         // a grabber, etc.
         Circle deviceOnRobot = new Circle(pRobotScreenCoordinates.getX() + WHEEL_WIDTH + FieldFXCenterStageBackdropLG.PX_PER_INCH * 2, pRobotScreenCoordinates.getY() + FieldFXCenterStageBackdropLG.PX_PER_INCH * 2, FieldFXCenterStageBackdropLG.PX_PER_INCH);
         deviceOnRobot.setId(robot.getId() + "_" + DEVICE_ON_ROBOT_ID);
-        deviceOnRobot.setFill(Color.YELLOW);
+        deviceOnRobot.setStrokeWidth(2.0);
+        deviceOnRobot.setStroke(Color.YELLOW);
+        deviceOnRobot.setFill(Color.TRANSPARENT);
         robot.getChildren().add(deviceOnRobot);
     }
 

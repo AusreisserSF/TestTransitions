@@ -13,7 +13,6 @@ import javafx.scene.control.TextFormatter;
 import javafx.util.converter.DoubleStringConverter;
 
 import java.util.EnumMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -21,8 +20,8 @@ import java.util.function.Predicate;
 // the body; this allows for a better representation of the camera
 // and delivery device.
 public class StartParameterValidation {
-    public static final double MIN_ROBOT_BODY_WIDTH = 8.0;
-    public static final double MAX_ROBOT_BODY_WIDTH = 18.0;
+    public static final double MIN_ROBOT_BODY_DIMENSION = 12.0;
+    public static final double MAX_ROBOT_BODY_DIMENSION = 18.0;
 
     public enum StartParameter {ROBOT_BODY_WIDTH, ROBOT_BODY_HEIGHT}
 
@@ -32,24 +31,51 @@ public class StartParameterValidation {
         public StartParameterValidation(SimulatorController pSimulatorController) {
 
             //**TODO One listener for each start parameter with a range of double values.
+
+            // Robot width.
             startParameters.put(StartParameter.ROBOT_BODY_WIDTH, new StartParameterInfo(0.0, false));
             PredicateChangeListener widthListener = (new PredicateChangeListener(
                     widthP -> {
                         // If the user doesn't enter a value for the width the animation runs
                         // but when the user closes the application window this change listener
-                        // fires with a null value for I get a widthP.
+                        // fires with a null value for widthP.
                         if (widthP ==  null)
                             return true;
 
                         StartParameterInfo widthInfo = startParameters.get(StartParameter.ROBOT_BODY_WIDTH);
                         widthInfo.setParameterValue(widthP);
-                        boolean widthValid = widthP >= MIN_ROBOT_BODY_WIDTH && widthP <= MAX_ROBOT_BODY_WIDTH;
+                        boolean widthValid = widthP >= MIN_ROBOT_BODY_DIMENSION && widthP <= MAX_ROBOT_BODY_DIMENSION;
                         widthInfo.setValidity(widthValid);
                         return widthValid;
                     },
-                    "The width of the robot must be between 8.0 and 18.0 inches"));
+                    "The width of the robot must be between " +  MIN_ROBOT_BODY_DIMENSION + " and " + MAX_ROBOT_BODY_DIMENSION));
 
             validateStartParameter(pSimulatorController.robot_width_id, widthListener);
+
+            // Robot height.
+            startParameters.put(StartParameter.ROBOT_BODY_HEIGHT, new StartParameterInfo(0.0, false));
+            PredicateChangeListener heightListener = (new PredicateChangeListener(
+                    heightP -> {
+                        // If the user doesn't enter a value for the height the animation runs
+                        // but when the user closes the application window this change listener
+                        // fires with a null value for heightP.
+                        if (heightP ==  null)
+                            return true;
+
+                        StartParameterInfo heightInfo = startParameters.get(StartParameter.ROBOT_BODY_HEIGHT);
+                        heightInfo.setParameterValue(heightP);
+                        boolean heightValid = heightP >= MIN_ROBOT_BODY_DIMENSION && heightP <= MAX_ROBOT_BODY_DIMENSION;
+                        heightInfo.setValidity(heightValid);
+                        return heightValid;
+                    },
+                    "The height of the robot must be between " +  MIN_ROBOT_BODY_DIMENSION + " and " + MAX_ROBOT_BODY_DIMENSION));
+
+            validateStartParameter(pSimulatorController.robot_height_id, heightListener);
+        }
+
+        //**TODO What if the parameter is not valid?
+        public double getStartParameter(StartParameter pSelectedParameter) {
+            return startParameters.get(pSelectedParameter).getParameterValue();
         }
 
         public boolean allStartParametersValid() {

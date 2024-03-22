@@ -81,23 +81,6 @@ public class CenterStageBackdrop extends Application {
         //**TODO When you use the Point2D below the body of the robot is lined up with
         // the grid at y400 but the wheels are above the grid line. Fix this ...
 
-        //**TODO Are you sure that a Group is the right container for the robot?
-        //**TODO DIFFERENT for BLUE and RED ... Here it looks like the position is of the
-        // upper left corner of the robot; Paths use the center point.
-        //**TODO Maybe the initial position has to anticipate the 90 degree rotation ...
-        RobotFXCenterStageLG centerStageRobot;
-        if (alliance == RobotConstants.Alliance.BLUE) {
-            centerStageRobot = new RobotFXCenterStageLG(
-                new Point2D(FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5,
-                        FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5),
-                90.0, Color.GREEN);
-    } else { // RED
-            centerStageRobot = new RobotFXCenterStageLG(
-                    new Point2D(FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + (FieldFXCenterStageBackdropLG.TILE_DIMENSIONS - (RobotFXLG.ROBOT_BODY_WIDTH + (RobotFXLG.WHEEL_WIDTH * 2))) - FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5,
-                            FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5),
-                    -90.0, Color.GREEN);
-        }
-
         // Parse and validate the start parameters that have a range of double values.
         startParameterValidation = new StartParameterValidation(controller);
 
@@ -118,6 +101,25 @@ public class CenterStageBackdrop extends Application {
                 errorAlert.setContentText("Not all start parameters have been set correctly");
                 errorAlert.showAndWait();
                 return;
+            }
+
+            //**TODO Here it looks like the position is of the
+            // upper left corner of the robot; Paths use the center point.
+            //**TODO Maybe the initial position has to anticipate the 90 degree rotation ...
+            // Place the robot on the field with the dimensions entered by the user.
+            RobotFXCenterStageLG centerStageRobot;
+            double robotBodyWidth = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_BODY_WIDTH);
+            double robotBodyHeight = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_BODY_HEIGHT);
+            if (alliance == RobotConstants.Alliance.BLUE) {
+                centerStageRobot = new RobotFXCenterStageLG(robotBodyWidth, robotBodyHeight, Color.GREEN,
+                        new Point2D(FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5,
+                                FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5),
+                        90.0);
+            } else { // RED
+                centerStageRobot = new RobotFXCenterStageLG(robotBodyWidth, robotBodyHeight, Color.GREEN,
+                        new Point2D(FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + (FieldFXCenterStageBackdropLG.TILE_DIMENSIONS - (robotBodyWidth + (RobotFXLG.WHEEL_WIDTH * 2))) - FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5,
+                                FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5),
+                        -90.0);
             }
 
             Group robot = centerStageRobot.getRobot();
@@ -178,7 +180,7 @@ public class CenterStageBackdrop extends Application {
     }
 
     //**TODO From FTCAutoSimulator/RobotSimulator
-        // Set up the Play button.
+    // Set up the Play button.
     private Button setPlayButton(Pane pFieldPane, RobotConstants.Alliance pAlliance) {
         Button playButton = new Button("Play");
         playButton.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
@@ -228,8 +230,7 @@ public class CenterStageBackdrop extends Application {
         if (pAlliance == RobotConstants.Alliance.BLUE) {
             path.getElements().add(new CubicCurveTo(400, 300, 300, 300, 200, 275));
             rotation = -90.0f;
-        }
-        else { // RED
+        } else { // RED
             path.getElements().add(new CubicCurveTo(200, 300, 300, 300, 400, 275));
             rotation = 90.0f;
         }
@@ -282,7 +283,6 @@ public class CenterStageBackdrop extends Application {
 
         });
         parallelT.play();
-
 
 
         //**TODO Get the angle and distance from the camera to the
