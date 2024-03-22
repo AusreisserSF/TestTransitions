@@ -55,7 +55,10 @@ public abstract class RobotFXLG {
         robot.getChildren().add(robotWheelRR);
 
         //**TODO This really doesn't work because the rotated robot ends up
-        // too far awa from the wall and the wheels cross the line.
+        // too far away from the wall and the wheels cross the line. **BUT**
+        // really we want to base the position of the robot on its body
+        // because for visual effect the wheels are shown outside the body
+        // instead of (invisibly) under it.
         // Set the initial rotation of the robot.
         robot.setRotate(pInitialHeading);
     }

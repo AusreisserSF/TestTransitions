@@ -68,19 +68,6 @@ public class CenterStageBackdrop extends Application {
         Color allianceColor = (alliance == RobotConstants.Alliance.BLUE) ? Color.BLUE : Color.RED;
         controller.alliance_id.setTextFill(allianceColor); // or jewelsea setStyle("-fx-text-inner-color: red;");
 
-        // Show the robot on the field ina default starting position.
-        //**TODO how to specify variable information: dimensions of the robot,
-        // position of the camera and device on the robot: user input box on
-        // startup, then drag-and-drop OR choose a default position then drag-
-        // and-drop.
-        //**TODO How to specify the position of the robot in front of the
-        // backdrop: user input box on startup, then drag-and-drop OR choose
-        // a default position then drag-and-drop.
-        //**TODO Don't need OpMode - user selects AprilTag
-        //**TODO Pass in scaling factor for tile, robot size; e.g. 100px squares vs 200
-        //**TODO When you use the Point2D below the body of the robot is lined up with
-        // the grid at y400 but the wheels are above the grid line. Fix this ...
-
         // Parse and validate the start parameters that have a range of double values.
         startParameterValidation = new StartParameterValidation(controller);
 
@@ -103,9 +90,9 @@ public class CenterStageBackdrop extends Application {
                 return;
             }
 
-            //**TODO Here it looks like the position is of the
-            // upper left corner of the robot; Paths use the center point.
-            //**TODO Maybe the initial position has to anticipate the 90 degree rotation ...
+            //**TODO Here it looks like the position of the robot is that
+            // of the upper left corner; Paths use the center point.
+
             // Place the robot on the field with the dimensions entered by the user.
             RobotFXCenterStageLG centerStageRobot;
             double robotBodyWidth = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_BODY_WIDTH);

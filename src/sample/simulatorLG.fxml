@@ -122,10 +122,10 @@
 
                 <RadioButton fx:id="strafe_to_id" selected="true" text="Strafe to" GridPane.columnIndex="1" GridPane.rowIndex="8">
                     <toggleGroup>
-                        <ToggleGroup fx:id="approach_toggle" />
+                        <ToggleGroup fx:id="approach_toggle_id" />
                     </toggleGroup>
                 </RadioButton>
-                <RadioButton fx:id="turn_to_id" text="Turn to" toggleGroup="$approach_toggle" GridPane.columnIndex="2" GridPane.rowIndex="8" />
+                <RadioButton fx:id="turn_to_id" text="Turn to" toggleGroup="$approach_toggle_id" GridPane.columnIndex="2" GridPane.rowIndex="8" />
             </children>
             <BorderPane.margin>
                 <Insets />

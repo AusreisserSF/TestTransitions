@@ -23,7 +23,13 @@ public class StartParameterValidation {
     public static final double MIN_ROBOT_BODY_DIMENSION = 12.0;
     public static final double MAX_ROBOT_BODY_DIMENSION = 18.0;
 
-    public enum StartParameter {ROBOT_BODY_WIDTH, ROBOT_BODY_HEIGHT}
+    //**TODO There must be limits on the approach position - neither
+    // too close nor too far left or right (camera field of view?)
+    // nor too far from the backdrop.
+    public enum StartParameter {ROBOT_BODY_WIDTH, ROBOT_BODY_HEIGHT,
+    CAMERA_CENTER_FROM_ROBOT_CENTER_ID, CAMERA_OFFSET_FROM_ROBOT_CENTER_ID,
+    DEVICE_CENTER_FROM_ROBOT_CENTER_ID, DEVICE_OFFSET_FROM_ROBOT_CENTER_ID,
+    POSITION_X_ID, POSITION_Y_ID}
 
     private final EnumMap<StartParameter, StartParameterInfo> startParameters =
             new EnumMap<>(StartParameter.class);
@@ -71,6 +77,16 @@ public class StartParameterValidation {
                     "The height of the robot must be between " +  MIN_ROBOT_BODY_DIMENSION + " and " + MAX_ROBOT_BODY_DIMENSION));
 
             validateStartParameter(pSimulatorController.robot_height_id, heightListener);
+
+            //     CAMERA_CENTER_FROM_ROBOT_CENTER_ID
+            startParameters.put(StartParameter.CAMERA_CENTER_FROM_ROBOT_CENTER_ID, new StartParameterInfo(0.0, true));
+            // constraint - camera left or right edge may be no more than half the width of the robot from the center
+            // the edge depends on the sign of the parameter
+
+            //     CAMERA_OFFSET_FROM_ROBOT_CENTER_ID
+            startParameters.put(StartParameter.CAMERA_OFFSET_FROM_ROBOT_CENTER_ID, new StartParameterInfo(0.0, true));
+            // constraint - camera top or bottom edge may be no more than half the height of the robot from the center
+            // the edge depends on the sign of the parameter
         }
 
         //**TODO What if the parameter is not valid?

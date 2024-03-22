@@ -67,7 +67,7 @@
                   <Insets left="5.0" />
                </GridPane.margin>
                 </Label>
-                <Label id="Height" layoutX="10.0" layoutY="162.0" text="Device offset from robot center" GridPane.rowIndex="5">
+                <Label id="device_offset_from_robot_center" layoutX="10.0" layoutY="162.0" text="Device offset from robot center" GridPane.rowIndex="5">
                     <font>
                         <Font size="14.0" />
                     </font>
