@@ -57,7 +57,7 @@ public class CenterStageBackdrop extends Application {
 
         String allianceString = allianceSelection(pStage);
         RobotConstants.Alliance alliance = RobotConstants.Alliance.valueOf(allianceString);
-        //**TODO Or send the primary Scene to allianceSelection and let it restore
+        //**TODO Or send the Stage and primary Scene to allianceSelection and let it restore
         pStage.setScene(rootScene); // reset to primary Pane
 
         FieldFXCenterStageBackdropLG fieldCenterStageBackdrop = new FieldFXCenterStageBackdropLG(alliance, field);
@@ -159,13 +159,6 @@ public class CenterStageBackdrop extends Application {
         return allianceSelection;
     }
 
-    //**TODO Note that some parameters are dependent on others, e.g
-    // are dependent on the robot's dimensions.
-    private void validateStartParameters() {
-        StartParameterValidation startParameterValidation = new StartParameterValidation(controller);
-
-    }
-
     //**TODO From FTCAutoSimulator/RobotSimulator
     // Set up the Play button.
     private Button setPlayButton(Pane pFieldPane, RobotConstants.Alliance pAlliance) {
@@ -241,10 +234,11 @@ public class CenterStageBackdrop extends Application {
             pRobot.setTranslateX(0);
             pRobot.setTranslateY(0);
 
-            //**TODO STOPPED HERE 3/21/2024 ... You can't for parallelT.play() to
+            //**TODO STOPPED HERE 3/21/2024 ... There's no way to wait for parallelT.play() to
             // complete; further action must be taken here. But it's a good question -
             // how do you run an animation, do some processing (as here), and then
-            // run another animation without nesting?
+            // run another animation without nesting? ??Embed the ParallelTransition
+            // in a SequentialTransition.
             Rectangle cameraOnRobot = (Rectangle) pRobot.lookup("#" + pRobot.getId() + "_" + RobotFXCenterStageLG.CAMERA_ON_ROBOT_ID);
             Point2D cameraCoord = cameraOnRobot.localToScene(cameraOnRobot.getX(), cameraOnRobot.getY());
 
@@ -267,6 +261,11 @@ public class CenterStageBackdrop extends Application {
             line.getStrokeDashArray().addAll(10.0);
             line.setStrokeWidth(3.0);
             pField.getChildren().add(line);
+
+            //**TODO Draw the other two sides of the triangle.
+            // The length of the adjacent side of the triangle is
+            double adjacent = cameraFaceY - aprilTagCenterY;
+            double opposite = Math.abs(cameraFaceX - aprilTagCenterX);
 
         });
         parallelT.play();

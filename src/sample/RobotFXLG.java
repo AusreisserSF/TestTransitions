@@ -16,6 +16,9 @@ public abstract class RobotFXLG {
 
     protected final Group robot;
 
+    //**TODO You could put the wheels "under" the robot by placing their
+    // black rectangles over the body. Then the camera would have to be
+    // a different color.
     public RobotFXLG(double pRobotBodyWidth, double pRobotBodyHeight, Color pRobotBodyColor,
                      Point2D pRobotScreenCoordinates, double pInitialHeading) {
         robotBodyWidth = pRobotBodyWidth * FieldFXCenterStageBackdropLG.PX_PER_INCH; // pixels;
