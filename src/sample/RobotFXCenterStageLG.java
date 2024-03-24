@@ -12,6 +12,10 @@ public class RobotFXCenterStageLG extends RobotFXLG {
     public static final String CAMERA_ON_ROBOT_ID = "cameraOnRobotId";
     public static final String DEVICE_ON_ROBOT_ID = "deviceOnRobotId";
 
+    //**TODO Place the wheels "under" the robot by drawing their black
+    // rectangles over the body. Then the camera would have to be a
+    // rectangle outline of a different color.
+
     //**TODO Also need the position of the camera and the device on the
     // robot - both fore and aft of robot center and offset left or
     // right of center.
