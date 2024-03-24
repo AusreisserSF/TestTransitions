@@ -256,17 +256,34 @@ public class CenterStageBackdrop extends Application {
             double aprilTagCenterY = aprilTagCoord.getY() + aprilTag.getHeight() / 2;
 
             // Draw a line from the camera to the target AprilTag.
-            Line line = new Line(cameraFaceX, cameraFaceY, aprilTagCenterX, aprilTagCenterY);
-            line.setStroke(Color.FUCHSIA);
-            line.getStrokeDashArray().addAll(10.0);
-            line.setStrokeWidth(3.0);
-            pField.getChildren().add(line);
+            Line lineH = new Line(cameraFaceX, cameraFaceY, aprilTagCenterX, aprilTagCenterY);
+            lineH.setStroke(Color.FUCHSIA);
+            lineH.getStrokeDashArray().addAll(10.0);
+            lineH.setStrokeWidth(3.0);
+            pField.getChildren().add(lineH);
 
-            //**TODO Draw the other two sides of the triangle.
-            // The length of the adjacent side of the triangle is
-            double adjacent = cameraFaceY - aprilTagCenterY;
+            // Draw the adjacent side of the triangle.
+            Line lineA = new Line(cameraFaceX, cameraFaceY, cameraFaceX, aprilTagCenterY);
+            lineA.setStroke(Color.FUCHSIA);
+            lineA.getStrokeDashArray().addAll(10.0);
+            lineA.setStrokeWidth(3.0);
+            pField.getChildren().add(lineA);
+
+            // Get the angle from the camera to the AprilTag.
+            double adjacent = Math.abs(cameraFaceY - aprilTagCenterY);
             double opposite = Math.abs(cameraFaceX - aprilTagCenterX);
 
+            double hSquared = Math.pow(adjacent, 2) + Math.pow(opposite, 2);
+            double distanceFromCameraToAprilTag = Math.sqrt(hSquared);
+
+            double tanTheta = opposite / adjacent;
+            double degreesFromCameraToAprilTag = Math.toDegrees(Math.atan(tanTheta));
+            System.out.println("Degrees from camera to AprilTag " + degreesFromCameraToAprilTag);
+
+            //**TODO Correct the distance to strafe or the angle to turn
+            // based on the position of the camera and the delivery device
+            // on the robot.
+            //     public static AngleDistance getCorrectedAngleAndDistance(double distanceFromCenterToFront, double offset, double distanceFromCamera, double angleFromCamera) {
         });
         parallelT.play();
 
