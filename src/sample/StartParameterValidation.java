@@ -27,8 +27,9 @@ public class StartParameterValidation {
     // too close nor too far left or right (camera field of view?)
     // nor too far from the backdrop.
     public enum StartParameter {ROBOT_BODY_WIDTH, ROBOT_BODY_HEIGHT,
-    CAMERA_CENTER_FROM_ROBOT_CENTER_ID, CAMERA_OFFSET_FROM_ROBOT_CENTER_ID,
-    DEVICE_CENTER_FROM_ROBOT_CENTER_ID, DEVICE_OFFSET_FROM_ROBOT_CENTER_ID,
+        CAMERA_CENTER_FROM_ROBOT_CENTER, CAMERA_OFFSET_FROM_ROBOT_CENTER,
+        DEVICE_CENTER_FROM_ROBOT_CENTER, DEVICE_OFFSET_FROM_ROBOT_CENTER,
+
         //## Normally you would want to position the robot opposite the
         // target AprilTag but you can use the values below to test different
         // positions.
@@ -82,22 +83,22 @@ public class StartParameterValidation {
             validateStartParameter(pSimulatorController.robot_height_id, heightListener);
 
             //     CAMERA_CENTER_FROM_ROBOT_CENTER_ID
-            startParameters.put(StartParameter.CAMERA_CENTER_FROM_ROBOT_CENTER_ID, new StartParameterInfo(0.0, true));
+            startParameters.put(StartParameter.CAMERA_CENTER_FROM_ROBOT_CENTER, new StartParameterInfo(0.0, true));
             // constraint - camera top or bottom edge may be no more than half the height of the robot from the center
             // the edge depends on the sign of the parameter
 
             //     CAMERA_OFFSET_FROM_ROBOT_CENTER_ID
-            startParameters.put(StartParameter.CAMERA_OFFSET_FROM_ROBOT_CENTER_ID, new StartParameterInfo(0.0, true));
+            startParameters.put(StartParameter.CAMERA_OFFSET_FROM_ROBOT_CENTER, new StartParameterInfo(0.0, true));
             // constraint - camera left or right edge may be no more than half the width of the robot from the center
             // the edge depends on the sign of the parameter
 
             //    DEVICE_CENTER_FROM_ROBOT_CENTER_ID
-            startParameters.put(StartParameter.DEVICE_CENTER_FROM_ROBOT_CENTER_ID, new StartParameterInfo(0.0, true));
+            startParameters.put(StartParameter.DEVICE_CENTER_FROM_ROBOT_CENTER, new StartParameterInfo(0.0, true));
             // constraint - device top or bottom edge may be no more than half the height of the robot from the center
             // the edge depends on the sign of the parameter
 
             //    DEVICE_OFFSET_FROM_ROBOT_CENTER_ID
-            startParameters.put(StartParameter.DEVICE_OFFSET_FROM_ROBOT_CENTER_ID, new StartParameterInfo(0.0, true));
+            startParameters.put(StartParameter.DEVICE_OFFSET_FROM_ROBOT_CENTER, new StartParameterInfo(0.0, true));
             // constraint - device left or right edge may be no more than half the width of the robot from the center
             // the edge depends on the sign of the parameter
 

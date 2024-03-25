@@ -7,8 +7,8 @@ import javafx.scene.shape.Rectangle;
 
 public abstract class RobotFXLG {
 
-    public final double robotBodyWidth;
-    public final double robotBodyHeight;
+    protected final double robotWidth;
+    protected final double robotHeight;
     public static final double WHEEL_WIDTH = FieldFXCenterStageBackdropLG.PX_PER_INCH * 2;
     public static final double WHEEL_HEIGHT = FieldFXCenterStageBackdropLG.PX_PER_INCH * 4;
     public static final double WHEEL_OFFSET = FieldFXCenterStageBackdropLG.PX_PER_INCH * 1;
@@ -18,14 +18,14 @@ public abstract class RobotFXLG {
 
     // Place the wheels "under" the robot by drawing their black
     // rectangles over the body.
-    public RobotFXLG(double pRobotBodyWidth, double pRobotBodyHeight, Color pRobotBodyColor,
+    public RobotFXLG(double pRobotWidth, double pRobotHeight, Color pRobotBodyColor,
                      Point2D pRobotScreenCoordinates, double pInitialHeading) {
-        robotBodyWidth = pRobotBodyWidth * FieldFXCenterStageBackdropLG.PX_PER_INCH; // pixels;
-        robotBodyHeight = pRobotBodyHeight * FieldFXCenterStageBackdropLG.PX_PER_INCH;
+        robotWidth = pRobotWidth;
+        robotHeight = pRobotHeight;
         robot = new Group();
         robot.setId(ROBOT_ID);
 
-        Rectangle robotBody = new Rectangle(pRobotScreenCoordinates.getX(), pRobotScreenCoordinates.getY(), robotBodyWidth, robotBodyHeight);
+        Rectangle robotBody = new Rectangle(pRobotScreenCoordinates.getX(), pRobotScreenCoordinates.getY(), robotWidth, robotHeight);
         robotBody.setArcHeight(15);
         robotBody.setArcWidth(15);
         robotBody.setStroke(Color.BLACK);
@@ -38,29 +38,24 @@ public abstract class RobotFXLG {
         robotWheelLF.setFill(Color.BLACK);
         robot.getChildren().add(robotWheelLF);
 
-        Rectangle robotWheelRF = new Rectangle(pRobotScreenCoordinates.getX() + robotBodyWidth - (WHEEL_WIDTH + WHEEL_OFFSET), pRobotScreenCoordinates.getY() + WHEEL_OFFSET, WHEEL_WIDTH, WHEEL_HEIGHT);
+        Rectangle robotWheelRF = new Rectangle(pRobotScreenCoordinates.getX() + robotWidth - (WHEEL_WIDTH + WHEEL_OFFSET), pRobotScreenCoordinates.getY() + WHEEL_OFFSET, WHEEL_WIDTH, WHEEL_HEIGHT);
         robotWheelRF.setArcHeight(5);
         robotWheelRF.setArcWidth(5);
         robotWheelRF.setFill(Color.BLACK);
         robot.getChildren().add(robotWheelRF);
 
-        Rectangle robotWheelLR = new Rectangle(pRobotScreenCoordinates.getX() + WHEEL_OFFSET, pRobotScreenCoordinates.getY() + robotBodyHeight - (WHEEL_HEIGHT + WHEEL_OFFSET), WHEEL_WIDTH, WHEEL_HEIGHT);
+        Rectangle robotWheelLR = new Rectangle(pRobotScreenCoordinates.getX() + WHEEL_OFFSET, pRobotScreenCoordinates.getY() + robotHeight - (WHEEL_HEIGHT + WHEEL_OFFSET), WHEEL_WIDTH, WHEEL_HEIGHT);
         robotWheelLR.setArcHeight(5);
         robotWheelLR.setArcWidth(5);
         robotWheelLR.setFill(Color.BLACK);
         robot.getChildren().add(robotWheelLR);
 
-        Rectangle robotWheelRR = new Rectangle(pRobotScreenCoordinates.getX() + robotBodyWidth - (WHEEL_WIDTH + WHEEL_OFFSET), pRobotScreenCoordinates.getY() + robotBodyHeight - (WHEEL_HEIGHT + WHEEL_OFFSET), WHEEL_WIDTH, WHEEL_HEIGHT);
+        Rectangle robotWheelRR = new Rectangle(pRobotScreenCoordinates.getX() + robotWidth - (WHEEL_WIDTH + WHEEL_OFFSET), pRobotScreenCoordinates.getY() + robotHeight - (WHEEL_HEIGHT + WHEEL_OFFSET), WHEEL_WIDTH, WHEEL_HEIGHT);
         robotWheelRR.setArcHeight(5);
         robotWheelRR.setArcWidth(5);
         robotWheelRR.setFill(Color.BLACK);
         robot.getChildren().add(robotWheelRR);
 
-        //**TODO This really doesn't work because the rotated robot ends up
-        // too far away from the wall and the wheels cross the line. **BUT**
-        // really we want to base the position of the robot on its body
-        // because for visual effect the wheels are shown outside the body
-        // instead of (invisibly) under it.
         // Set the initial rotation of the robot.
         robot.setRotate(pInitialHeading);
     }
@@ -69,12 +64,12 @@ public abstract class RobotFXLG {
         return robot;
     }
 
-    public double getRobotBodyWidth() {
-        return robotBodyWidth;
+    public double getRobotWidth() {
+        return robotWidth;
     }
 
-    public double getRobotBodyHeight() {
-        return robotBodyHeight;
+    public double getRobotHeight() {
+        return robotHeight;
     }
 
 }

@@ -95,16 +95,24 @@ public class CenterStageBackdrop extends Application {
 
             // Place the robot on the field with the dimensions entered by the user.
             RobotFXCenterStageLG centerStageRobot;
-            double robotBodyWidth = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_BODY_WIDTH);
-            double robotBodyHeight = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_BODY_HEIGHT);
+            double robotWidth = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_BODY_WIDTH);
+            double robotHeight = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_BODY_HEIGHT);
             if (alliance == RobotConstants.Alliance.BLUE) {
-                centerStageRobot = new RobotFXCenterStageLG(robotBodyWidth, robotBodyHeight, Color.GREEN,
+                centerStageRobot = new RobotFXCenterStageLG(robotWidth, robotHeight, Color.GREEN,
+                        startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_CENTER_FROM_ROBOT_CENTER),
+                        startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_OFFSET_FROM_ROBOT_CENTER),
+                        startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.DEVICE_CENTER_FROM_ROBOT_CENTER),
+                        startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.DEVICE_OFFSET_FROM_ROBOT_CENTER),
                         new Point2D(FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5,
                                 FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5),
                         90.0);
             } else { // RED
-                centerStageRobot = new RobotFXCenterStageLG(robotBodyWidth, robotBodyHeight, Color.GREEN,
-                        new Point2D(FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + (FieldFXCenterStageBackdropLG.TILE_DIMENSIONS - (robotBodyWidth + (RobotFXLG.WHEEL_WIDTH * 2))) - FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5,
+                centerStageRobot = new RobotFXCenterStageLG(robotWidth, robotHeight, Color.GREEN,
+                        startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_CENTER_FROM_ROBOT_CENTER),
+                        startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_OFFSET_FROM_ROBOT_CENTER),
+                        startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.DEVICE_CENTER_FROM_ROBOT_CENTER),
+                        startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.DEVICE_OFFSET_FROM_ROBOT_CENTER),
+                        new Point2D(FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + (FieldFXCenterStageBackdropLG.TILE_DIMENSIONS - (robotWidth + (RobotFXLG.WHEEL_WIDTH * 2))) - FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5,
                                 FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5),
                         -90.0);
             }
