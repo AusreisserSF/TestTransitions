@@ -21,26 +21,28 @@ public class RobotFXCenterStageLG extends RobotFXLG {
                 pRobotHeight * FieldFXCenterStageBackdropLG.PX_PER_INCH,
                 pRobotBodyColor, pRobotScreenCoordinates, pInitialHeading);
 
-        //**TODO Need local variables *in pixels* for
-//      // double pCameraCenterFromRobotCenter * FieldFXCenterStageBackdropLG.PX_PER_INCH,
-//      double pCameraOffsetFromRobotCenter * FieldFXCenterStageBackdropLG.PX_PER_INCH,
-//      // double pDeviceCenterFromRobotCenter * FieldFXCenterStageBackdropLG.PX_PER_INCH,
-//      double pDeviceOffsetFromRobotCenter * FieldFXCenterStageBackdropLG.PX_PER_INCH,
+        // Convert all measurements from inches to pixels.
+        double robotWidthPX = pRobotWidth * FieldFXCenterStageBackdropLG.PX_PER_INCH;
+        double robotHeightPX = pRobotHeight * FieldFXCenterStageBackdropLG.PX_PER_INCH;
+        double cameraCenterFromRobotCenterPX = pCameraCenterFromRobotCenter * FieldFXCenterStageBackdropLG.PX_PER_INCH;
+        double cameraOffsetFromRobotCenterPX = pCameraOffsetFromRobotCenter * FieldFXCenterStageBackdropLG.PX_PER_INCH;
+        double deviceCenterFromRobotCenterPX = pDeviceCenterFromRobotCenter * FieldFXCenterStageBackdropLG.PX_PER_INCH;
+        double deviceOffsetFromRobotCenterPX = pDeviceOffsetFromRobotCenter * FieldFXCenterStageBackdropLG.PX_PER_INCH;
 
         // Place the camera on the robot.
-        double cameraYBaseline = (robotHeight / 2) - (CAMERA_HEIGHT / 2);
+        double cameraYBaseline = (robotHeightPX / 2) - (CAMERA_HEIGHT / 2);
         // If the parameter is < 0 then the camera center is *below* robot
         // center so subtract the negative parameter. If the parameter is >
         // 0 then the camera is *above* robot center so subtract the positive
         // number.
-        double cameraYFinal = cameraYBaseline - pCameraCenterFromRobotCenter;
+        double cameraYFinal = cameraYBaseline - cameraCenterFromRobotCenterPX;
 
-        double cameraXBaseline = (robotWidth / 2) - (CAMERA_WIDTH / 2);
+        double cameraXBaseline = (robotWidthPX / 2) - (CAMERA_WIDTH / 2);
         // If the parameter is < 0 then the camera center is to the *right*
         // of robot center so subtract the negative parameter. If the parameter
         // is > 0 then the camera is to the *left* of robot center so subtract
         // the positive number.
-        double cameraXFinal = cameraXBaseline - pCameraCenterFromRobotCenter;
+        double cameraXFinal = cameraXBaseline - cameraOffsetFromRobotCenterPX;
 
         Rectangle cameraOnRobot = new Rectangle(pRobotScreenCoordinates.getX() + cameraXFinal,
                 pRobotScreenCoordinates.getY() + cameraYFinal, CAMERA_WIDTH, CAMERA_HEIGHT);
