@@ -95,8 +95,8 @@ public class CenterStageBackdrop extends Application {
 
             // Place the robot on the field with the dimensions entered by the user.
             RobotFXCenterStageLG centerStageRobot;
-            double robotWidth = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_BODY_WIDTH);
-            double robotHeight = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_BODY_HEIGHT);
+            double robotWidth = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_WIDTH);
+            double robotHeight = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_HEIGHT);
             if (alliance == RobotConstants.Alliance.BLUE) {
                 centerStageRobot = new RobotFXCenterStageLG(robotWidth, robotHeight, Color.GREEN,
                         startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_CENTER_FROM_ROBOT_CENTER),
