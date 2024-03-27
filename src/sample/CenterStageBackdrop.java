@@ -95,28 +95,26 @@ public class CenterStageBackdrop extends Application {
             // of the upper left corner; Paths use the center point.
 
             // Place the robot on the field with the dimensions entered by the user.
-            RobotFXCenterStageLG centerStageRobot;
             double robotWidth = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_WIDTH);
             double robotHeight = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_HEIGHT);
+            Point2D startingPosition;
+            double startingRotation;
             if (alliance == RobotConstants.Alliance.BLUE) {
-                centerStageRobot = new RobotFXCenterStageLG(robotWidth, robotHeight, Color.GREEN,
-                        startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_CENTER_FROM_ROBOT_CENTER),
-                        startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_OFFSET_FROM_ROBOT_CENTER),
-                        startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.DEVICE_CENTER_FROM_ROBOT_CENTER),
-                        startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.DEVICE_OFFSET_FROM_ROBOT_CENTER),
-                        new Point2D(FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5,
-                                FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5),
-                        90.0);
+                startingPosition = new Point2D(FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5,
+                        FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5);
+                startingRotation = 90.0;
             } else { // RED
-                centerStageRobot = new RobotFXCenterStageLG(robotWidth, robotHeight, Color.GREEN,
-                        startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_CENTER_FROM_ROBOT_CENTER),
-                        startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_OFFSET_FROM_ROBOT_CENTER),
-                        startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.DEVICE_CENTER_FROM_ROBOT_CENTER),
-                        startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.DEVICE_OFFSET_FROM_ROBOT_CENTER),
-                        new Point2D(FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + (FieldFXCenterStageBackdropLG.TILE_DIMENSIONS - (robotWidth + (RobotFXLG.WHEEL_WIDTH * 2))) - FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5,
-                                FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5),
-                        -90.0);
+                startingPosition = new Point2D(FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + (FieldFXCenterStageBackdropLG.TILE_DIMENSIONS - (robotWidth + (RobotFXLG.WHEEL_WIDTH * 2))) - FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5,
+                        FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5);
+                startingRotation = -90.0;
             }
+
+            RobotFXCenterStageLG centerStageRobot = new RobotFXCenterStageLG(robotWidth, robotHeight, Color.GREEN,
+                    startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_CENTER_FROM_ROBOT_CENTER),
+                    startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_OFFSET_FROM_ROBOT_CENTER),
+                    startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.DEVICE_CENTER_FROM_ROBOT_CENTER),
+                    startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.DEVICE_OFFSET_FROM_ROBOT_CENTER),
+                    startingPosition, startingRotation);
 
             Group robot = centerStageRobot.getRobot();
             field.getChildren().add(robot);
@@ -198,14 +196,7 @@ public class CenterStageBackdrop extends Application {
         // alliance wall and make the robot follow a CubicCurve path while
         // simultaneously rotating -90 degrees to face the backdrop.
 
-        //!! Who knew that this adjustment is necessary?
-        // https://stackoverflow.com/questions/29594707/moving-a-button-to-specified-coordinates-in-javafx-with-a-path-transition-using
-        // But if the initial rotation is 90.0 instead of 0.0 the starting position is not correct.
-        // Instead of getLayoutBounds() you have to use getBoundsInParent().
-        //double xOffsetInParent = pRobot.getBoundsInParent().getWidth() / 2;
-        //double yOffsetInParent = pRobot.getBoundsInParent().getHeight() / 2;
-
-        //!! However, I noticed the use of localToScene(() in some code below -
+        //!! I noticed the use of localToScene(() in some code from the FTCSimulator -
         // this is more like it. By the way, this is the *center* of the robot.
         Point2D loc = pRobot.localToScene(pRobot.getBoundsInParent().getCenterX(), pRobot.getBoundsInParent().getCenterY());
 
@@ -243,7 +234,7 @@ public class CenterStageBackdrop extends Application {
             pRobot.setTranslateX(0);
             pRobot.setTranslateY(0);
 
-            //**TODO STOPPED HERE 3/21/2024 ... There's no way to wait for parallelT.play() to
+            //**TODO There's no way to wait for parallelT.play() to
             // complete; further action must be taken here. But it's a good question -
             // how do you run an animation, do some processing (as here), and then
             // run another animation without nesting? ??Embed the ParallelTransition
@@ -293,6 +284,10 @@ public class CenterStageBackdrop extends Application {
             // based on the position of the camera and the delivery device
             // on the robot.
             //     public static AngleDistance getCorrectedAngleAndDistance(double distanceFromCenterToFront, double offset, double distanceFromCamera, double angleFromCamera) {
+
+            //**TODO Let's try a strafe first - which will require getting the distance from the
+            // camera center to the device center (!watch the sign) as well as changes to the
+            // Transitions as noted above.
         });
         parallelT.play();
 
