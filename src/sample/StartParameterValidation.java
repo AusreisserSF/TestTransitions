@@ -27,14 +27,6 @@ public class StartParameterValidation {
         ROBOT_WIDTH, ROBOT_HEIGHT,
         CAMERA_CENTER_FROM_ROBOT_CENTER, CAMERA_OFFSET_FROM_ROBOT_CENTER,
         DEVICE_CENTER_FROM_ROBOT_CENTER, DEVICE_OFFSET_FROM_ROBOT_CENTER,
-
-        //**TODO There must be limits on the approach position - neither
-        // too close nor too far left or right (camera field of view?)
-        // nor too far from the backdrop.
-
-        //## Normally you would want to position the robot opposite the
-        // target AprilTag but you can use the values below to test different
-        // positions.
         POSITION_X_ID, POSITION_Y_ID
     }
 
@@ -142,12 +134,63 @@ public class StartParameterValidation {
         //    DEVICE_CENTER_FROM_ROBOT_CENTER_ID
         startParameters.put(StartParameter.DEVICE_CENTER_FROM_ROBOT_CENTER, new StartParameterInfo(0.0, true));
         // constraint - device top or bottom edge may be no more than half the height of the robot from the center
-        // the edge depends on the sign of the parameter
+        // the edge depends on the sign of the parameter.
+        PredicateChangeListener deviceCenterListener = (new PredicateChangeListener(
+                deviceCenterP -> {
+                    // If the user doesn't enter a value the animation runs but when the
+                    // user closes the application window this change listener fires with
+                    // a null value for deviceCenterP.
+                    if (deviceCenterP == null)
+                        return true;
+
+                    // Make sure that the robot's height has already been set.
+                    StartParameterInfo heightInfo = startParameters.get(StartParameter.ROBOT_HEIGHT);
+
+                    StartParameterInfo deviceCenterInfo = startParameters.get(StartParameter.DEVICE_CENTER_FROM_ROBOT_CENTER);
+                    deviceCenterInfo.setParameterValue(deviceCenterP);
+                    boolean deviceCenterValid = (heightInfo != null && heightInfo.getValidity() &&
+                            Math.abs(deviceCenterInfo.getParameterValue()) < (heightInfo.getParameterValue() / 2));
+                    deviceCenterInfo.setValidity(deviceCenterValid);
+                    return deviceCenterValid;
+                },
+                "The fore/aft distance from device center to robot center must be less than 1/2 the height of the robot"));
+
+        validateStartParameter(pSimulatorController.device_center_from_robot_center_id, deviceCenterListener);
 
         //    DEVICE_OFFSET_FROM_ROBOT_CENTER_ID
         startParameters.put(StartParameter.DEVICE_OFFSET_FROM_ROBOT_CENTER, new StartParameterInfo(0.0, true));
         // constraint - device left or right edge may be no more than half the width of the robot from the center
-        // the edge depends on the sign of the parameter
+        // the edge depends on the sign of the parameter.
+        PredicateChangeListener deviceOffsetListener = (new PredicateChangeListener(
+                deviceOffsetP -> {
+                    // If the user doesn't enter a value the animation runs but when the
+                    // user closes the application window this change listener fires with
+                    // a null value for deviceOffsetP.
+                    if (deviceOffsetP == null)
+                        return true;
+
+                    // Make sure that the robot's width has already been set.
+                    StartParameterInfo widthInfo = startParameters.get(StartParameter.ROBOT_WIDTH);
+
+                    StartParameterInfo deviceOffsetInfo = startParameters.get(StartParameter.DEVICE_OFFSET_FROM_ROBOT_CENTER);
+                    deviceOffsetInfo.setParameterValue(deviceOffsetP);
+                    boolean deviceOffsetValid = (widthInfo != null && widthInfo.getValidity() &&
+                            Math.abs(deviceOffsetInfo.getParameterValue()) < (widthInfo.getParameterValue() / 2));
+                    deviceOffsetInfo.setValidity(deviceOffsetValid);
+                    return deviceOffsetValid;
+                },
+                "The left/right distance from device center to robot center must be less than 1/2 the width of the robot"));
+
+        validateStartParameter(pSimulatorController.device_offset_from_robot_center_id, deviceOffsetListener);
+
+        //**TODO There must be limits on the approach position - neither
+        // too close nor too far left or right (camera field of view?)
+        // nor too far from the backdrop.
+
+        //## Normally you would want to position the robot opposite the
+        // target AprilTag but you can use the values below to test different
+        // positions.
+        // POSITION_X_ID, POSITION_Y_ID
 
     }
 

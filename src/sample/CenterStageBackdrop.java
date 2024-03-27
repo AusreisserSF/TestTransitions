@@ -40,7 +40,6 @@ public class CenterStageBackdrop extends Application {
     SimulatorController controller;
     StartParameterValidation startParameterValidation;
 
-    //**TODO Do you really need device center from robot center? Yes, for visualization.
     //**TODO Show all positions in FTC field coordinates? Or at least report the field coordinates.
     @Override
     public void start(final Stage pStage) throws IOException {
@@ -68,6 +67,8 @@ public class CenterStageBackdrop extends Application {
         Color allianceColor = (alliance == RobotConstants.Alliance.BLUE) ? Color.BLUE : Color.RED;
         controller.alliance_id.setTextFill(allianceColor); // or jewelsea setStyle("-fx-text-inner-color: red;");
 
+        //**TODO Need a way to read parameters from an XML file and then write them
+        // back out.
         // Parse and validate the start parameters that have a range of double values.
         startParameterValidation = new StartParameterValidation(controller);
 

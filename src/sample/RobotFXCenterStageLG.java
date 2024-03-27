@@ -55,14 +55,14 @@ public class RobotFXCenterStageLG extends RobotFXLG {
 
         // Show a device mounted on the robot. The device may be a shooter, a delivery arm,
         // a grabber, etc.
-        //**TODO STOPPED HERE 3/25/24 10:28PM ...
         double deviceYBaseline = (robotHeightPX / 2) - DEVICE_RADIUS;
         double deviceYFinal = cameraYBaseline - deviceCenterFromRobotCenterPX;
         double deviceXBaseline = (robotWidthPX / 2) - DEVICE_RADIUS;
         double deviceXFinal = deviceXBaseline - deviceOffsetFromRobotCenterPX;
 
 
-        Circle deviceOnRobot = new Circle(pRobotScreenCoordinates.getX() + FieldFXCenterStageBackdropLG.PX_PER_INCH * 2, pRobotScreenCoordinates.getY() + FieldFXCenterStageBackdropLG.PX_PER_INCH * 2, FieldFXCenterStageBackdropLG.PX_PER_INCH);
+        Circle deviceOnRobot = new Circle(pRobotScreenCoordinates.getX() + deviceXFinal,
+                pRobotScreenCoordinates.getY() + deviceYFinal, FieldFXCenterStageBackdropLG.PX_PER_INCH);
         deviceOnRobot.setId(robot.getId() + "_" + DEVICE_ON_ROBOT_ID);
         deviceOnRobot.setStrokeWidth(2.0);
         deviceOnRobot.setStroke(Color.YELLOW);
