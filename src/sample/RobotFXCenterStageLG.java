@@ -7,7 +7,7 @@ import javafx.scene.shape.Rectangle;
 
 public class RobotFXCenterStageLG extends RobotFXLG {
 
-    public static final double CAMERA_WIDTH = FieldFXCenterStageBackdropLG.PX_PER_INCH * 3;
+    public static final double CAMERA_WIDTH = FieldFXCenterStageBackdropLG.PX_PER_INCH * 2;
     public static final double CAMERA_HEIGHT = FieldFXCenterStageBackdropLG.PX_PER_INCH * 2;
     public static final String CAMERA_ON_ROBOT_ID = "cameraOnRobotId";
     public static final double DEVICE_RADIUS = FieldFXCenterStageBackdropLG.PX_PER_INCH * 1;
@@ -55,11 +55,10 @@ public class RobotFXCenterStageLG extends RobotFXLG {
 
         // Show a device mounted on the robot. The device may be a shooter, a delivery arm,
         // a grabber, etc.
-        double deviceYBaseline = (robotHeightPX / 2) - DEVICE_RADIUS;
-        double deviceYFinal = cameraYBaseline - deviceCenterFromRobotCenterPX;
-        double deviceXBaseline = (robotWidthPX / 2) - DEVICE_RADIUS;
+        double deviceYBaseline = (robotHeightPX / 2);
+        double deviceYFinal = deviceYBaseline - deviceCenterFromRobotCenterPX;
+        double deviceXBaseline = (robotWidthPX / 2);
         double deviceXFinal = deviceXBaseline - deviceOffsetFromRobotCenterPX;
-
 
         Circle deviceOnRobot = new Circle(pRobotScreenCoordinates.getX() + deviceXFinal,
                 pRobotScreenCoordinates.getY() + deviceYFinal, FieldFXCenterStageBackdropLG.PX_PER_INCH);
