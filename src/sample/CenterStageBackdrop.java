@@ -226,8 +226,6 @@ public class CenterStageBackdrop extends Application {
 
         // Follow the cubic curve and rotate in parallel.
         ParallelTransition parallelT = new ParallelTransition(pathTransition, rotateTransition);
-        //parallelT.setCycleCount(5);
-        //parallelT.setAutoReverse(true);
         parallelT.setOnFinished(event -> { //**TODO See OneNote - stackoverflow answer from jewelsea
             pRobot.setLayoutX(pRobot.getLayoutX() + pRobot.getTranslateX());
             pRobot.setLayoutY(pRobot.getLayoutY() + pRobot.getTranslateY());
@@ -257,6 +255,7 @@ public class CenterStageBackdrop extends Application {
 
             // Draw a line from the camera to the target AprilTag.
             Line lineH = new Line(cameraFaceX, cameraFaceY, aprilTagCenterX, aprilTagCenterY);
+            lineH.setId("lineH");
             lineH.setStroke(Color.FUCHSIA);
             lineH.getStrokeDashArray().addAll(10.0);
             lineH.setStrokeWidth(3.0);
@@ -264,6 +263,7 @@ public class CenterStageBackdrop extends Application {
 
             // Draw the adjacent side of the triangle.
             Line lineA = new Line(cameraFaceX, cameraFaceY, cameraFaceX, aprilTagCenterY);
+            lineA.setId("lineA");
             lineA.setStroke(Color.FUCHSIA);
             lineA.getStrokeDashArray().addAll(10.0);
             lineA.setStrokeWidth(3.0);
@@ -289,7 +289,36 @@ public class CenterStageBackdrop extends Application {
             // camera center to the device center (!watch the sign) as well as changes to the
             // Transitions as noted above.
         });
-        parallelT.play();
+
+        TranslateTransition ttStrafe = new TranslateTransition(Duration.millis(2000));
+        ttStrafe.setNode(pRobot);
+        ttStrafe.setByX(200f); // simple strafe
+        ttStrafe.setOnFinished(event -> { //**TODO See OneNote - stackoverflow answer from jewelsea
+            System.out.println("After strafe layoutX " + pRobot.getLayoutX() + ", translateX " + pRobot.getTranslateX());
+            pRobot.setLayoutX(pRobot.getLayoutX() + pRobot.getTranslateX());
+            pRobot.setLayoutY(pRobot.getLayoutY() + pRobot.getTranslateY());
+            pRobot.setTranslateX(0);
+            pRobot.setTranslateY(0);
+
+            //**TODO The translation value setByX(200f) is correct but the layout numbers
+            // below are not: X 656, Y -394
+            Point2D robotCoord = pRobot.localToScene(pRobot.getLayoutX(), pRobot.getLayoutY());
+            System.out.println("Position after path following x " + robotCoord.getX() + ", y " + robotCoord.getY());
+        });
+
+        PauseTransition pauseT = new PauseTransition(Duration.millis(1500));
+        pauseT.setOnFinished(event -> {
+            Line lineHRef = (Line) pField.lookup("#lineH");
+            pField.getChildren().remove(lineHRef);
+            Line lineARef = (Line) pField.lookup("#lineA");
+            pField.getChildren().remove(lineARef);
+        });
+
+        SequentialTransition seqTransition = new SequentialTransition(
+                parallelT, pauseT, ttStrafe
+        );
+
+        seqTransition.play();
 
 
         //**TODO Get the angle and distance from the camera to the
@@ -300,33 +329,10 @@ public class CenterStageBackdrop extends Application {
         // angle and distance from the device to the selected AprilTag
         // and display. Draw a line from the device to the AprilTag.
 
-        /*
-        TranslateTransition tt = new TranslateTransition(Duration.millis(2000));
-        tt.setNode(robot);
-        tt.setToX(150f); // simple strafe
-        tt.setOnFinished(event -> { //**TODO See OneNote - stackoverflow answer from jewelsea
-            robot.setLayoutX(robot.getLayoutX() + robot.getTranslateX());
-            robot.setLayoutY(robot.getLayoutY() + robot.getTranslateY());
-            robot.setTranslateX(0);
-            robot.setTranslateY(0);
-
-            // But mixed in with the above also do this:
-            Rectangle robotBody = (Rectangle) pRobot.lookup("#robotBodyId");
-            Point2D rbCoord = robotBody.localToScene(robotBody.getX(), robotBody.getY());
-            System.out.println("Position after path following x " + rbCoord.getX() + ", y " + rbCoord.getY());
-            System.out.println("JavaFX rotation after path " + pRobot.getRotate());
-
-            double robotRotation = pRobot.getRotate() + 90.0;
-            System.out.println("Robot rotation after path " + robotRotation);
-
-            Point2D centroid = computeRotatedCentroid(rbCoord.getX(), rbCoord.getY(), RobotFX.ROBOT_WIDTH, RobotFX.ROBOT_HEIGHT, robotRotation);
-            System.out.println("Centroid x " + centroid.getX() + ", y " + centroid.getY());
-        });
-
         //**TODO Get the robot's Rectangle by Id then get its centroid by:
         //             Point2D centroid = computeRotatedCentroid(rbCoord.getX(), rbCoord.getY(), RobotFX.ROBOT_WIDTH, RobotFX.ROBOT_HEIGHT, robotRotation);
         // then strafe so that the centroid is opposite the centroid of AprilTag 3.
-         */
+
 
     }
 
