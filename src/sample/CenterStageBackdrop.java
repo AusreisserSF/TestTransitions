@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 // Combination of
 // https://www.infoworld.com/article/2074529/javafx-2-animation--path-transitions.html
@@ -225,6 +226,10 @@ public class CenterStageBackdrop extends Application {
         rotateTransition.setByAngle(rotation);
 
         // Follow the cubic curve and rotate in parallel.
+            AtomicReference<Double> cameraFaceX = new AtomicReference<>((double) 0);
+            AtomicReference<Double> cameraFaceY = new AtomicReference<>((double) 0);
+            AtomicReference<Double> aprilTagCenterX = new AtomicReference<>((double) 0);
+            AtomicReference<Double> aprilTagCenterY = new AtomicReference<>((double) 0);
         ParallelTransition parallelT = new ParallelTransition(pathTransition, rotateTransition);
         parallelT.setOnFinished(event -> { //**TODO See OneNote - stackoverflow answer from jewelsea
             pRobot.setLayoutX(pRobot.getLayoutX() + pRobot.getTranslateX());
@@ -232,11 +237,13 @@ public class CenterStageBackdrop extends Application {
             pRobot.setTranslateX(0);
             pRobot.setTranslateY(0);
 
+            Bounds robotBP = pRobot.getBoundsInParent();
+            double robotCoordX = robotBP.getCenterX();
+            double robotCoordY = robotBP.getCenterY();
+            System.out.println("Position after ParallelTransition x " + robotCoordX + ", y " + robotCoordY);
+
             //**TODO There's no way to wait for parallelT.play() to
-            // complete; further action must be taken here. But it's a good question -
-            // how do you run an animation, do some processing (as here), and then
-            // run another animation without nesting? ??Embed the ParallelTransition
-            // in a SequentialTransition.
+            // complete; further action must be taken here.
             Rectangle cameraOnRobot = (Rectangle) pRobot.lookup("#" + pRobot.getId() + "_" + RobotFXCenterStageLG.CAMERA_ON_ROBOT_ID);
             Point2D cameraCoord = cameraOnRobot.localToScene(cameraOnRobot.getX(), cameraOnRobot.getY());
 
@@ -248,21 +255,29 @@ public class CenterStageBackdrop extends Application {
             // The returned coordinates of the objects are those of the upper left-hand
             // corner. We want to draw a line from the face of the camera to the center
             // of the AprilTag.
-            double cameraFaceX = cameraCoord.getX() + cameraOnRobot.getWidth() / 2;
-            double cameraFaceY = cameraCoord.getY();
-            double aprilTagCenterX = aprilTagCoord.getX() + aprilTag.getWidth() / 2;
-            double aprilTagCenterY = aprilTagCoord.getY() + aprilTag.getHeight() / 2;
+            cameraFaceX.set(cameraCoord.getX() + cameraOnRobot.getWidth() / 2);
+            cameraFaceY.set(cameraCoord.getY());
+            aprilTagCenterX.set(aprilTagCoord.getX() + aprilTag.getWidth() / 2);
+            aprilTagCenterY.set(aprilTagCoord.getY() + aprilTag.getHeight() / 2);
 
             // Draw a line from the camera to the target AprilTag.
-            Line lineH = new Line(cameraFaceX, cameraFaceY, aprilTagCenterX, aprilTagCenterY);
+            Line lineH = new Line(cameraFaceX.get(), cameraFaceY.get(), aprilTagCenterX.get(), aprilTagCenterY.get());
             lineH.setId("lineH");
             lineH.setStroke(Color.FUCHSIA);
             lineH.getStrokeDashArray().addAll(10.0);
             lineH.setStrokeWidth(3.0);
             pField.getChildren().add(lineH);
 
+            // Draw the opposite side of the triangle.
+            Line lineO = new Line(cameraFaceX.get(), aprilTagCenterY.get(), aprilTagCenterX.get(), aprilTagCenterY.get());
+            lineO.setId("lineO");
+            lineO.setStroke(Color.FUCHSIA);
+            lineO.getStrokeDashArray().addAll(10.0);
+            lineO.setStrokeWidth(3.0);
+            pField.getChildren().add(lineO);
+
             // Draw the adjacent side of the triangle.
-            Line lineA = new Line(cameraFaceX, cameraFaceY, cameraFaceX, aprilTagCenterY);
+            Line lineA = new Line(cameraFaceX.get(), cameraFaceY.get(), cameraFaceX.get(), aprilTagCenterY.get());
             lineA.setId("lineA");
             lineA.setStroke(Color.FUCHSIA);
             lineA.getStrokeDashArray().addAll(10.0);
@@ -270,8 +285,8 @@ public class CenterStageBackdrop extends Application {
             pField.getChildren().add(lineA);
 
             // Get the angle from the camera to the AprilTag.
-            double adjacent = Math.abs(cameraFaceY - aprilTagCenterY);
-            double opposite = Math.abs(cameraFaceX - aprilTagCenterX);
+            double adjacent = Math.abs(cameraFaceY.get() - aprilTagCenterY.get());
+            double opposite = Math.abs(cameraFaceX.get() - aprilTagCenterX.get());
 
             double hSquared = Math.pow(adjacent, 2) + Math.pow(opposite, 2);
             double distanceFromCameraToAprilTag = Math.sqrt(hSquared);
@@ -280,19 +295,26 @@ public class CenterStageBackdrop extends Application {
             double degreesFromCameraToAprilTag = Math.toDegrees(Math.atan(tanTheta));
             System.out.println("Degrees from camera to AprilTag " + degreesFromCameraToAprilTag);
 
-            //**TODO Correct the distance to strafe or the angle to turn
-            // based on the position of the camera and the delivery device
-            // on the robot.
-            //     public static AngleDistance getCorrectedAngleAndDistance(double distanceFromCenterToFront, double offset, double distanceFromCamera, double angleFromCamera) {
-
-            //**TODO Let's try a strafe first - which will require getting the distance from the
-            // camera center to the device center (!watch the sign) as well as changes to the
-            // Transitions as noted above.
         });
 
+        //**TODO Correct the distance to strafe or the angle to turn
+        // based on the position of the camera and the delivery device
+        // on the robot.
+        //     public static AngleDistance getCorrectedAngleAndDistance(double distanceFromCenterToFront, double offset, double distanceFromCamera, double angleFromCamera) {
+
+        //**TODO Let's try a strafe first - which will require getting the distance from the
+        // camera center to the device center (!watch the sign) as well as changes to the
+        // Transitions as noted above.
+
+        //**TODO The next line can't work because the ParallelTransition has not played yet.
+        // May have to introduce a dummy PauseTransition to set the distanceToStrafe.
+
+        // Positive: strafe to the left; negative: strafe to the right.
+        double distanceToStrafe = aprilTagCenterX.get() - cameraFaceY.get();
+        System.out.println("Distance to strafe x " + distanceToStrafe);
         TranslateTransition ttStrafe = new TranslateTransition(Duration.millis(2000));
         ttStrafe.setNode(pRobot);
-        ttStrafe.setByX(200f); // simple strafe
+        ttStrafe.setByX(distanceToStrafe); // simple strafe
         ttStrafe.setOnFinished(event -> { //**TODO See OneNote - stackoverflow answer from jewelsea
             System.out.println("After strafe layoutX " + pRobot.getLayoutX() + ", translateX " + pRobot.getTranslateX());
             pRobot.setLayoutX(pRobot.getLayoutX() + pRobot.getTranslateX());
@@ -300,16 +322,18 @@ public class CenterStageBackdrop extends Application {
             pRobot.setTranslateX(0);
             pRobot.setTranslateY(0);
 
-            //**TODO The translation value setByX(200f) is correct but the layout numbers
-            // below are not: X 656, Y -394
-            Point2D robotCoord = pRobot.localToScene(pRobot.getLayoutX(), pRobot.getLayoutY());
-            System.out.println("Position after path following x " + robotCoord.getX() + ", y " + robotCoord.getY());
+            Bounds robotBP = pRobot.getBoundsInParent();
+            double robotCoordX = robotBP.getCenterX();
+            double robotCoordY = robotBP.getCenterY();
+            System.out.println("Position after strafe x " + robotCoordX + ", y " + robotCoordY);
         });
 
-        PauseTransition pauseT = new PauseTransition(Duration.millis(1500));
+        PauseTransition pauseT = new PauseTransition(Duration.millis(2500));
         pauseT.setOnFinished(event -> {
             Line lineHRef = (Line) pField.lookup("#lineH");
             pField.getChildren().remove(lineHRef);
+            Line lineORef = (Line) pField.lookup("#lineO");
+            pField.getChildren().remove(lineORef);
             Line lineARef = (Line) pField.lookup("#lineA");
             pField.getChildren().remove(lineARef);
         });
