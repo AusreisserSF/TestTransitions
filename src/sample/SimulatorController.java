@@ -30,7 +30,7 @@ public class SimulatorController {
     @FXML
     public TextField position_y_id;
     @FXML
-    public Spinner april_tag_spinner_id;
+    public Spinner<Integer> april_tag_spinner_id;
     @FXML
     public ToggleGroup approach_toggle_id;
 

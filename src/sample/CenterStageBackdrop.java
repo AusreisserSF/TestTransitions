@@ -28,7 +28,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 // Combination of
 // https://www.infoworld.com/article/2074529/javafx-2-animation--path-transitions.html
@@ -68,8 +67,8 @@ public class CenterStageBackdrop extends Application {
         Color allianceColor = (alliance == RobotConstants.Alliance.BLUE) ? Color.BLUE : Color.RED;
         controller.alliance_id.setTextFill(allianceColor); // or jewelsea setStyle("-fx-text-inner-color: red;");
 
-        //**TODO Need a way to read parameters from an XML file and then write them
-        // back out.
+        //**TODO ??Need a way to read parameters from an XML file and then write them
+        // back out??
         // Parse and validate the start parameters that have a range of double values.
         startParameterValidation = new StartParameterValidation(controller);
 
@@ -78,6 +77,7 @@ public class CenterStageBackdrop extends Application {
             spinnerValueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 3);
         else // RED
             spinnerValueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(4, 6);
+
         controller.april_tag_spinner_id.setValueFactory(spinnerValueFactory);
 
         // Show the play button now but do not start the animation until
@@ -129,7 +129,7 @@ public class CenterStageBackdrop extends Application {
     //**TODO What I really want is a RadioButtonDialog, which doesn't exist.
     // But it looks like you may be able make a custom Dialog with
     // RadioButton(s)/Toggle group inside it. But this will take some work.
-    private String allianceSelection(Stage pStage) throws IOException {
+    private String allianceSelection(Stage pStage) {
         /*
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(getClass().getResource("allianceToggle.fxml"));
@@ -140,15 +140,15 @@ public class CenterStageBackdrop extends Application {
         Button okButton = new Button("OK");
 
         // Items for the dialog.
-        String alliances[] = {"BLUE", "RED"};
-        ChoiceDialog allianceDialog = new ChoiceDialog(alliances[0], alliances);
+        String[] alliances = {"BLUE", "RED"};
+        ChoiceDialog<String> allianceDialog = new ChoiceDialog<>(alliances[0], alliances);
 
         allianceDialog.setHeaderText("Select alliance and confirm, fill in start parameters, hit Play");
         allianceDialog.setContentText("Please select your alliance");
         allianceDialog.showAndWait();
 
         // get the selected item
-        String allianceSelection = (String) allianceDialog.getSelectedItem();
+        String allianceSelection = allianceDialog.getSelectedItem();
 
         // action event
         EventHandler<ActionEvent> event = e -> allianceDialog.show();
@@ -256,18 +256,11 @@ public class CenterStageBackdrop extends Application {
             double robotCoordY = robotBP.getCenterY();
             System.out.println("Position after ParallelTransition x " + robotCoordX + ", y " + robotCoordY);
 
-            //**TODO There's no way to wait for parallelT.play() to
+            //## All of these coordinates and calculations can only be made after
+            // the ParallelTranstion is complete, i.e. now.
             // complete; further action must be taken here.
             Rectangle cameraOnRobot = (Rectangle) pRobot.lookup("#" + pRobot.getId() + "_" + RobotFXCenterStageLG.CAMERA_ON_ROBOT_ID);
             Point2D cameraCoord = cameraOnRobot.localToScene(cameraOnRobot.getX(), cameraOnRobot.getY());
-
-            Circle deviceOnRobot = (Circle) pRobot.lookup("#" + pRobot.getId() + "_" + RobotFXCenterStageLG.DEVICE_ON_ROBOT_ID);
-            Point2D deviceCoord = deviceOnRobot.localToScene(deviceOnRobot.getCenterX(), deviceOnRobot.getCenterY());
-
-            // Get the coordinates of the target AprilTag.
-            Integer targetAprilTag = (Integer) controller.april_tag_spinner_id.getValue();
-            Rectangle aprilTag = (Rectangle) pField.lookup("#" + FieldFXCenterStageBackdropLG.APRIL_TAG_ID + Integer.toString(targetAprilTag));
-            Point2D aprilTagCoord = aprilTag.localToScene(aprilTag.getX(), aprilTag.getY());
 
             // The returned coordinates of the objects are those of the upper left-hand
             // corner. We want to draw a line from the face of the camera to the center
@@ -276,14 +269,23 @@ public class CenterStageBackdrop extends Application {
             double cameraFaceY = cameraCoord.getY();
             System.out.println("Camera face center x " + cameraFaceX + ", y " + cameraFaceY);
 
+            Circle deviceOnRobot = (Circle) pRobot.lookup("#" + pRobot.getId() + "_" + RobotFXCenterStageLG.DEVICE_ON_ROBOT_ID);
+            Point2D deviceCoord = deviceOnRobot.localToScene(deviceOnRobot.getCenterX(), deviceOnRobot.getCenterY());
+            double deviceCenterX = deviceCoord.getX();
+            double deviceCenterY = deviceCoord.getY();
+
+            // Get the coordinates of the target AprilTag.
+            Integer targetAprilTag = controller.april_tag_spinner_id.getValue();
+            Rectangle aprilTag = (Rectangle) pField.lookup("#" + FieldFXCenterStageBackdropLG.APRIL_TAG_ID + targetAprilTag);
+            Point2D aprilTagCoord = aprilTag.localToScene(aprilTag.getX(), aprilTag.getY());
+
             double aprilTagCenterX = aprilTagCoord.getX() + aprilTag.getWidth() / 2;
             double aprilTagCenterY = aprilTagCoord.getY() + aprilTag.getHeight() / 2;
             System.out.println("AprilTag center x " + aprilTagCenterX + ", y " + aprilTagCenterY);
 
+            // Strafe so that the delivery device is opposite the AT.
             // Positive: strafe to the left; negative: strafe to the right.
-            //**TODO TEMP - strafe so that the camera is opposite the AT.
-            // Next: strafe so that the delivery device is opposite the AT.
-            double distanceToStrafe = aprilTagCenterX - cameraFaceX;
+            double distanceToStrafe = aprilTagCenterX - deviceCenterX;
             System.out.println("Distance to strafe x " + distanceToStrafe);
             ttStrafe.setByX(distanceToStrafe);
 
@@ -402,9 +404,7 @@ public class CenterStageBackdrop extends Application {
         rect2.setFill(Color.DARKCYAN);
         pGroup.getChildren().add(rect2);
 
-        rect2.xProperty().addListener(xValue -> {
-            System.out.println("XProperty " + xValue);
-        });
+        rect2.xProperty().addListener(xValue -> System.out.println("XProperty " + xValue));
 
         PauseTransition pauseTransition = new PauseTransition(Duration.millis(2000));
 
