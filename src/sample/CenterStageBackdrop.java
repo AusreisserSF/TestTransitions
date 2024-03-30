@@ -225,9 +225,9 @@ public class CenterStageBackdrop extends Application {
                 new RotateTransition(Duration.millis(3000), pRobot);
         rotateTransition.setByAngle(rotation);
 
-        //**TODO The TranslateTransition must be declared before the ParallelTransition,
-        // i.e. out of the time sequence, because the distance to strafe is only known
-        // when the ParallelTransition has completed.
+        //## The TranslateTransition for the final strafe must be declared before the
+        // ParallelTransition, i.e. out of the time sequence, because the distance to
+        // strafe is only known after the ParallelTransition is complete.
         TranslateTransition ttStrafe = new TranslateTransition(Duration.millis(2000));
         ttStrafe.setNode(pRobot);
         ttStrafe.setOnFinished(event -> { //**TODO See OneNote - stackoverflow answer from jewelsea
@@ -243,6 +243,19 @@ public class CenterStageBackdrop extends Application {
             System.out.println("Position after strafe x " + robotCoordX + ", y " + robotCoordY);
         });
 
+        //## The RotateTransition for the final strafe must be declared before the
+        // ParallelTransition, i.e. out of the time sequence, because the angle to
+        // rotate is only known after the ParallelTransition is complete.
+        RotateTransition rotateDevice = new RotateTransition(Duration.seconds(2));
+        rotateDevice.setNode(pRobot);
+        rotateDevice.setByAngle(90.0); //**TODO This can only happen after the ParallelTransition is complete.
+        rotateDevice.setOnFinished(event -> {
+            Bounds robotBP = pRobot.getBoundsInParent();
+            double robotCoordX = robotBP.getCenterX();
+            double robotCoordY = robotBP.getCenterY();
+            System.out.println("Position after rotation " + pRobot.getRotate());
+        });
+
         // Follow the cubic curve and rotate in parallel.
         ParallelTransition parallelT = new ParallelTransition(pathTransition, rotateTransition);
         parallelT.setOnFinished(event -> { //**TODO See OneNote - stackoverflow answer from jewelsea
@@ -255,6 +268,7 @@ public class CenterStageBackdrop extends Application {
             double robotCoordX = robotBP.getCenterX();
             double robotCoordY = robotBP.getCenterY();
             System.out.println("Position after ParallelTransition x " + robotCoordX + ", y " + robotCoordY);
+            System.out.println("Rotation after ParallelTransition x " + pRobot.getRotate());
 
             //## All of these coordinates and calculations can only be made after
             // the ParallelTranstion is complete, i.e. now.
@@ -288,6 +302,10 @@ public class CenterStageBackdrop extends Application {
             double distanceToStrafe = aprilTagCenterX - deviceCenterX;
             System.out.println("Distance to strafe x " + distanceToStrafe);
             ttStrafe.setByX(distanceToStrafe);
+
+            //**TODO Rotate the rbot about its center so that the delivery device is pointing
+            // towards the AprilTag.
+            //**rotateDevice.setByAngle(90.0); //**TODO This can only happen after the ParallelTransition is complete.
 
             // Draw a line from the camera to the target AprilTag.
             Line lineH = new Line(cameraFaceX, cameraFaceY, aprilTagCenterX, aprilTagCenterY);
@@ -335,7 +353,7 @@ public class CenterStageBackdrop extends Application {
             pField.getChildren().remove(lineARef);
         });
 
-        //**TODO Let's try a strafe first ...
+        //**TODO TEST: rotate towards the AprilTag instead of the strafe.
         SequentialTransition seqTransition = new SequentialTransition(
                 parallelT, pauseT, ttStrafe
         );
@@ -356,47 +374,6 @@ public class CenterStageBackdrop extends Application {
         // then strafe so that the centroid is opposite the centroid of AprilTag 3.
 
 
-    }
-
-    private PathTransition generatePathTransition(Group pRobot, final Path path) {
-        PathTransition pathTransition = new PathTransition();
-        pathTransition.setDuration(Duration.millis(4000));
-        pathTransition.setPath(path);
-        pathTransition.setNode(pRobot);
-        pathTransition.setOrientation(PathTransition.OrientationType.ORTHOGONAL_TO_TANGENT);
-        pathTransition.setCycleCount(1);
-        pathTransition.setAutoReverse(false);
-        pathTransition.setOnFinished(event -> {
-            Rectangle robotBody = (Rectangle) pRobot.lookup("#robotBodyId");
-            Point2D rbCoord = robotBody.localToScene(robotBody.getX(), robotBody.getY());
-            System.out.println("Position after path following x " + rbCoord.getX() + ", y " + rbCoord.getY());
-            System.out.println("JavaFX rotation after path " + pRobot.getRotate());
-
-            double robotRotation = pRobot.getRotate() + 90.0;
-            System.out.println("Robot rotation after path " + robotRotation);
-
-            Point2D centroid = computeRotatedCentroid(rbCoord.getX(), rbCoord.getY(), RobotFX.ROBOT_WIDTH, RobotFX.ROBOT_HEIGHT, robotRotation);
-            System.out.println("Centroid x " + centroid.getX() + ", y " + centroid.getY());
-
-            Map<Corners, Point2D> cornerMap = robotBodyCornerCoordinates(centroid.getX(), centroid.getY(), RobotFX.ROBOT_WIDTH, RobotFX.ROBOT_HEIGHT, robotRotation);
-            System.out.println("Robot body top left " + cornerMap.get(Corners.TOP_LEFT).getX() + " y " + cornerMap.get(Corners.TOP_LEFT).getY());
-            System.out.println("Top right " + cornerMap.get(Corners.TOP_RIGHT).getX() + " y " + cornerMap.get(Corners.TOP_RIGHT).getY());
-            System.out.println("Bottom right " + cornerMap.get(Corners.BOTTOM_RIGHT).getX() + " y " + cornerMap.get(Corners.BOTTOM_RIGHT).getY());
-            System.out.println("Bottom left " + cornerMap.get(Corners.BOTTOM_LEFT).getX() + " y " + cornerMap.get(Corners.BOTTOM_LEFT).getY());
-
-            // https://stackoverflow.com/questions/26513747/efficient-way-to-find-min-value-in-map
-            // Obtain the entry with the minimum value:
-            Map.Entry<Corners, Point2D> entryWithMinValue = Collections.min(
-                    cornerMap.entrySet(), Map.Entry.comparingByValue(Comparator.comparingDouble(Point2D::getY)));
-            System.out.println("Minimum y coordinate " + entryWithMinValue);
-
-            // Or directly obtain the key, if you only need that:
-            //String keyWithMinValue = Collections.min(
-            //        myMap.entrySet(), Map.Entry.comparingByValue()).getKey();
-            //System.out.println(keyWithMinValue);
-
-        });
-        return pathTransition;
     }
 
     private void translateAndRotate(Group pGroup) {
