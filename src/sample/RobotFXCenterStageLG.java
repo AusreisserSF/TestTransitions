@@ -13,7 +13,12 @@ public class RobotFXCenterStageLG extends RobotFXLG {
     public static final double DEVICE_RADIUS = FieldFXCenterStageBackdropLG.PX_PER_INCH * 1;
     public static final String DEVICE_ON_ROBOT_ID = "deviceOnRobotId";
 
-    //**TODO Convert all measurements from inches to pixels here.
+    public final double cameraCenterFromRobotCenterPX;
+    public final double cameraOffsetFromRobotCenterPX;
+    public final double deviceCenterFromRobotCenterPX;
+    public final double deviceOffsetFromRobotCenterPX;
+
+    // Convert all measurements from inches to pixels here.
     public RobotFXCenterStageLG(double pRobotWidth, double pRobotHeight, Color pRobotBodyColor,
                                 double pCameraCenterFromRobotCenter, double pCameraOffsetFromRobotCenter,
                                 double pDeviceCenterFromRobotCenter, double pDeviceOffsetFromRobotCenter,
@@ -25,10 +30,10 @@ public class RobotFXCenterStageLG extends RobotFXLG {
         // Convert all measurements from inches to pixels.
         double robotWidthPX = pRobotWidth * FieldFXCenterStageBackdropLG.PX_PER_INCH;
         double robotHeightPX = pRobotHeight * FieldFXCenterStageBackdropLG.PX_PER_INCH;
-        double cameraCenterFromRobotCenterPX = pCameraCenterFromRobotCenter * FieldFXCenterStageBackdropLG.PX_PER_INCH;
-        double cameraOffsetFromRobotCenterPX = pCameraOffsetFromRobotCenter * FieldFXCenterStageBackdropLG.PX_PER_INCH;
-        double deviceCenterFromRobotCenterPX = pDeviceCenterFromRobotCenter * FieldFXCenterStageBackdropLG.PX_PER_INCH;
-        double deviceOffsetFromRobotCenterPX = pDeviceOffsetFromRobotCenter * FieldFXCenterStageBackdropLG.PX_PER_INCH;
+        cameraCenterFromRobotCenterPX = pCameraCenterFromRobotCenter * FieldFXCenterStageBackdropLG.PX_PER_INCH;
+        cameraOffsetFromRobotCenterPX = pCameraOffsetFromRobotCenter * FieldFXCenterStageBackdropLG.PX_PER_INCH;
+        deviceCenterFromRobotCenterPX = pDeviceCenterFromRobotCenter * FieldFXCenterStageBackdropLG.PX_PER_INCH;
+        deviceOffsetFromRobotCenterPX = pDeviceOffsetFromRobotCenter * FieldFXCenterStageBackdropLG.PX_PER_INCH;
 
         // Place the camera on the robot.
         double cameraYBaseline = (robotHeightPX / 2) - (CAMERA_HEIGHT / 2);

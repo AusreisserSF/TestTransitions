@@ -11,6 +11,7 @@ public abstract class RobotFXLG {
     public static final double WHEEL_OFFSET = FieldFXCenterStageBackdropLG.PX_PER_INCH * 1;
     public static final String ROBOT_ID = "robotGroup";
 
+    //**TODO Be consistent - put robot width and height here as public? Make Group public?
     protected final Group robot;
 
     // Place the wheels "under" the robot by drawing their black

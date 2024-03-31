@@ -37,8 +37,9 @@ public class CenterStageBackdrop extends Application {
 
     private enum Corners {TOP_LEFT, TOP_RIGHT, BOTTOM_RIGHT, BOTTOM_LEFT}
 
-    SimulatorController controller;
-    StartParameterValidation startParameterValidation;
+    private SimulatorController controller;
+    private StartParameterValidation startParameterValidation;
+    private RobotFXCenterStageLG centerStageRobot;
 
     //**TODO Show all positions in FTC field coordinates? Or at least report the field coordinates.
     @Override
@@ -110,7 +111,7 @@ public class CenterStageBackdrop extends Application {
                 startingRotation = -90.0;
             }
 
-            RobotFXCenterStageLG centerStageRobot = new RobotFXCenterStageLG(robotWidth, robotHeight, Color.GREEN,
+            centerStageRobot = new RobotFXCenterStageLG(robotWidth, robotHeight, Color.GREEN,
                     startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_CENTER_FROM_ROBOT_CENTER),
                     startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_OFFSET_FROM_ROBOT_CENTER),
                     startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.DEVICE_CENTER_FROM_ROBOT_CENTER),
@@ -224,6 +225,9 @@ public class CenterStageBackdrop extends Application {
         RotateTransition rotateTransition =
                 new RotateTransition(Duration.millis(3000), pRobot);
         rotateTransition.setByAngle(rotation);
+        rotateTransition.setOnFinished(event -> {
+            System.out.println("Angle after initial rotation " + pRobot.getRotate());
+        });
 
         //## The TranslateTransition for the final strafe must be declared before the
         // ParallelTransition, i.e. out of the time sequence, because the distance to
@@ -246,14 +250,10 @@ public class CenterStageBackdrop extends Application {
         //## The RotateTransition for the final strafe must be declared before the
         // ParallelTransition, i.e. out of the time sequence, because the angle to
         // rotate is only known after the ParallelTransition is complete.
-        RotateTransition rotateDevice = new RotateTransition(Duration.seconds(2));
-        rotateDevice.setNode(pRobot);
-        rotateDevice.setByAngle(90.0); //**TODO This can only happen after the ParallelTransition is complete.
-        rotateDevice.setOnFinished(event -> {
-            Bounds robotBP = pRobot.getBoundsInParent();
-            double robotCoordX = robotBP.getCenterX();
-            double robotCoordY = robotBP.getCenterY();
-            System.out.println("Position after rotation " + pRobot.getRotate());
+        RotateTransition rotateDeviceTowardsAprilTag = new RotateTransition(Duration.seconds(2));
+        rotateDeviceTowardsAprilTag.setNode(pRobot);
+        rotateDeviceTowardsAprilTag.setOnFinished(event -> {
+            System.out.println("Angle after rotation " + pRobot.getRotate());
         });
 
         // Follow the cubic curve and rotate in parallel.
@@ -303,10 +303,6 @@ public class CenterStageBackdrop extends Application {
             System.out.println("Distance to strafe x " + distanceToStrafe);
             ttStrafe.setByX(distanceToStrafe);
 
-            //**TODO Rotate the rbot about its center so that the delivery device is pointing
-            // towards the AprilTag.
-            //**rotateDevice.setByAngle(90.0); //**TODO This can only happen after the ParallelTransition is complete.
-
             // Draw a line from the camera to the target AprilTag.
             Line lineH = new Line(cameraFaceX, cameraFaceY, aprilTagCenterX, aprilTagCenterY);
             lineH.setId("lineH");
@@ -341,6 +337,19 @@ public class CenterStageBackdrop extends Application {
             double tanTheta = opposite / adjacent;
             double degreesFromCameraToAprilTag = Math.toDegrees(Math.atan(tanTheta));
             System.out.println("Degrees from camera to AprilTag " + degreesFromCameraToAprilTag);
+
+            //**TODO STOPPED HERE 3/30/2024 Watch sign inversions; now get the angle from the
+            // device to the AprilTag ...
+            // Set the sign of the angle from the camera to the AprilTag: for JavaFX positive is
+            // clockwise.
+            if (aprilTagCenterX > cameraFaceX)
+                degreesFromCameraToAprilTag *= -1;
+            AngleDistance fromRobotCenter = CameraToCenterCorrections.getCorrectedAngleAndDistance(centerStageRobot.cameraCenterFromRobotCenterPX,
+                    centerStageRobot.cameraOffsetFromRobotCenterPX, distanceFromCameraToAprilTag, degreesFromCameraToAprilTag);
+            System.out.println("Angle from robot center to AprilTag " + fromRobotCenter.angle);
+            System.out.println("Distance from robot center to AprilTag " + fromRobotCenter.distance);
+
+            rotateDeviceTowardsAprilTag.setByAngle(-fromRobotCenter.angle); // This can only happen after the ParallelTransition is complete.
         });
 
         PauseTransition pauseT = new PauseTransition(Duration.millis(2500));
@@ -353,9 +362,9 @@ public class CenterStageBackdrop extends Application {
             pField.getChildren().remove(lineARef);
         });
 
-        //**TODO TEST: rotate towards the AprilTag instead of the strafe.
+        //**TODO TEST: rotate towards the AprilTag instead of strafe.
         SequentialTransition seqTransition = new SequentialTransition(
-                parallelT, pauseT, ttStrafe
+                parallelT, pauseT, rotateDeviceTowardsAprilTag // ttStrafe
         );
 
         seqTransition.play();
