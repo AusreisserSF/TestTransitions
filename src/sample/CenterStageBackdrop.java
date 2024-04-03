@@ -24,10 +24,10 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 // Combination of
 // https://www.infoworld.com/article/2074529/javafx-2-animation--path-transitions.html
@@ -257,6 +257,12 @@ public class CenterStageBackdrop extends Application {
         });
 
         // Follow the cubic curve and rotate in parallel.
+        AtomicReference<Double> robotCoordX = new AtomicReference<>((double) 0);
+        AtomicReference<Double> robotCoordY = new AtomicReference<>((double) 0);
+        AtomicReference<Double> deviceCenterX = new AtomicReference<>((double) 0);
+        AtomicReference<Double> deviceCenterY = new AtomicReference<>((double) 0);
+        AtomicReference<Double> aprilTagCenterX = new AtomicReference<>((double) 0);
+        AtomicReference<Double> aprilTagCenterY = new AtomicReference<>((double) 0);
         ParallelTransition parallelT = new ParallelTransition(pathTransition, rotateTransition);
         parallelT.setOnFinished(event -> { //**TODO See OneNote - stackoverflow answer from jewelsea
             pRobot.setLayoutX(pRobot.getLayoutX() + pRobot.getTranslateX());
@@ -265,8 +271,9 @@ public class CenterStageBackdrop extends Application {
             pRobot.setTranslateY(0);
 
             Bounds robotBP = pRobot.getBoundsInParent();
-            double robotCoordX = robotBP.getCenterX();
-            double robotCoordY = robotBP.getCenterY();
+            robotCoordX.set(robotBP.getCenterX());
+            robotCoordY.set(robotBP.getCenterY());
+
             System.out.println("Position after ParallelTransition x " + robotCoordX + ", y " + robotCoordY);
             System.out.println("Rotation after ParallelTransition x " + pRobot.getRotate());
 
@@ -285,81 +292,159 @@ public class CenterStageBackdrop extends Application {
 
             Circle deviceOnRobot = (Circle) pRobot.lookup("#" + pRobot.getId() + "_" + RobotFXCenterStageLG.DEVICE_ON_ROBOT_ID);
             Point2D deviceCoord = deviceOnRobot.localToScene(deviceOnRobot.getCenterX(), deviceOnRobot.getCenterY());
-            double deviceCenterX = deviceCoord.getX();
-            double deviceCenterY = deviceCoord.getY();
+            deviceCenterX.set(deviceCoord.getX());
+            deviceCenterY.set(deviceCoord.getY());
 
             // Get the coordinates of the target AprilTag.
             Integer targetAprilTag = controller.april_tag_spinner_id.getValue();
             Rectangle aprilTag = (Rectangle) pField.lookup("#" + FieldFXCenterStageBackdropLG.APRIL_TAG_ID + targetAprilTag);
             Point2D aprilTagCoord = aprilTag.localToScene(aprilTag.getX(), aprilTag.getY());
 
-            double aprilTagCenterX = aprilTagCoord.getX() + aprilTag.getWidth() / 2;
-            double aprilTagCenterY = aprilTagCoord.getY() + aprilTag.getHeight() / 2;
+            aprilTagCenterX.set(aprilTagCoord.getX() + aprilTag.getWidth() / 2);
+            aprilTagCenterY.set(aprilTagCoord.getY() + aprilTag.getHeight() / 2);
             System.out.println("AprilTag center x " + aprilTagCenterX + ", y " + aprilTagCenterY);
 
             // Strafe so that the delivery device is opposite the AT.
             // Positive: strafe to the left; negative: strafe to the right.
-            double distanceToStrafe = aprilTagCenterX - deviceCenterX;
+            double distanceToStrafe = aprilTagCenterX.get() - deviceCenterX.get();
             System.out.println("Distance to strafe x " + distanceToStrafe);
             ttStrafe.setByX(distanceToStrafe);
 
-            // Draw a line from the camera to the target AprilTag.
-            Line lineH = new Line(cameraFaceX, cameraFaceY, aprilTagCenterX, aprilTagCenterY);
-            lineH.setId("lineH");
-            lineH.setStroke(Color.FUCHSIA);
-            lineH.getStrokeDashArray().addAll(10.0);
-            lineH.setStrokeWidth(3.0);
-            pField.getChildren().add(lineH);
-
-            // Draw the opposite side of the triangle.
-            Line lineO = new Line(cameraFaceX, aprilTagCenterY, aprilTagCenterX, aprilTagCenterY);
-            lineO.setId("lineO");
-            lineO.setStroke(Color.FUCHSIA);
-            lineO.getStrokeDashArray().addAll(10.0);
-            lineO.setStrokeWidth(3.0);
-            pField.getChildren().add(lineO);
-
-            // Draw the adjacent side of the triangle.
-            Line lineA = new Line(cameraFaceX, cameraFaceY, cameraFaceX, aprilTagCenterY);
-            lineA.setId("lineA");
-            lineA.setStroke(Color.FUCHSIA);
-            lineA.getStrokeDashArray().addAll(10.0);
-            lineA.setStrokeWidth(3.0);
-            pField.getChildren().add(lineA);
-
             // Get the angle from the camera to the AprilTag.
-            double adjacent = Math.abs(cameraFaceY - aprilTagCenterY);
-            double opposite = Math.abs(cameraFaceX - aprilTagCenterX);
+            double cameraAdjacent = Math.abs(cameraFaceY - aprilTagCenterY.get());
+            double cameraOpposite = Math.abs(cameraFaceX - aprilTagCenterX.get());
 
-            double hSquared = Math.pow(adjacent, 2) + Math.pow(opposite, 2);
-            double distanceFromCameraToAprilTag = Math.sqrt(hSquared);
+            double cameraHypotenuseSquared = Math.pow(cameraAdjacent, 2) + Math.pow(cameraOpposite, 2);
+            double distanceFromCameraToAprilTag = Math.sqrt(cameraHypotenuseSquared);
 
-            double tanTheta = opposite / adjacent;
+            double tanTheta = cameraOpposite / cameraAdjacent;
             double degreesFromCameraToAprilTag = Math.toDegrees(Math.atan(tanTheta));
             System.out.println("Degrees from camera to AprilTag " + degreesFromCameraToAprilTag);
 
-            //**TODO STOPPED HERE 3/30/2024 Watch sign inversions; now get the angle from the
-            // device to the AprilTag ...
-            // Set the sign of the angle from the camera to the AprilTag: for JavaFX positive is
-            // clockwise.
-            if (aprilTagCenterX > cameraFaceX)
+            // Draw a line from the camera to the target AprilTag, the hypotenuse of the camera triangle.
+            Line lineCH = new Line(cameraFaceX, cameraFaceY, aprilTagCenterX.get(), aprilTagCenterY.get());
+            lineCH.setId("lineCH");
+            lineCH.setStroke(Color.FUCHSIA);
+            lineCH.getStrokeDashArray().addAll(10.0);
+            lineCH.setStrokeWidth(3.0);
+            pField.getChildren().add(lineCH);
+
+            // Draw the opposite side of the camera triangle.
+            /*
+            Line lineCO = new Line(cameraFaceX, aprilTagCenterY, aprilTagCenterX, aprilTagCenterY);
+            lineO.lineCO("lineCO");
+            lineCO.setStroke(Color.FUCHSIA);
+            lineCO.getStrokeDashArray().addAll(10.0);
+            lineCO.setStrokeWidth(3.0);
+            pField.getChildren().add(lineCO);
+            */
+
+            // Draw the adjacent side of the triangle.
+            Line lineCA = new Line(cameraFaceX, cameraFaceY, cameraFaceX, aprilTagCenterY.get());
+            lineCA.setId("lineCA");
+            lineCA.setStroke(Color.FUCHSIA);
+            lineCA.getStrokeDashArray().addAll(10.0);
+            lineCA.setStrokeWidth(3.0);
+            pField.getChildren().add(lineCA);
+
+            // Get the angle and distance from the center of the robot to the AprilTag.
+            // This is an intermediate step, but necessary in order to calculate the angle
+            // by which the robot must be rotated so that the delivery device points at the
+            // AprilTag and the final distance from the device to the AprilTag.
+            // Set the sign of the angle from the camera to the AprilTag: for FTC negative
+            // is clockwise.
+            if (aprilTagCenterX.get() > cameraFaceX)
                 degreesFromCameraToAprilTag *= -1;
+
+            // The fields centerStageRobot.cameraCenterFromRobotCenterPX and
+            // centerStageRobot.cameraOffsetFromRobotCenterPX are already signed correctly
+            // for FTC.
             AngleDistance fromRobotCenter = CameraToCenterCorrections.getCorrectedAngleAndDistance(centerStageRobot.cameraCenterFromRobotCenterPX,
                     centerStageRobot.cameraOffsetFromRobotCenterPX, distanceFromCameraToAprilTag, degreesFromCameraToAprilTag);
             System.out.println("Angle from robot center to AprilTag " + fromRobotCenter.angle);
             System.out.println("Distance from robot center to AprilTag " + fromRobotCenter.distance);
 
-            rotateDeviceTowardsAprilTag.setByAngle(-fromRobotCenter.angle); // This can only happen after the ParallelTransition is complete.
+            // sine of fromRobotCenter.angle = robotATOpposite / fromRobotCenter.distance;
+            double robotATOpposite = Math.sin(Math.toRadians(fromRobotCenter.angle)) * fromRobotCenter.distance;
+            // fromRobotCenter.distance squared = robotATOpposite squared + robotATAdjacent squared
+            double robotATAdjacentSquared = Math.pow(fromRobotCenter.distance, 2) - Math.pow(robotATOpposite, 2);
+            double robotATAdjacent = Math.sqrt(robotATAdjacentSquared);
+
+            // We have the right triangle with a hypotenuse from the center of the robot to
+            // the AprilTag. Now we need the right triangle with a hypotenuse from the center
+            // of the robot to the point where a vertical line from the delivery device
+            // intersects the horizontal line that intersects the centers of all 3 AprilTags.
+            // The opposite side of the triangle is the same as the offset from the center of
+            // the robot to the center of the device.
+            double robotCenterDeviceOpposite = Math.abs(centerStageRobot.deviceOffsetFromRobotCenterPX);
+            double robotDeviceHypotenuseSquared = Math.pow(robotATAdjacent, 2) + Math.pow(robotCenterDeviceOpposite, 2);
+            double robotDeviceHypotenuse = Math.sqrt(robotDeviceHypotenuseSquared);
+
+            // Get the angle at the center of the robot given the triangle defined above.
+            double robotDeviceATSin = robotCenterDeviceOpposite / robotDeviceHypotenuse;
+            double degreesFromRobotCenter = Math.toDegrees(Math.asin(robotDeviceATSin));
+            System.out.println("Degrees from robot center to AprilTag horizontal opposite the device " + degreesFromRobotCenter);
+
+            // Set the number of degrees to rotate so that the device is facing
+            // the AprilTag.
+            //**TODO turn is short - watch sign!!
+            rotateDeviceTowardsAprilTag.setByAngle(-(degreesFromRobotCenter + fromRobotCenter.angle));
+
         });
 
         PauseTransition pauseT = new PauseTransition(Duration.millis(2500));
         pauseT.setOnFinished(event -> {
-            Line lineHRef = (Line) pField.lookup("#lineH");
-            pField.getChildren().remove(lineHRef);
-            Line lineORef = (Line) pField.lookup("#lineO");
-            pField.getChildren().remove(lineORef);
-            Line lineARef = (Line) pField.lookup("#lineA");
-            pField.getChildren().remove(lineARef);
+            Line lineCHRef = (Line) pField.lookup("#lineCH");
+            pField.getChildren().remove(lineCHRef);
+            //Line lineORef = (Line) pField.lookup("#lineCO");
+            //pField.getChildren().remove(lineORef);
+            Line lineCARef = (Line) pField.lookup("#lineCA");
+            pField.getChildren().remove(lineCARef);
+
+            // Draw the hypotenuse and the adjacent side of the triangle formed
+            // between the center of the robot and the delivery device.
+            Line lineRCDH = new Line(robotCoordX.get(), robotCoordY.get(), Math.abs(robotCoordX.get() - centerStageRobot.deviceOffsetFromRobotCenterPX), aprilTagCenterY.get());
+            lineRCDH.setId("lineRCDH");
+            lineRCDH.setStroke(Color.FUCHSIA);
+            lineRCDH.getStrokeDashArray().addAll(10.0);
+            lineRCDH.setStrokeWidth(3.0);
+            pField.getChildren().add(lineRCDH);
+
+            // Draw the adjacent side of the triangle. This side is shared between
+            // two triangles.
+            Line lineRCA = new Line(robotCoordX.get(), robotCoordY.get(), robotCoordX.get(), aprilTagCenterY.get());
+            lineRCA.setId("lineRCA");
+            lineRCA.setStroke(Color.FUCHSIA);
+            lineRCA.getStrokeDashArray().addAll(10.0);
+            lineRCA.setStrokeWidth(3.0);
+            pField.getChildren().add(lineRCA);
+
+            // Also show the hypotenuse of the right triangle formed between the center
+            // of the robot and the AprilTag.
+            Line lineRCAH = new Line(robotCoordX.get(), robotCoordY.get(), aprilTagCenterX.get(), aprilTagCenterY.get());
+            lineRCAH.setId("lineRCAH");
+            lineRCAH.setStroke(Color.AQUA);
+            lineRCAH.getStrokeDashArray().addAll(10.0);
+            lineRCAH.setStrokeWidth(3.0);
+            pField.getChildren().add(lineRCAH);
+
+            // One last thing: we need the distance from the delivery device
+            // to the AprilTag. This is the hypotenuse of a right triangle.
+            // double deviceHypotenuseSquared = deviceAdjacentSquared + deviceOppositeSquared
+            double deviceAdjacent = deviceCenterY.get()- aprilTagCenterY.get();
+            double deviceOpposite = Math.abs(deviceCenterX.get() - aprilTagCenterX.get());
+            double deviceHypotenuseSquared = Math.pow(deviceAdjacent, 2) + Math.pow(deviceOpposite, 2);
+            double deviceToAprilTag = Math.sqrt(deviceHypotenuseSquared);
+            System.out.println("Distance from device to AprilTag " + deviceToAprilTag);
+
+            // And draw the line.
+            Line lineDH = new Line(deviceCenterX.get(), deviceCenterY.get(), aprilTagCenterX.get(), aprilTagCenterY.get());
+            lineDH.setId("lineDH");
+            lineDH.setStroke(Color.FUCHSIA);
+            lineDH.getStrokeDashArray().addAll(10.0);
+            lineDH.setStrokeWidth(3.0);
+            pField.getChildren().add(lineDH);
+
         });
 
         //**TODO TEST: rotate towards the AprilTag instead of strafe.
