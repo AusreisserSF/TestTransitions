@@ -254,19 +254,27 @@ public class CenterStageBackdrop extends Application {
         AtomicReference<Double> aprilTagCenterX = new AtomicReference<>((double) 0);
         AtomicReference<Double> aprilTagCenterY = new AtomicReference<>((double) 0);
 
-        //## The RotateTransition for the final strafe must be declared before the
+        //## The RotateTransition for the final rotation must be declared before the
         // ParallelTransition, i.e. out of the time sequence, because the angle to
         // rotate is only known after the ParallelTransition is complete.
         RotateTransition rotateDeviceTowardsAprilTag = new RotateTransition(Duration.seconds(2));
         rotateDeviceTowardsAprilTag.setNode(pRobot);
         rotateDeviceTowardsAprilTag.setOnFinished(event -> {
+            // The following made no difference ...
+            /*
+            pRobot.setLayoutX(pRobot.getLayoutX() + pRobot.getTranslateX());
+            pRobot.setLayoutY(pRobot.getLayoutY() + pRobot.getTranslateY());
+            pRobot.setTranslateX(0);
+            pRobot.setTranslateY(0);
+            */
+
             System.out.println("Angle after rotation " + pRobot.getRotate());
 
+            //**NOTHING TODO - this worked!
             // Draw a line from the device to the AprilTag.
-            //**TODO Neither getBoundsInParent nor getBoundsInLocal returns the post-rotation
-            // coordinates of the device; instead - the original coordinates.
-            Bounds deviceBP = pRobot.lookup("#" + pRobot.getId() + "_" + RobotFXCenterStageLG.DEVICE_ON_ROBOT_ID).getBoundsInLocal();
-            Line lineDH = new Line(deviceBP.getCenterX(), deviceBP.getCenterY(), aprilTagCenterX.get(), aprilTagCenterY.get());
+            Circle deviceOnRobot = (Circle) pRobot.lookup("#" + pRobot.getId() + "_" + RobotFXCenterStageLG.DEVICE_ON_ROBOT_ID);
+            Point2D deviceCoord = deviceOnRobot.localToScene(deviceOnRobot.getCenterX(), deviceOnRobot.getCenterY());
+            Line lineDH = new Line(deviceCoord.getX(), deviceCoord.getY(), aprilTagCenterX.get(), aprilTagCenterY.get());
             lineDH.setId("lineDCH");
             lineDH.setStroke(Color.YELLOW);
             lineDH.getStrokeDashArray().addAll(10.0);
@@ -342,14 +350,12 @@ public class CenterStageBackdrop extends Application {
             pField.getChildren().add(lineCH);
 
             // Draw the opposite side of the camera triangle.
-            /*
-            Line lineCO = new Line(cameraFaceX, aprilTagCenterY, aprilTagCenterX, aprilTagCenterY);
-            lineO.lineCO("lineCO");
+            Line lineCO = new Line(cameraFaceX, aprilTagCenterY.get(), aprilTagCenterX.get(), aprilTagCenterY.get());
+            lineCO.setId("lineCO");
             lineCO.setStroke(Color.FUCHSIA);
             lineCO.getStrokeDashArray().addAll(10.0);
             lineCO.setStrokeWidth(3.0);
             pField.getChildren().add(lineCO);
-            */
 
             // Draw the adjacent side of the triangle.
             Line lineCA = new Line(cameraFaceX, cameraFaceY, cameraFaceX, aprilTagCenterY.get());
