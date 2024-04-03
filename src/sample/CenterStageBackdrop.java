@@ -247,6 +247,13 @@ public class CenterStageBackdrop extends Application {
             System.out.println("Position after strafe x " + robotCoordX + ", y " + robotCoordY);
         });
 
+        AtomicReference<Double> robotCoordX = new AtomicReference<>((double) 0);
+        AtomicReference<Double> robotCoordY = new AtomicReference<>((double) 0);
+        AtomicReference<Double> deviceCenterX = new AtomicReference<>((double) 0);
+        AtomicReference<Double> deviceCenterY = new AtomicReference<>((double) 0);
+        AtomicReference<Double> aprilTagCenterX = new AtomicReference<>((double) 0);
+        AtomicReference<Double> aprilTagCenterY = new AtomicReference<>((double) 0);
+
         //## The RotateTransition for the final strafe must be declared before the
         // ParallelTransition, i.e. out of the time sequence, because the angle to
         // rotate is only known after the ParallelTransition is complete.
@@ -254,15 +261,20 @@ public class CenterStageBackdrop extends Application {
         rotateDeviceTowardsAprilTag.setNode(pRobot);
         rotateDeviceTowardsAprilTag.setOnFinished(event -> {
             System.out.println("Angle after rotation " + pRobot.getRotate());
+
+            // Draw a line from the device to the AprilTag.
+            //**TODO Neither getBoundsInParent nor getBoundsInLocal returns the post-rotation
+            // coordinates of the device; instead - the original coordinates.
+            Bounds deviceBP = pRobot.lookup("#" + pRobot.getId() + "_" + RobotFXCenterStageLG.DEVICE_ON_ROBOT_ID).getBoundsInLocal();
+            Line lineDH = new Line(deviceBP.getCenterX(), deviceBP.getCenterY(), aprilTagCenterX.get(), aprilTagCenterY.get());
+            lineDH.setId("lineDCH");
+            lineDH.setStroke(Color.YELLOW);
+            lineDH.getStrokeDashArray().addAll(10.0);
+            lineDH.setStrokeWidth(3.0);
+            pField.getChildren().add(lineDH);
         });
 
         // Follow the cubic curve and rotate in parallel.
-        AtomicReference<Double> robotCoordX = new AtomicReference<>((double) 0);
-        AtomicReference<Double> robotCoordY = new AtomicReference<>((double) 0);
-        AtomicReference<Double> deviceCenterX = new AtomicReference<>((double) 0);
-        AtomicReference<Double> deviceCenterY = new AtomicReference<>((double) 0);
-        AtomicReference<Double> aprilTagCenterX = new AtomicReference<>((double) 0);
-        AtomicReference<Double> aprilTagCenterY = new AtomicReference<>((double) 0);
         ParallelTransition parallelT = new ParallelTransition(pathTransition, rotateTransition);
         parallelT.setOnFinished(event -> { //**TODO See OneNote - stackoverflow answer from jewelsea
             pRobot.setLayoutX(pRobot.getLayoutX() + pRobot.getTranslateX());
@@ -387,9 +399,8 @@ public class CenterStageBackdrop extends Application {
 
             // Set the number of degrees to rotate so that the device is facing
             // the AprilTag.
-            //**TODO turn is short - watch sign!!
-            rotateDeviceTowardsAprilTag.setByAngle(-(degreesFromRobotCenter + fromRobotCenter.angle));
-
+            //**TODO watch sign!!
+            rotateDeviceTowardsAprilTag.setByAngle(degreesFromRobotCenter + Math.abs(fromRobotCenter.angle));
         });
 
         PauseTransition pauseT = new PauseTransition(Duration.millis(2500));
@@ -431,25 +442,27 @@ public class CenterStageBackdrop extends Application {
             // One last thing: we need the distance from the delivery device
             // to the AprilTag. This is the hypotenuse of a right triangle.
             // double deviceHypotenuseSquared = deviceAdjacentSquared + deviceOppositeSquared
-            double deviceAdjacent = deviceCenterY.get()- aprilTagCenterY.get();
+            double deviceAdjacent = deviceCenterY.get() - aprilTagCenterY.get();
             double deviceOpposite = Math.abs(deviceCenterX.get() - aprilTagCenterX.get());
             double deviceHypotenuseSquared = Math.pow(deviceAdjacent, 2) + Math.pow(deviceOpposite, 2);
             double deviceToAprilTag = Math.sqrt(deviceHypotenuseSquared);
             System.out.println("Distance from device to AprilTag " + deviceToAprilTag);
+        });
 
-            // And draw the line.
-            Line lineDH = new Line(deviceCenterX.get(), deviceCenterY.get(), aprilTagCenterX.get(), aprilTagCenterY.get());
-            lineDH.setId("lineDH");
-            lineDH.setStroke(Color.FUCHSIA);
-            lineDH.getStrokeDashArray().addAll(10.0);
-            lineDH.setStrokeWidth(3.0);
-            pField.getChildren().add(lineDH);
-
+        PauseTransition preRotationPauseT = new PauseTransition(Duration.millis(2500));
+        preRotationPauseT.setOnFinished(event -> {
+            // Erase the lines
+            Line lineRCDHRef = (Line) pField.lookup("#lineRCDH");
+            pField.getChildren().remove(lineRCDHRef);
+            Line lineRCARef = (Line) pField.lookup("#lineRCA");
+            pField.getChildren().remove(lineRCARef);
+            Line lineRCAHRef = (Line) pField.lookup("#lineRCAH");
+            pField.getChildren().remove(lineRCAHRef);
         });
 
         //**TODO TEST: rotate towards the AprilTag instead of strafe.
         SequentialTransition seqTransition = new SequentialTransition(
-                parallelT, pauseT, rotateDeviceTowardsAprilTag // ttStrafe
+                parallelT, pauseT, preRotationPauseT, rotateDeviceTowardsAprilTag // ttStrafe
         );
 
         seqTransition.play();
