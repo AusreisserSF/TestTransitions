@@ -343,9 +343,11 @@ public class CenterStageBackdrop extends Application {
             // Get the angle from the camera to the AprilTag.
             double cameraAdjacent = Math.abs(cameraFaceY - aprilTagCenterY.get());
             double cameraOpposite = Math.abs(cameraFaceX - aprilTagCenterX.get());
+            System.out.println("Camera adjacent " + cameraAdjacent + ", opposite " + cameraOpposite);
 
             double cameraHypotenuseSquared = Math.pow(cameraAdjacent, 2) + Math.pow(cameraOpposite, 2);
             double distanceFromCameraToAprilTag = Math.sqrt(cameraHypotenuseSquared);
+            System.out.println("Distance from camera to AprilTag " + distanceFromCameraToAprilTag);
 
             double tanTheta = cameraOpposite / cameraAdjacent;
             double degreesFromCameraToAprilTag = Math.toDegrees(Math.atan(tanTheta));
@@ -367,7 +369,7 @@ public class CenterStageBackdrop extends Application {
             lineCO.setStrokeWidth(3.0);
             pField.getChildren().add(lineCO);
 
-            // Draw the adjacent side of the triangle.
+            // Draw the adjacent side of the camera triangle.
             Line lineCA = new Line(cameraFaceX, cameraFaceY, cameraFaceX, aprilTagCenterY.get());
             lineCA.setId("lineCA");
             lineCA.setStroke(Color.FUCHSIA);
@@ -378,7 +380,7 @@ public class CenterStageBackdrop extends Application {
             // Get the angle and distance from the center of the robot to the AprilTag.
             // This is an intermediate step, but necessary in order to calculate the angle
             // by which the robot must be rotated so that the delivery device points at the
-            // AprilTag and the final distance from the device to the AprilTag.
+            // AprilTag and to calculate the final distance from the device to the AprilTag.
             // Set the sign of the angle from the camera to the AprilTag: for FTC negative
             // is clockwise.
             if (aprilTagCenterX.get() > cameraFaceX)
@@ -429,8 +431,8 @@ public class CenterStageBackdrop extends Application {
             Line lineCARef = (Line) pField.lookup("#lineCA");
             pField.getChildren().remove(lineCARef);
 
-            // Draw the triangle formed
-            // between the center of the robot and the delivery device.
+            //**TODO Make this its own PuaseTransition
+            // Draw the triangle formed between the center of the robot and the delivery device.
             if (radioButtonText.equals("Turn to")) {
                 Line lineRCDH = new Line(robotCoordX.get(), robotCoordY.get(), Math.abs(robotCoordX.get() - centerStageRobot.deviceOffsetFromRobotCenterPX), aprilTagCenterY.get());
                 lineRCDH.setId("lineRCDH");
