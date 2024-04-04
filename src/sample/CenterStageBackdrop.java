@@ -415,9 +415,8 @@ public class CenterStageBackdrop extends Application {
 
             // Set the number of degrees to rotate so that the device is facing
             // the AprilTag.
-            //**TODO watch sign!! STOPPED HERE 4/3/2024
-            //            if (robotCenterX.get() < deviceCenterX.get())
-            //                degreesFromRobotCenter *= -1;
+            if (robotCoordX.get() < deviceCenterX.get())
+                           degreesFromRobotCenter *= -1;
             rotateDeviceTowardsAprilTag.setByAngle(degreesFromRobotCenter + Math.abs(fromRobotCenter.angle));
         });
 
