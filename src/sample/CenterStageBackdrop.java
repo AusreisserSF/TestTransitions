@@ -9,10 +9,7 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceDialog;
-import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.TilePane;
@@ -168,8 +165,9 @@ public class CenterStageBackdrop extends Application {
         return allianceSelection;
     }
 
-    //**TODO From FTCAutoSimulator/RobotSimulator
+    // Based on FTCAutoSimulator/RobotSimulator
     // Set up the Play button.
+    //**TODO Need to toggle with Pause so that we can see the drawn triangles.
     private Button setPlayButton(Pane pFieldPane, RobotConstants.Alliance pAlliance) {
         Button playButton = new Button("Play");
         playButton.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
@@ -207,7 +205,7 @@ public class CenterStageBackdrop extends Application {
 
         //**TODO The curves are a proof-of-concept. They will be different depending
         // on the user's selection for the final position in front of the backdrop.
-        // CubicCurveTo constructor parameters: controlX1, controlX2, controly1, controly2, endX, endY
+        // CubicCurveTo constructor parameters: controlX1, controlX2, controlY1, controlY2, endX, endY
         float rotation;
         if (pAlliance == RobotConstants.Alliance.BLUE) {
             path.getElements().add(new CubicCurveTo(400, 300, 300, 300, 200, 275));
@@ -229,6 +227,13 @@ public class CenterStageBackdrop extends Application {
             System.out.println("Angle after initial rotation " + pRobot.getRotate());
         });
 
+        AtomicReference<Double> robotCoordX = new AtomicReference<>((double) 0);
+        AtomicReference<Double> robotCoordY = new AtomicReference<>((double) 0);
+        AtomicReference<Double> deviceCenterX = new AtomicReference<>((double) 0);
+        AtomicReference<Double> deviceCenterY = new AtomicReference<>((double) 0);
+        AtomicReference<Double> aprilTagCenterX = new AtomicReference<>((double) 0);
+        AtomicReference<Double> aprilTagCenterY = new AtomicReference<>((double) 0);
+
         //## The TranslateTransition for the final strafe must be declared before the
         // ParallelTransition, i.e. out of the time sequence, because the distance to
         // strafe is only known after the ParallelTransition is complete.
@@ -241,18 +246,23 @@ public class CenterStageBackdrop extends Application {
             pRobot.setTranslateX(0);
             pRobot.setTranslateY(0);
 
+            // Draw a line from the device to the AprilTag.
+            Circle deviceOnRobot = (Circle) pRobot.lookup("#" + pRobot.getId() + "_" + RobotFXCenterStageLG.DEVICE_ON_ROBOT_ID);
+            Point2D deviceCoord = deviceOnRobot.localToScene(deviceOnRobot.getCenterX(), deviceOnRobot.getCenterY());
+            Line lineDAT = new Line(deviceCoord.getX(), deviceCoord.getY(), aprilTagCenterX.get(), aprilTagCenterY.get());
+            lineDAT.setId("lineDAT");
+            lineDAT.setStroke(Color.YELLOW);
+            lineDAT.getStrokeDashArray().addAll(10.0);
+            lineDAT.setStrokeWidth(3.0);
+            pField.getChildren().add(lineDAT);
+            System.out.println("Distance from device to AprilTag " + (aprilTagCenterY.get() - deviceCoord.getY()));
+
             Bounds robotBP = pRobot.getBoundsInParent();
-            double robotCoordX = robotBP.getCenterX();
-            double robotCoordY = robotBP.getCenterY();
-            System.out.println("Position after strafe x " + robotCoordX + ", y " + robotCoordY);
+            System.out.println("Robot position after strafe x " + robotBP.getCenterX() + ", y " + robotBP.getCenterY());
         });
 
-        AtomicReference<Double> robotCoordX = new AtomicReference<>((double) 0);
-        AtomicReference<Double> robotCoordY = new AtomicReference<>((double) 0);
-        AtomicReference<Double> deviceCenterX = new AtomicReference<>((double) 0);
-        AtomicReference<Double> deviceCenterY = new AtomicReference<>((double) 0);
-        AtomicReference<Double> aprilTagCenterX = new AtomicReference<>((double) 0);
-        AtomicReference<Double> aprilTagCenterY = new AtomicReference<>((double) 0);
+        RadioButton selectedRadioButton = (RadioButton) controller.approach_toggle_id.getSelectedToggle();
+        String radioButtonText = selectedRadioButton.getText();
 
         //## The RotateTransition for the final rotation must be declared before the
         // ParallelTransition, i.e. out of the time sequence, because the angle to
@@ -324,7 +334,7 @@ public class CenterStageBackdrop extends Application {
             aprilTagCenterY.set(aprilTagCoord.getY() + aprilTag.getHeight() / 2);
             System.out.println("AprilTag center x " + aprilTagCenterX + ", y " + aprilTagCenterY);
 
-            // Strafe so that the delivery device is opposite the AT.
+            // Support a strafe that positions the delivery device opposite the AT.
             // Positive: strafe to the left; negative: strafe to the right.
             double distanceToStrafe = aprilTagCenterX.get() - deviceCenterX.get();
             System.out.println("Distance to strafe x " + distanceToStrafe);
@@ -405,7 +415,9 @@ public class CenterStageBackdrop extends Application {
 
             // Set the number of degrees to rotate so that the device is facing
             // the AprilTag.
-            //**TODO watch sign!!
+            //**TODO watch sign!! STOPPED HERE 4/3/2024
+            //            if (robotCenterX.get() < deviceCenterX.get())
+            //                degreesFromRobotCenter *= -1;
             rotateDeviceTowardsAprilTag.setByAngle(degreesFromRobotCenter + Math.abs(fromRobotCenter.angle));
         });
 
@@ -413,46 +425,55 @@ public class CenterStageBackdrop extends Application {
         pauseT.setOnFinished(event -> {
             Line lineCHRef = (Line) pField.lookup("#lineCH");
             pField.getChildren().remove(lineCHRef);
-            //Line lineORef = (Line) pField.lookup("#lineCO");
-            //pField.getChildren().remove(lineORef);
+            Line lineCORef = (Line) pField.lookup("#lineCO");
+            pField.getChildren().remove(lineCORef);
             Line lineCARef = (Line) pField.lookup("#lineCA");
             pField.getChildren().remove(lineCARef);
 
-            // Draw the hypotenuse and the adjacent side of the triangle formed
+            // Draw the triangle formed
             // between the center of the robot and the delivery device.
-            Line lineRCDH = new Line(robotCoordX.get(), robotCoordY.get(), Math.abs(robotCoordX.get() - centerStageRobot.deviceOffsetFromRobotCenterPX), aprilTagCenterY.get());
-            lineRCDH.setId("lineRCDH");
-            lineRCDH.setStroke(Color.FUCHSIA);
-            lineRCDH.getStrokeDashArray().addAll(10.0);
-            lineRCDH.setStrokeWidth(3.0);
-            pField.getChildren().add(lineRCDH);
+            if (radioButtonText.equals("Turn to")) {
+                Line lineRCDH = new Line(robotCoordX.get(), robotCoordY.get(), Math.abs(robotCoordX.get() - centerStageRobot.deviceOffsetFromRobotCenterPX), aprilTagCenterY.get());
+                lineRCDH.setId("lineRCDH");
+                lineRCDH.setStroke(Color.FUCHSIA);
+                lineRCDH.getStrokeDashArray().addAll(10.0);
+                lineRCDH.setStrokeWidth(3.0);
+                pField.getChildren().add(lineRCDH);
 
-            // Draw the adjacent side of the triangle. This side is shared between
-            // two triangles.
-            Line lineRCA = new Line(robotCoordX.get(), robotCoordY.get(), robotCoordX.get(), aprilTagCenterY.get());
-            lineRCA.setId("lineRCA");
-            lineRCA.setStroke(Color.FUCHSIA);
-            lineRCA.getStrokeDashArray().addAll(10.0);
-            lineRCA.setStrokeWidth(3.0);
-            pField.getChildren().add(lineRCA);
+                Line lineRCDO = new Line(robotCoordX.get(), aprilTagCenterY.get(), Math.abs(robotCoordX.get() - centerStageRobot.deviceOffsetFromRobotCenterPX), aprilTagCenterY.get());
+                lineRCDO.setId("lineRCDO");
+                lineRCDO.setStroke(Color.FUCHSIA);
+                lineRCDO.getStrokeDashArray().addAll(10.0);
+                lineRCDO.setStrokeWidth(3.0);
+                pField.getChildren().add(lineRCDO);
 
-            // Also show the hypotenuse of the right triangle formed between the center
-            // of the robot and the AprilTag.
-            Line lineRCAH = new Line(robotCoordX.get(), robotCoordY.get(), aprilTagCenterX.get(), aprilTagCenterY.get());
-            lineRCAH.setId("lineRCAH");
-            lineRCAH.setStroke(Color.AQUA);
-            lineRCAH.getStrokeDashArray().addAll(10.0);
-            lineRCAH.setStrokeWidth(3.0);
-            pField.getChildren().add(lineRCAH);
+                // Draw the adjacent side of the triangle. This side is shared between
+                // two triangles.
+                Line lineRCA = new Line(robotCoordX.get(), robotCoordY.get(), robotCoordX.get(), aprilTagCenterY.get());
+                lineRCA.setId("lineRCA");
+                lineRCA.setStroke(Color.FUCHSIA);
+                lineRCA.getStrokeDashArray().addAll(10.0);
+                lineRCA.setStrokeWidth(3.0);
+                pField.getChildren().add(lineRCA);
 
-            // One last thing: we need the distance from the delivery device
-            // to the AprilTag. This is the hypotenuse of a right triangle.
-            // double deviceHypotenuseSquared = deviceAdjacentSquared + deviceOppositeSquared
-            double deviceAdjacent = deviceCenterY.get() - aprilTagCenterY.get();
-            double deviceOpposite = Math.abs(deviceCenterX.get() - aprilTagCenterX.get());
-            double deviceHypotenuseSquared = Math.pow(deviceAdjacent, 2) + Math.pow(deviceOpposite, 2);
-            double deviceToAprilTag = Math.sqrt(deviceHypotenuseSquared);
-            System.out.println("Distance from device to AprilTag " + deviceToAprilTag);
+                // Also show the hypotenuse of the right triangle formed between the center
+                // of the robot and the AprilTag.
+                Line lineRCAH = new Line(robotCoordX.get(), robotCoordY.get(), aprilTagCenterX.get(), aprilTagCenterY.get());
+                lineRCAH.setId("lineRCAH");
+                lineRCAH.setStroke(Color.AQUA);
+                lineRCAH.getStrokeDashArray().addAll(10.0);
+                lineRCAH.setStrokeWidth(3.0);
+                pField.getChildren().add(lineRCAH);
+
+                // One last thing: we need the distance from the delivery device
+                // to the AprilTag. This is the hypotenuse of a right triangle.
+                // double deviceHypotenuseSquared = deviceAdjacentSquared + deviceOppositeSquared
+                double deviceAdjacent = deviceCenterY.get() - aprilTagCenterY.get();
+                double deviceOpposite = Math.abs(deviceCenterX.get() - aprilTagCenterX.get());
+                double deviceHypotenuseSquared = Math.pow(deviceAdjacent, 2) + Math.pow(deviceOpposite, 2);
+                double deviceToAprilTag = Math.sqrt(deviceHypotenuseSquared);
+                System.out.println("Distance from device to AprilTag " + deviceToAprilTag);
+            }
         });
 
         PauseTransition preRotationPauseT = new PauseTransition(Duration.millis(2500));
@@ -460,77 +481,22 @@ public class CenterStageBackdrop extends Application {
             // Erase the lines
             Line lineRCDHRef = (Line) pField.lookup("#lineRCDH");
             pField.getChildren().remove(lineRCDHRef);
+            Line lineRCDORef = (Line) pField.lookup("#lineRCDO");
+            pField.getChildren().remove(lineRCDORef);
             Line lineRCARef = (Line) pField.lookup("#lineRCA");
             pField.getChildren().remove(lineRCARef);
             Line lineRCAHRef = (Line) pField.lookup("#lineRCAH");
             pField.getChildren().remove(lineRCAHRef);
         });
 
-        //**TODO TEST: rotate towards the AprilTag instead of strafe.
-        SequentialTransition seqTransition = new SequentialTransition(
-                parallelT, pauseT, preRotationPauseT, rotateDeviceTowardsAprilTag // ttStrafe
-        );
+        // Look at the startup parameter that indicates whether to strafe or rotate.
+        SequentialTransition seqTransition = new SequentialTransition(parallelT, pauseT); // common
+        if (radioButtonText.equals("Strafe to"))
+            seqTransition.getChildren().add(ttStrafe);
+        else
+            seqTransition.getChildren().addAll(preRotationPauseT, rotateDeviceTowardsAprilTag);
 
         seqTransition.play();
-
-
-        //**TODO Get the angle and distance from the camera to the
-        // selected AprilTag and display. Draw a line from the camera
-        // to the AprilTag. Get the angle and distance from the center
-        // of the robot to the selected AprilTag and display. Draw a
-        // line from the center of the robot to the AprilTag. Get the
-        // angle and distance from the device to the selected AprilTag
-        // and display. Draw a line from the device to the AprilTag.
-
-        //**TODO Get the robot's Rectangle by Id then get its centroid by:
-        //             Point2D centroid = computeRotatedCentroid(rbCoord.getX(), rbCoord.getY(), RobotFX.ROBOT_WIDTH, RobotFX.ROBOT_HEIGHT, robotRotation);
-        // then strafe so that the centroid is opposite the centroid of AprilTag 3.
-
-
-    }
-
-    private void translateAndRotate(Group pGroup) {
-        final Rectangle rect2 = new Rectangle(120, 210, 60, 60);
-        rect2.setFill(Color.DARKCYAN);
-        pGroup.getChildren().add(rect2);
-
-        rect2.xProperty().addListener(xValue -> System.out.println("XProperty " + xValue));
-
-        PauseTransition pauseTransition = new PauseTransition(Duration.millis(2000));
-
-        TranslateTransition translateNorth = new TranslateTransition();
-        translateNorth.setNode(rect2);
-        translateNorth.setByY(-90);
-        translateNorth.setDuration(Duration.seconds(2));
-        translateNorth.setOnFinished(event -> {
-            Point2D rbCoord = rect2.localToScene(rect2.getX(), rect2.getY());
-            System.out.println("Position after straight line motion x " + rbCoord.getX() + ", y " + rbCoord.getY());
-        });
-
-        RotateTransition rotate90 =
-                new RotateTransition(Duration.seconds(2), rect2);
-        rotate90.setByAngle(90.0);
-        rotate90.setOnFinished(event -> {
-            Point2D rbCoord = rect2.localToScene(rect2.getX(), rect2.getY());
-            System.out.println("Position after turn x " + rbCoord.getX() + ", y " + rbCoord.getY());
-            System.out.println("Rotation " + rect2.getRotate());
-        });
-
-        TranslateTransition translateWest = new TranslateTransition();
-        translateWest.setNode(rect2);
-        translateWest.setByX(90);
-        translateWest.setDuration(Duration.seconds(2));
-        translateWest.setOnFinished(event -> {
-            Point2D rbCoord = rect2.localToScene(rect2.getX(), rect2.getY());
-            System.out.println("Position after straight line motion x " + rbCoord.getX() + ", y " + rbCoord.getY());
-        });
-
-        SequentialTransition sequential = new SequentialTransition();
-        sequential.getChildren().add(pauseTransition);
-        sequential.getChildren().add(translateNorth);
-        sequential.getChildren().add(rotate90);
-        sequential.getChildren().add(translateWest);
-        sequential.play();
     }
 
     // Given the screen coordinates of a corner of a rectangle and its rotation angle,
@@ -593,15 +559,15 @@ public class CenterStageBackdrop extends Application {
         return cornerMap;
     }
 
-    // Generic version: find the lowest value in a map according to the criteria defined in the Camparator.
+    // Generic version: find the lowest value in a map according to the criteria defined in the Comparator.
     // From https://stackoverflow.com/questions/37348462/find-minimum-value-in-a-map-java
-    private static <K, V> V minMapValue(Map<K, V> pMap, Comparator<V> pComp) {
+    private <K, V> V minMapValue(Map<K, V> pMap, Comparator<V> pComp) {
         return pMap.values().stream().min(pComp).get();
     }
 
     // Specific version: in a Map<Corners, Point2D> find the key/value pair with the lowest y-coordinate
     // value.
-    private static Point2D minYCorner(Map<Corners, Point2D> pCornerMap) {
+    private Point2D minYCorner(Map<Corners, Point2D> pCornerMap) {
         return pCornerMap.values().stream().min(Comparator.comparingDouble(Point2D::getY)).get();
     }
 
