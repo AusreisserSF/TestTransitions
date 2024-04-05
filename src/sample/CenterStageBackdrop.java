@@ -82,12 +82,8 @@ public class CenterStageBackdrop extends Application {
         // all start parameters have been validated.
         Button playPauseButton = setPlayPauseButton(field, alliance);
         //**TODO TEST
-        AtomicReference<EventHandler<ActionEvent>> event2 = new AtomicReference<>();
-        event2.set((e) -> {
-            playPauseButton.removeEventHandler(ActionEvent.ACTION, event2.get());
-        });
-
-        EventHandler<ActionEvent> event = e -> {
+        AtomicReference<EventHandler<ActionEvent>> event = new AtomicReference<>();
+        event.set((e) -> {
             if (!startParameterValidation.allStartParametersValid()) {
                 Alert errorAlert = new Alert(Alert.AlertType.ERROR);
                 errorAlert.setHeaderText("Invalid request to Play the animation");
@@ -95,6 +91,8 @@ public class CenterStageBackdrop extends Application {
                 errorAlert.showAndWait();
                 return;
             }
+
+            playPauseButton.removeEventHandler(ActionEvent.ACTION, event.get());
 
             //**TODO How do you freeze the start parameters after the Play button has been
             // hit?
@@ -128,10 +126,10 @@ public class CenterStageBackdrop extends Application {
             Group robot = centerStageRobot.getRobot();
             field.getChildren().add(robot);
 
-            runAnimation(field, robot, alliance); //**TODO put alliance first
-        };
+            runAnimation(alliance, field, robot, playPauseButton);
+        });
 
-        playPauseButton.setOnAction(event);
+        playPauseButton.setOnAction(event.get());
     }
 
     //**TODO What I really want is a RadioButtonDialog, which doesn't exist.
@@ -234,9 +232,7 @@ public class CenterStageBackdrop extends Application {
         RotateTransition rotateTransition =
                 new RotateTransition(Duration.millis(3000), pRobot);
         rotateTransition.setByAngle(rotation);
-        rotateTransition.setOnFinished(event -> {
-            System.out.println("Angle after initial rotation " + pRobot.getRotate());
-        });
+        rotateTransition.setOnFinished(event -> System.out.println("Angle after initial rotation " + pRobot.getRotate()));
 
         AtomicReference<Double> robotCoordX = new AtomicReference<>((double) 0);
         AtomicReference<Double> robotCoordY = new AtomicReference<>((double) 0);
@@ -400,8 +396,11 @@ public class CenterStageBackdrop extends Application {
             // The fields centerStageRobot.cameraCenterFromRobotCenterPX and
             // centerStageRobot.cameraOffsetFromRobotCenterPX are already signed correctly
             // for FTC.
-            AngleDistance fromRobotCenter = CameraToCenterCorrections.getCorrectedAngleAndDistance(centerStageRobot.cameraCenterFromRobotCenterPX,
-                    centerStageRobot.cameraOffsetFromRobotCenterPX, distanceFromCameraToAprilTag, degreesFromCameraToAprilTag);
+            AngleDistance fromRobotCenter = CameraToCenterCorrections.getCorrectedAngleAndDistance2(degreesFromCameraToAprilTag,
+                    distanceFromCameraToAprilTag, centerStageRobot.cameraCenterFromRobotCenterPX, centerStageRobot.cameraOffsetFromRobotCenterPX);
+
+            // AngleDistance fromRobotCenter = CameraToCenterCorrections.getCorrectedAngleAndDistance(centerStageRobot.cameraCenterFromRobotCenterPX,
+            //        centerStageRobot.cameraOffsetFromRobotCenterPX, distanceFromCameraToAprilTag, degreesFromCameraToAprilTag);
             System.out.println("Angle from robot center to AprilTag " + fromRobotCenter.angle);
             System.out.println("Distance from robot center to AprilTag " + fromRobotCenter.distance);
 
@@ -508,8 +507,8 @@ public class CenterStageBackdrop extends Application {
         else
             seqTransition.getChildren().addAll(preRotationPauseT, rotateDeviceTowardsAprilTag);
 
-        //**TODO Naming! static??
-        new PlayPauseButton(pPlayPauseButton, seqTransition);
+        //**TODO static method??
+        new PlayPauseToggle(pPlayPauseButton, seqTransition);
     }
 
     // Given the screen coordinates of a corner of a rectangle and its rotation angle,

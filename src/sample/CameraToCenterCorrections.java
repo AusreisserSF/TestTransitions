@@ -52,10 +52,29 @@ public class CameraToCenterCorrections {
         // opposite and adjacent sides of the "robot center" triangle. Then we can get the
         // hypotenuse, which is the distance from the center of the robot to the target, and the
         // angle from the center of the robot to the target.
-        //**TODO All along the way signs will be important.
 
         // First get the opposite edge of the robot center triangle.
+        double robotCenterOpposite = Math.abs(Math.abs(pOffsetRobotCenterToCamera) - cameraOpposite);
 
+        // Then get the adjacent edge of the robot center triangle.
+        double robotCenterAdjacent = pDistanceRobotCenterToCamera + cameraAdjacent;
+
+        // Get the angle and distance from robot center to target center.
+        double tanTheta = robotCenterOpposite / robotCenterAdjacent;
+        double degreesFromRobotCenterToTarget = Math.toDegrees(Math.atan(tanTheta));
+        System.out.println("Raw angle from robot center to target " + degreesFromRobotCenterToTarget);
+
+        // Determine the FTC sign of the angle from robot center to target center.
+        // The FTC sign is the inverse of the signum.
+        double robotCenterSignum = Math.signum(Math.abs(pOffsetRobotCenterToCamera) - cameraOpposite);
+        degreesFromRobotCenterToTarget *= -robotCenterSignum;
+        System.out.println("FTC angle from robot center to target " + degreesFromRobotCenterToTarget);
+
+        double robotCenterHypotenuseSquared = Math.pow(robotCenterAdjacent, 2) + Math.pow(robotCenterOpposite, 2);
+        double distanceRobotCenterToTarget = Math.sqrt(robotCenterHypotenuseSquared);
+        System.out.println("Distance from robot center to target " + distanceRobotCenterToTarget);
+
+        return new AngleDistance(degreesFromRobotCenterToTarget, distanceRobotCenterToTarget);
      }
 
     // This method returns both the angle and distance.

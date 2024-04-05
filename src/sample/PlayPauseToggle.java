@@ -6,7 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 
-public class PlayPauseButton {
+public class PlayPauseToggle {
 
     private enum ButtonStateOnPress {PLAY, PAUSE}
 
@@ -17,7 +17,7 @@ public class PlayPauseButton {
 
     // Assume when this class is constructed that the Play button has already been
     // pressed.
-    public PlayPauseButton(Button pPlayPauseButton, SequentialTransition pSequentialTransaction) {
+    public PlayPauseToggle(Button pPlayPauseButton, SequentialTransition pSequentialTransaction) {
         playPauseButton = pPlayPauseButton;
         sequentialTransition = pSequentialTransaction;
         buttonStateOnPress = ButtonStateOnPress.PAUSE; // state for the next button press
