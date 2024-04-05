@@ -81,6 +81,12 @@ public class CenterStageBackdrop extends Application {
         // Show the play button now but do not start the animation until
         // all start parameters have been validated.
         Button playButton = setPlayButton(field, alliance);
+        //**TODO TEST
+        AtomicReference<EventHandler<ActionEvent>> event2 = new AtomicReference<>();
+        event2.set((e) -> {
+            playButton.removeEventHandler(ActionEvent.ACTION, event2.get());
+        });
+
         EventHandler<ActionEvent> event = e -> {
             if (!startParameterValidation.allStartParametersValid()) {
                 Alert errorAlert = new Alert(Alert.AlertType.ERROR);
@@ -89,6 +95,9 @@ public class CenterStageBackdrop extends Application {
                 errorAlert.showAndWait();
                 return;
             }
+
+            //**TODO How do you freeze the start parameters after the Play button has been
+            // hit?
 
             //**TODO Here it looks like the position of the robot is that
             // of the upper left corner; Paths use the center point.
@@ -103,6 +112,7 @@ public class CenterStageBackdrop extends Application {
                         FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5);
                 startingRotation = 90.0;
             } else { // RED
+                //**TODO on the RED side the robot starts off the field to the right ...
                 startingPosition = new Point2D(FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + (FieldFXCenterStageBackdropLG.TILE_DIMENSIONS - (robotWidth + (RobotFXLG.WHEEL_WIDTH * 2))) - FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5,
                         FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5);
                 startingRotation = -90.0;
@@ -118,7 +128,7 @@ public class CenterStageBackdrop extends Application {
             Group robot = centerStageRobot.getRobot();
             field.getChildren().add(robot);
 
-            applyAnimation(field, robot, alliance);
+            runAnimation(field, robot, alliance); //**TODO put alliance first
         };
 
         playButton.setOnAction(event);
@@ -190,7 +200,8 @@ public class CenterStageBackdrop extends Application {
         return playButton;
     }
 
-    private void applyAnimation(Pane pField, Group pRobot, RobotConstants.Alliance pAlliance) {
+    //**TODO Put all of this into a separate class. Then make AtomicReferences class fields.
+    private void runAnimation(Pane pField, Group pRobot, RobotConstants.Alliance pAlliance) {
 
         //## As a demonstration start the robot facing inward from the BLUE
         // alliance wall and make the robot follow a CubicCurve path while
@@ -496,6 +507,8 @@ public class CenterStageBackdrop extends Application {
             seqTransition.getChildren().add(ttStrafe);
         else
             seqTransition.getChildren().addAll(preRotationPauseT, rotateDeviceTowardsAprilTag);
+
+        //    public PlayPauseButton playPauseButton = new PlayPauseButton(Button pPlayPauseButton, seqTransition)
 
         seqTransition.play();
     }

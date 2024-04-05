@@ -11,10 +11,50 @@ public class CameraToCenterCorrections {
 
     //The formulas change depending on whether we have the camera positioned to the left or to the right of the center of the robot.
     public enum CameraPosition {
-        LEFT,
-        CENTER,
-        RIGHT
+        LEFT, CENTER, RIGHT
     }
+
+    private enum CameraForeAft {
+        FORE, CENTER, AFT
+    }
+
+    private enum CameraOffset {
+        LEFT, CENTER, RIGHT
+    }
+
+    //**TODO EXPERIMENTAL replacement
+    public static AngleDistance getCorrectedAngleAndDistance2(double pAngleFromCamera, double pDistanceFromCamera,
+         double pDistanceRobotCenterToCamera, double pOffsetRobotCenterToCamera) {
+
+        // Gets the fore/aft position of the camera in relation to the center of the robot
+        // when observed from behind.
+        CameraForeAft cameraForeAft = pDistanceRobotCenterToCamera < 0 ? CameraForeAft.AFT :
+                pOffsetRobotCenterToCamera > 0 ? CameraForeAft.FORE : CameraForeAft.CENTER;
+
+        // Gets the left/right position of the camera in relation to the center of the robot
+        // when observed from behind.
+        CameraOffset cameraOffset = pOffsetRobotCenterToCamera < 0 ? CameraOffset.RIGHT :
+                pOffsetRobotCenterToCamera > 0 ? CameraOffset.LEFT : CameraOffset.CENTER;
+
+        // We have the distance from the face of the camera to the target; this will be the hypotenuse
+        // of the camera triangle. We have the angle from the camera to the target; this will be the
+        // angle theta. We need to solve for the edge opposite theta and the edge adjacent to theta.
+        // sine theta = opposite / hypotenuse
+        double cameraOpposite = Math.sin(Math.toRadians(Math.abs(pAngleFromCamera))) * pDistanceFromCamera;
+
+        // pDistanceFromCamera squared = cameraOpposite squared + cameraAdjacent squared
+        double cameraAdjacentSquared = Math.pow(pDistanceFromCamera, 2) - Math.pow(cameraOpposite, 2);
+        double cameraAdjacent = Math.sqrt(cameraAdjacentSquared);
+
+        // Make the transformations that will yield the angle and distance to the target from the
+        // center of the robot. Use the opposite and adjacent sides of the camera triangle and the
+        // known position of the camera in relation to the center of the robot to calculate the
+        // opposite and adjacent sides of the "robot center" triangle. Then we can get the
+        // hypotenuse, which is the distance from the center of the robot to the target, and the
+        // angle from the center of the robot to the target.
+        //**TODO All along the way signs will be important.
+
+     }
 
     // This method returns both the angle and distance.
     public static AngleDistance getCorrectedAngleAndDistance(double distanceFromCenterToFront, double offset, double distanceFromCamera, double angleFromCamera) {
