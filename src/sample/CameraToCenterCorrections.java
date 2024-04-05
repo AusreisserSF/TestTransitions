@@ -54,6 +54,8 @@ public class CameraToCenterCorrections {
         // angle from the center of the robot to the target.
         //**TODO All along the way signs will be important.
 
+        // First get the opposite edge of the robot center triangle.
+
      }
 
     // This method returns both the angle and distance.

@@ -80,11 +80,11 @@ public class CenterStageBackdrop extends Application {
 
         // Show the play button now but do not start the animation until
         // all start parameters have been validated.
-        Button playButton = setPlayButton(field, alliance);
+        Button playPauseButton = setPlayPauseButton(field, alliance);
         //**TODO TEST
         AtomicReference<EventHandler<ActionEvent>> event2 = new AtomicReference<>();
         event2.set((e) -> {
-            playButton.removeEventHandler(ActionEvent.ACTION, event2.get());
+            playPauseButton.removeEventHandler(ActionEvent.ACTION, event2.get());
         });
 
         EventHandler<ActionEvent> event = e -> {
@@ -131,7 +131,7 @@ public class CenterStageBackdrop extends Application {
             runAnimation(field, robot, alliance); //**TODO put alliance first
         };
 
-        playButton.setOnAction(event);
+        playPauseButton.setOnAction(event);
     }
 
     //**TODO What I really want is a RadioButtonDialog, which doesn't exist.
@@ -178,30 +178,30 @@ public class CenterStageBackdrop extends Application {
     // Based on FTCAutoSimulator/RobotSimulator
     // Set up the Play button.
     //**TODO Need to toggle with Pause so that we can see the drawn triangles.
-    private Button setPlayButton(Pane pFieldPane, RobotConstants.Alliance pAlliance) {
-        Button playButton = new Button("Play");
-        playButton.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
+    private Button setPlayPauseButton(Pane pFieldPane, RobotConstants.Alliance pAlliance) {
+        Button playPauseButton = new Button("Play");
+        playPauseButton.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
 
         // Position the button on the opposite side of the field from
         // the selected alliance.
         //**TODO Get the offsets from the button itself.
-        Bounds buttonBoundsLocal = playButton.getBoundsInLocal();
+        Bounds buttonBoundsLocal = playPauseButton.getBoundsInLocal();
         final double buttonOffsetX = 50;
         final double buttonOffsetY = 50;
 
-        playButton.setLayoutY(FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 3 - buttonOffsetY);
+        playPauseButton.setLayoutY(FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 3 - buttonOffsetY);
         if (pAlliance == RobotConstants.Alliance.BLUE)
-            playButton.setLayoutX((FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 3) - FieldFXCenterStageBackdropLG.FIELD_OUTSIDE_BORDER_SIZE - buttonOffsetX);
+            playPauseButton.setLayoutX((FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 3) - FieldFXCenterStageBackdropLG.FIELD_OUTSIDE_BORDER_SIZE - buttonOffsetX);
         else
-            playButton.setLayoutX(FieldFXCenterStageBackdropLG.FIELD_OUTSIDE_BORDER_SIZE + buttonOffsetX);
+            playPauseButton.setLayoutX(FieldFXCenterStageBackdropLG.FIELD_OUTSIDE_BORDER_SIZE + buttonOffsetX);
 
-        pFieldPane.getChildren().add(playButton);
+        pFieldPane.getChildren().add(playPauseButton);
 
-        return playButton;
+        return playPauseButton;
     }
 
     //**TODO Put all of this into a separate class. Then make AtomicReferences class fields.
-    private void runAnimation(Pane pField, Group pRobot, RobotConstants.Alliance pAlliance) {
+    private void runAnimation(RobotConstants.Alliance pAlliance, Pane pField, Group pRobot, Button pPlayPauseButton) {
 
         //## As a demonstration start the robot facing inward from the BLUE
         // alliance wall and make the robot follow a CubicCurve path while
@@ -508,9 +508,8 @@ public class CenterStageBackdrop extends Application {
         else
             seqTransition.getChildren().addAll(preRotationPauseT, rotateDeviceTowardsAprilTag);
 
-        //    public PlayPauseButton playPauseButton = new PlayPauseButton(Button pPlayPauseButton, seqTransition)
-
-        seqTransition.play();
+        //**TODO Naming! static??
+        new PlayPauseButton(pPlayPauseButton, seqTransition);
     }
 
     // Given the screen coordinates of a corner of a rectangle and its rotation angle,
