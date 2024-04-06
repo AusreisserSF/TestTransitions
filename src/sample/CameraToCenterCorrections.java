@@ -24,11 +24,11 @@ public class CameraToCenterCorrections {
 
     //**TODO EXPERIMENTAL replacement
     public static AngleDistance getCorrectedAngleAndDistance2(double pAngleFromCamera, double pDistanceFromCamera,
-         double pDistanceRobotCenterToCamera, double pOffsetRobotCenterToCamera) {
+         double pDistanceRobotCenterToCameraFace, double pOffsetRobotCenterToCamera) {
 
         // Gets the fore/aft position of the camera in relation to the center of the robot
         // when observed from behind.
-        CameraForeAft cameraForeAft = pDistanceRobotCenterToCamera < 0 ? CameraForeAft.AFT :
+        CameraForeAft cameraForeAft = pDistanceRobotCenterToCameraFace < 0 ? CameraForeAft.AFT :
                 pOffsetRobotCenterToCamera > 0 ? CameraForeAft.FORE : CameraForeAft.CENTER;
 
         // Gets the left/right position of the camera in relation to the center of the robot
@@ -59,7 +59,7 @@ public class CameraToCenterCorrections {
         double robotCenterOpposite = Math.abs(Math.abs(pOffsetRobotCenterToCamera) + cameraOpposite);
 
         // Then get the adjacent edge of the robot center triangle.
-        double robotCenterAdjacent = pDistanceRobotCenterToCamera + cameraAdjacent;
+        double robotCenterAdjacent = pDistanceRobotCenterToCameraFace + cameraAdjacent;
         System.out.println("Robot center triangle opposite " + robotCenterOpposite + ", adjacent " + robotCenterAdjacent);
 
         // Get the angle and distance from robot center to target center.

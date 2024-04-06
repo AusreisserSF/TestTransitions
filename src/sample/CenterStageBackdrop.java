@@ -396,8 +396,11 @@ public class CenterStageBackdrop extends Application {
             // The fields centerStageRobot.cameraCenterFromRobotCenterPX and
             // centerStageRobot.cameraOffsetFromRobotCenterPX are already signed correctly
             // for FTC.
+            //**TODO NEED to include 1/2 of the height of the camera ...
             AngleDistance fromRobotCenter = CameraToCenterCorrections.getCorrectedAngleAndDistance2(degreesFromCameraToAprilTag,
-                    distanceFromCameraToAprilTag, centerStageRobot.cameraCenterFromRobotCenterPX, centerStageRobot.cameraOffsetFromRobotCenterPX);
+                    distanceFromCameraToAprilTag,
+                    centerStageRobot.cameraCenterFromRobotCenterPX + RobotFXCenterStageLG.CAMERA_HEIGHT / 2,
+                    centerStageRobot.cameraOffsetFromRobotCenterPX);
 
             //AngleDistance fromRobotCenter = CameraToCenterCorrections.getCorrectedAngleAndDistance(centerStageRobot.cameraCenterFromRobotCenterPX,
             //        centerStageRobot.cameraOffsetFromRobotCenterPX, distanceFromCameraToAprilTag, degreesFromCameraToAprilTag);
@@ -442,7 +445,7 @@ public class CenterStageBackdrop extends Application {
             Line lineCARef = (Line) pField.lookup("#lineCA");
             pField.getChildren().remove(lineCARef);
 
-            //**TODO Make this its own PuaseTransition
+            //**TODO Make this its own PauseTransition
             // Draw the triangle formed between the center of the robot and the delivery device.
             if (radioButtonText.equals("Turn to")) {
                 Line lineRCDH = new Line(robotCoordX.get(), robotCoordY.get(), Math.abs(robotCoordX.get() - centerStageRobot.deviceOffsetFromRobotCenterPX), aprilTagCenterY.get());
