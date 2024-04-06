@@ -311,8 +311,8 @@ public class CenterStageBackdrop extends Application {
             robotCoordX.set(robotBP.getCenterX());
             robotCoordY.set(robotBP.getCenterY());
 
-            System.out.println("Position after ParallelTransition x " + robotCoordX + ", y " + robotCoordY);
-            System.out.println("Rotation after ParallelTransition x " + pRobot.getRotate());
+            System.out.println("Robot center after ParallelTransition x " + robotCoordX + ", y " + robotCoordY);
+            System.out.println("Robot rotation after ParallelTransition x " + pRobot.getRotate());
 
             //## All of these coordinates and calculations can only be made after
             // the ParallelTranstion is complete, i.e. now.
@@ -416,6 +416,7 @@ public class CenterStageBackdrop extends Application {
             // intersects the horizontal line that intersects the centers of all 3 AprilTags.
             // The opposite side of the triangle is the same as the offset from the center of
             // the robot to the center of the device.
+            double calculatedRobotCenterDeviceOpposite = robotCoordX.get() - deviceCenterX.get();
             double robotCenterDeviceOpposite = Math.abs(centerStageRobot.deviceOffsetFromRobotCenterPX);
             double robotDeviceHypotenuseSquared = Math.pow(robotATAdjacent, 2) + Math.pow(robotCenterDeviceOpposite, 2);
             double robotDeviceHypotenuse = Math.sqrt(robotDeviceHypotenuseSquared);
