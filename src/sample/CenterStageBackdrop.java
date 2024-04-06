@@ -399,7 +399,7 @@ public class CenterStageBackdrop extends Application {
             AngleDistance fromRobotCenter = CameraToCenterCorrections.getCorrectedAngleAndDistance2(degreesFromCameraToAprilTag,
                     distanceFromCameraToAprilTag, centerStageRobot.cameraCenterFromRobotCenterPX, centerStageRobot.cameraOffsetFromRobotCenterPX);
 
-            // AngleDistance fromRobotCenter = CameraToCenterCorrections.getCorrectedAngleAndDistance(centerStageRobot.cameraCenterFromRobotCenterPX,
+            //AngleDistance fromRobotCenter = CameraToCenterCorrections.getCorrectedAngleAndDistance(centerStageRobot.cameraCenterFromRobotCenterPX,
             //        centerStageRobot.cameraOffsetFromRobotCenterPX, distanceFromCameraToAprilTag, degreesFromCameraToAprilTag);
             System.out.println("Angle from robot center to AprilTag " + fromRobotCenter.angle);
             System.out.println("Distance from robot center to AprilTag " + fromRobotCenter.distance);
