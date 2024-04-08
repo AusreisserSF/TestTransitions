@@ -419,9 +419,15 @@ public class CenterStageBackdrop extends Application {
 
             // Set the number of degrees to rotate so that the device is facing
             // the AprilTag.
-            //**TODO ??if (robotCoordX.get() < deviceCenterX.get())
-            //**TODO WRONG stopped here 4/8/2024              degreesFromRobotCenter *= -1;
-            rotateDeviceTowardsAprilTag.setByAngle(degreesFromRobotCenter + Math.abs(fromRobotCenter.angle));
+            //**TODO Convert from FTC rotation to FX rotation.
+            double finalDegreesFromRobotCenterToDevice = degreesFromRobotCenter;
+            double finalDegreesFromRobotCenterToTarget = fromRobotCenter.angle;
+            if (deviceCenterX.get() > aprilTagCenterX.get())
+                finalDegreesFromRobotCenterToDevice *= -1;
+            if (robotCoordX.get() < aprilTagCenterX.get())
+                finalDegreesFromRobotCenterToTarget *= -1;
+
+            rotateDeviceTowardsAprilTag.setByAngle(finalDegreesFromRobotCenterToDevice + finalDegreesFromRobotCenterToTarget);
         });
 
         PauseTransition pauseT = new PauseTransition(Duration.millis(2500));

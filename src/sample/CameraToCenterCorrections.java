@@ -29,7 +29,7 @@ public class CameraToCenterCorrections {
         // Gets the fore/aft position of the camera in relation to the center of the robot
         // when observed from behind.
         CameraForeAft cameraForeAft = pDistanceRobotCenterToCameraFace < 0 ? CameraForeAft.AFT :
-                pOffsetRobotCenterToCamera > 0 ? CameraForeAft.FORE : CameraForeAft.CENTER;
+                pDistanceRobotCenterToCameraFace > 0 ? CameraForeAft.FORE : CameraForeAft.CENTER;
 
         // Gets the left/right position of the camera in relation to the center of the robot
         // when observed from behind.
@@ -71,9 +71,22 @@ public class CameraToCenterCorrections {
         System.out.println("Raw angle from robot center to target " + degreesFromRobotCenterToTarget);
 
         // Determine the FTC sign of the angle from robot center to target center.
-        //**TODO 4/7/24 WRONG The FTC sign is the same as the signum.
-        double robotCenterSignum = Math.signum(robotCenterOpposite - cameraOpposite);
-        degreesFromRobotCenterToTarget *= -robotCenterSignum;
+        //**TODO 4/7/24 Does not work for all cases ... e.g it does work for RED, 14.0, 14.0,
+        // 6.0, -6.0, 0.0, 6.0, AT 6 - AT is left of the camera, AT is left of robot center,
+        // device is left of robot center BUT gives the wrong sign for BLUE, 14.0, 14.0, 6.0,
+        // -6.0, 0.0, 6.0, AT 3 - AT is right of the camera, AT is right of robot center,
+        // device is left of robot center.
+        //**TODO What I need to know: is the target center to the right, center, or left
+        // of robot center? In particular, how do I know when the angle from the camera
+        // to the target and the angle from robot center to target should have opposite
+        // signs?
+        double robotCenterSignum;
+        if (cameraOpposite < Math.abs(pDistanceRobotCenterToCameraFace))
+            robotCenterSignum = 1;
+        else
+            robotCenterSignum = -1;
+
+        degreesFromRobotCenterToTarget *= robotCenterSignum; // RED: signum, BLUE: -signum
         System.out.println("FTC angle from robot center to target " + degreesFromRobotCenterToTarget);
 
         double robotCenterHypotenuseSquared = Math.pow(robotCenterAdjacent, 2) + Math.pow(robotCenterOpposite, 2);
