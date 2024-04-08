@@ -99,10 +99,10 @@
                   <Insets left="5.0" />
                </GridPane.margin>
                 </Label>
-                <Spinner id="april_tag_spinner" fx:id="april_tag_spinner_id" editable="true" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+                <Spinner id="april_tag_spinner" fx:id="april_tag_spinner" editable="true" GridPane.columnIndex="1" GridPane.rowIndex="8" />
                 <ChoiceBox id="direction_choice" fx:id="direction_choice_id" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-                <TextField id="robot_width" fx:id="robot_width_id" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                <TextField id="robot_height" fx:id="robot_height_id" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                <TextField id="robot_width" fx:id="robot_width" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                <TextField id="robot_height" fx:id="robot_height" GridPane.columnIndex="2" GridPane.rowIndex="1" />
             </children>
             <BorderPane.margin>
                 <Insets />

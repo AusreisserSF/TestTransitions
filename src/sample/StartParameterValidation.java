@@ -55,7 +55,7 @@ public class StartParameterValidation {
                 },
                 "The width of the robot must be between " + MIN_ROBOT_BODY_DIMENSION + " and " + MAX_ROBOT_BODY_DIMENSION));
 
-        validateStartParameter(pSimulatorController.robot_width_id, widthListener);
+        validateStartParameter(pSimulatorController.robot_width, widthListener);
 
         // Robot height.
         startParameters.put(StartParameter.ROBOT_HEIGHT, new StartParameterInfo(0.0, false));
@@ -75,7 +75,7 @@ public class StartParameterValidation {
                 },
                 "The height of the robot must be between " + MIN_ROBOT_BODY_DIMENSION + " and " + MAX_ROBOT_BODY_DIMENSION));
 
-        validateStartParameter(pSimulatorController.robot_height_id, heightListener);
+        validateStartParameter(pSimulatorController.robot_height, heightListener);
 
         //     CAMERA_CENTER_FROM_ROBOT_CENTER_ID
         startParameters.put(StartParameter.CAMERA_CENTER_FROM_ROBOT_CENTER, new StartParameterInfo(0.0, true));
@@ -102,7 +102,7 @@ public class StartParameterValidation {
                 },
                 "The fore/aft distance from camera center to robot center must be less than 1/2 the height of the robot"));
 
-        validateStartParameter(pSimulatorController.camera_center_from_robot_center_id, cameraCenterListener);
+        validateStartParameter(pSimulatorController.camera_center_from_robot_center, cameraCenterListener);
 
 
         //     CAMERA_OFFSET_FROM_ROBOT_CENTER_ID
@@ -129,7 +129,7 @@ public class StartParameterValidation {
                 },
                 "The left/right distance from camera center to robot center must be less than 1/2 the width of the robot"));
 
-        validateStartParameter(pSimulatorController.camera_offset_from_robot_center_id, cameraOffsetListener);
+        validateStartParameter(pSimulatorController.camera_offset_from_robot_center, cameraOffsetListener);
 
         //    DEVICE_CENTER_FROM_ROBOT_CENTER_ID
         startParameters.put(StartParameter.DEVICE_CENTER_FROM_ROBOT_CENTER, new StartParameterInfo(0.0, true));
@@ -155,7 +155,7 @@ public class StartParameterValidation {
                 },
                 "The fore/aft distance from device center to robot center must be less than 1/2 the height of the robot"));
 
-        validateStartParameter(pSimulatorController.device_center_from_robot_center_id, deviceCenterListener);
+        validateStartParameter(pSimulatorController.device_center_from_robot_center, deviceCenterListener);
 
         //    DEVICE_OFFSET_FROM_ROBOT_CENTER_ID
         startParameters.put(StartParameter.DEVICE_OFFSET_FROM_ROBOT_CENTER, new StartParameterInfo(0.0, true));
@@ -181,7 +181,7 @@ public class StartParameterValidation {
                 },
                 "The left/right distance from device center to robot center must be less than 1/2 the width of the robot"));
 
-        validateStartParameter(pSimulatorController.device_offset_from_robot_center_id, deviceOffsetListener);
+        validateStartParameter(pSimulatorController.device_offset_from_robot_center, deviceOffsetListener);
 
         //**TODO There must be limits on the approach position - neither
         // too close nor too far left or right (camera field of view?)

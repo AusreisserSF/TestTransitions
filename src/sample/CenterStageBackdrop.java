@@ -55,18 +55,19 @@ public class CenterStageBackdrop extends Application {
         String allianceString = allianceSelection(pStage);
         RobotConstants.Alliance alliance = RobotConstants.Alliance.valueOf(allianceString);
         //**TODO Or send the Stage and primary Scene to allianceSelection and let it restore
+        // the root scene.
         pStage.setScene(rootScene); // reset to primary Pane
 
         FieldFXCenterStageBackdropLG fieldCenterStageBackdrop = new FieldFXCenterStageBackdropLG(alliance, field);
 
         // Show the alliance id in its color.
-        controller.alliance_id.setText(allianceString);
-        controller.alliance_id.setFont(Font.font("System", FontWeight.BOLD, 14));
+        controller.alliance.setText(allianceString);
+        controller.alliance.setFont(Font.font("System", FontWeight.BOLD, 14));
         Color allianceColor = (alliance == RobotConstants.Alliance.BLUE) ? Color.BLUE : Color.RED;
-        controller.alliance_id.setTextFill(allianceColor); // or jewelsea setStyle("-fx-text-inner-color: red;");
+        controller.alliance.setTextFill(allianceColor); // or jewelsea setStyle("-fx-text-inner-color: red;");
 
         //**TODO ??Need a way to read parameters from an XML file and then write them
-        // back out??
+        // back out?? Only the robot dimensions, camera placement, device placement.
         // Parse and validate the start parameters that have a range of double values.
         startParameterValidation = new StartParameterValidation(controller);
 
@@ -76,12 +77,22 @@ public class CenterStageBackdrop extends Application {
         else // RED
             spinnerValueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(4, 6);
 
-        controller.april_tag_spinner_id.setValueFactory(spinnerValueFactory);
+        controller.april_tag_spinner.setValueFactory(spinnerValueFactory);
 
         // Show the play button now but do not start the animation until
         // all start parameters have been validated.
-        Button playPauseButton = setPlayPauseButton(field, alliance);
-        //**TODO TEST
+        Button playPauseButton = new Button("Play");
+        playPauseButton.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
+
+        // Position the button on the opposite side of the field from
+        // the selected alliance.
+        playPauseButton.setLayoutY(FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 3 - 50);
+        if (alliance == RobotConstants.Alliance.BLUE)
+            playPauseButton.setLayoutX((FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 3) - FieldFXCenterStageBackdropLG.FIELD_OUTSIDE_BORDER_SIZE - 60);
+        else
+            playPauseButton.setLayoutX(FieldFXCenterStageBackdropLG.FIELD_OUTSIDE_BORDER_SIZE + 10);
+
+        field.getChildren().add(playPauseButton);
         AtomicReference<EventHandler<ActionEvent>> event = new AtomicReference<>();
         event.set((e) -> {
             if (!startParameterValidation.allStartParametersValid()) {
@@ -101,8 +112,8 @@ public class CenterStageBackdrop extends Application {
             // of the upper left corner; Paths use the center point.
 
             // Place the robot on the field with the dimensions entered by the user.
-            double robotWidth = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_WIDTH);
-            double robotHeight = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_HEIGHT);
+            double robotWidthIn = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_WIDTH);
+            double robotHeightIn = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_HEIGHT);
             Point2D startingPosition;
             double startingRotation;
             if (alliance == RobotConstants.Alliance.BLUE) {
@@ -110,13 +121,12 @@ public class CenterStageBackdrop extends Application {
                         FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5);
                 startingRotation = 90.0;
             } else { // RED
-                //**TODO on the RED side the robot starts off the field to the right ...
-                startingPosition = new Point2D(FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + (FieldFXCenterStageBackdropLG.TILE_DIMENSIONS - (robotWidth + (RobotFXLG.WHEEL_WIDTH * 2))) - FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5,
+                startingPosition = new Point2D(FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 3 - ((robotWidthIn * FieldFXCenterStageBackdropLG.PX_PER_INCH) + FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5),
                         FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5);
                 startingRotation = -90.0;
             }
 
-            centerStageRobot = new RobotFXCenterStageLG(robotWidth, robotHeight, Color.GREEN,
+            centerStageRobot = new RobotFXCenterStageLG(robotWidthIn, robotHeightIn, Color.GREEN,
                     startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_CENTER_FROM_ROBOT_CENTER),
                     startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_OFFSET_FROM_ROBOT_CENTER),
                     startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.DEVICE_CENTER_FROM_ROBOT_CENTER),
@@ -173,32 +183,10 @@ public class CenterStageBackdrop extends Application {
         return allianceSelection;
     }
 
-    // Based on FTCAutoSimulator/RobotSimulator
-    // Set up the Play button.
-    //**TODO Need to toggle with Pause so that we can see the drawn triangles.
-    private Button setPlayPauseButton(Pane pFieldPane, RobotConstants.Alliance pAlliance) {
-        Button playPauseButton = new Button("Play");
-        playPauseButton.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
-
-        // Position the button on the opposite side of the field from
-        // the selected alliance.
-        //**TODO Get the offsets from the button itself.
-        Bounds buttonBoundsLocal = playPauseButton.getBoundsInLocal();
-        final double buttonOffsetX = 50;
-        final double buttonOffsetY = 50;
-
-        playPauseButton.setLayoutY(FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 3 - buttonOffsetY);
-        if (pAlliance == RobotConstants.Alliance.BLUE)
-            playPauseButton.setLayoutX((FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 3) - FieldFXCenterStageBackdropLG.FIELD_OUTSIDE_BORDER_SIZE - buttonOffsetX);
-        else
-            playPauseButton.setLayoutX(FieldFXCenterStageBackdropLG.FIELD_OUTSIDE_BORDER_SIZE + buttonOffsetX);
-
-        pFieldPane.getChildren().add(playPauseButton);
-
-        return playPauseButton;
-    }
-
     //**TODO Put all of this into a separate class. Then make AtomicReferences class fields.
+    //**TODO There are four triangles involved in the animation of the robot: camera to target,
+    // robot center to target, robot center to device, device to target.
+    //**TODO Make naming conform to these triangles (or abbreviations).
     private void runAnimation(RobotConstants.Alliance pAlliance, Pane pField, Group pRobot, Button pPlayPauseButton) {
 
         //## As a demonstration start the robot facing inward from the BLUE
@@ -268,7 +256,7 @@ public class CenterStageBackdrop extends Application {
             System.out.println("Robot position after strafe x " + robotBP.getCenterX() + ", y " + robotBP.getCenterY());
         });
 
-        RadioButton selectedRadioButton = (RadioButton) controller.approach_toggle_id.getSelectedToggle();
+        RadioButton selectedRadioButton = (RadioButton) controller.approach_toggle.getSelectedToggle();
         String radioButtonText = selectedRadioButton.getText();
 
         //## The RotateTransition for the final rotation must be declared before the
@@ -333,7 +321,7 @@ public class CenterStageBackdrop extends Application {
             deviceCenterY.set(deviceCoord.getY());
 
             // Get the coordinates of the target AprilTag.
-            Integer targetAprilTag = controller.april_tag_spinner_id.getValue();
+            Integer targetAprilTag = controller.april_tag_spinner.getValue();
             Rectangle aprilTag = (Rectangle) pField.lookup("#" + FieldFXCenterStageBackdropLG.APRIL_TAG_ID + targetAprilTag);
             Point2D aprilTagCoord = aprilTag.localToScene(aprilTag.getX(), aprilTag.getY());
 
@@ -396,7 +384,7 @@ public class CenterStageBackdrop extends Application {
             // The fields centerStageRobot.cameraCenterFromRobotCenterPX and
             // centerStageRobot.cameraOffsetFromRobotCenterPX are already signed correctly
             // for FTC.
-            //**TODO NEED to include 1/2 of the height of the camera ...
+            //**TODO Comment: need to include 1/2 of the height of the camera ...
             AngleDistance fromRobotCenter = CameraToCenterCorrections.getCorrectedAngleAndDistance2(degreesFromCameraToAprilTag,
                     distanceFromCameraToAprilTag,
                     centerStageRobot.cameraCenterFromRobotCenterPX + RobotFXCenterStageLG.CAMERA_HEIGHT / 2,
@@ -408,7 +396,7 @@ public class CenterStageBackdrop extends Application {
             System.out.println("Distance from robot center to AprilTag " + fromRobotCenter.distance);
 
             // sine of fromRobotCenter.angle = robotATOpposite / fromRobotCenter.distance;
-            double robotATOpposite = Math.sin(Math.toRadians(fromRobotCenter.angle)) * fromRobotCenter.distance;
+            double robotATOpposite = Math.sin(Math.toRadians(Math.abs(fromRobotCenter.angle))) * fromRobotCenter.distance;
             // fromRobotCenter.distance squared = robotATOpposite squared + robotATAdjacent squared
             double robotATAdjacentSquared = Math.pow(fromRobotCenter.distance, 2) - Math.pow(robotATOpposite, 2);
             double robotATAdjacent = Math.sqrt(robotATAdjacentSquared);
@@ -431,8 +419,8 @@ public class CenterStageBackdrop extends Application {
 
             // Set the number of degrees to rotate so that the device is facing
             // the AprilTag.
-            if (robotCoordX.get() < deviceCenterX.get())
-                           degreesFromRobotCenter *= -1;
+            //**TODO ??if (robotCoordX.get() < deviceCenterX.get())
+            //**TODO WRONG stopped here 4/8/2024              degreesFromRobotCenter *= -1;
             rotateDeviceTowardsAprilTag.setByAngle(degreesFromRobotCenter + Math.abs(fromRobotCenter.angle));
         });
 

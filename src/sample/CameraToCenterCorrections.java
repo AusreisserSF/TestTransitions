@@ -40,6 +40,9 @@ public class CameraToCenterCorrections {
         // of the camera triangle. We have the angle from the camera to the target; this will be the
         // angle theta. We need to solve for the edge opposite theta and the edge adjacent to theta.
         // sine theta = opposite / hypotenuse
+
+        //**TODO What if the robot center to camera offset is 0 and the angle to the target is zero?
+        // sine of 0 is 0
         double cameraOpposite = Math.sin(Math.toRadians(Math.abs(pAngleFromCamera))) * pDistanceFromCamera;
 
         // pDistanceFromCamera squared = cameraOpposite squared + cameraAdjacent squared
@@ -54,9 +57,9 @@ public class CameraToCenterCorrections {
         // angle from the center of the robot to the target.
 
         // First get the opposite edge of the robot center triangle.
-        //**TODO ??I don't think addition works for all cases ... only if the target
-        // is to the right of the camera ?? and the camera is to the right of the robot center??
-        double robotCenterOpposite = Math.abs(Math.abs(pOffsetRobotCenterToCamera) + cameraOpposite);
+        //**TODO What if the robot center to camera offset is 0 and the angle to the target is zero?
+        double robotCenterOpposite = pAngleFromCamera < 0 ? Math.abs(cameraOpposite + Math.abs(pOffsetRobotCenterToCamera)) :
+                Math.abs(cameraOpposite - Math.abs(pOffsetRobotCenterToCamera)) ;
 
         // Then get the adjacent edge of the robot center triangle.
         double robotCenterAdjacent = pDistanceRobotCenterToCameraFace + cameraAdjacent;
@@ -68,9 +71,9 @@ public class CameraToCenterCorrections {
         System.out.println("Raw angle from robot center to target " + degreesFromRobotCenterToTarget);
 
         // Determine the FTC sign of the angle from robot center to target center.
-        // The FTC sign is the same as the signum.
-        double robotCenterSignum = Math.signum(Math.abs(pOffsetRobotCenterToCamera) - cameraOpposite);
-        degreesFromRobotCenterToTarget *= robotCenterSignum;
+        //**TODO 4/7/24 WRONG The FTC sign is the same as the signum.
+        double robotCenterSignum = Math.signum(robotCenterOpposite - cameraOpposite);
+        degreesFromRobotCenterToTarget *= -robotCenterSignum;
         System.out.println("FTC angle from robot center to target " + degreesFromRobotCenterToTarget);
 
         double robotCenterHypotenuseSquared = Math.pow(robotCenterAdjacent, 2) + Math.pow(robotCenterOpposite, 2);
