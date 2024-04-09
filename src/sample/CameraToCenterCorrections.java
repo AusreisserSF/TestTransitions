@@ -7,9 +7,12 @@ November 2022
  */
 public class CameraToCenterCorrections {
 
-    //## Replacement for FTC season 2022 and 2023 getCorrectedAngleAndDistance
+    //## Replacement for FTC season 2022 and 2023 getCorrectedAngleAndDistance.
+    //**TODO Extend so that this method returns the angle and distance from the
+    // delivery device to the target.
     public static AngleDistance getCorrectedAngleAndDistance(double pAngleCameraToTarget, double pDistanceCameraToTarget,
-                                                             double pDistanceRobotCenterToCameraFace, double pOffsetRobotCenterToCameraCenter) {
+                                                             double pDistanceRobotCenterToCameraFace, double pOffsetRobotCenterToCameraCenter,
+                                                             double pDistanceRobotCenterToDeliveryDevice, double pOffsetRobotCenterToDeliveryDevice) {
 
         // We have the distance from the face of the camera to the target; this will be the hypotenuse
         // of the camera triangle. We have the angle from the camera to the target; this will be the
@@ -37,40 +40,71 @@ public class CameraToCenterCorrections {
         // angle from the center of the robot to the target.
 
         // First get the opposite edge of the robot center triangle.
-        //**TODO BROKEN - does not work when the camera is left of center ...
-        double angleRobotCenterToTargetSignum = 0;
-        // If the target is to the *right* of the camera (the angle is negative) and the
-        // camera is to the *right* of robot center (offset is negative) ...
-        double robotCenterOpposite = pAngleCameraToTarget < 0 ? Math.abs(cameraOpposite + Math.abs(pOffsetRobotCenterToCameraCenter)) :
-                Math.abs(cameraOpposite - Math.abs(pOffsetRobotCenterToCameraCenter));
 
-        // If the target is to the *right* of the camera (the angle is negative) and the
-        // camera is to the *left* of robot center (offset is positive) ...
-        // then the calculations are the opposite of the above.
+        // If the camera is left of robot center (the offset is positive)
+        //  If the target is left of the camera (the angle is positive)
+        //    the robot center "opposite" extends to the left.
+        //  Else if the target is right of the camera (the angle is negative)
+        //    reduce the robot center "opposite".
+        //  Else
+        //    the camera is in line with the target.
 
-        // If the target is to the *right* of the camera (the angle is negative) and the
-        // camera is *directly opposite* robot center (offset is 0) ...
-        // robot center opposite == camera opposite (math above works)
+        // Also set the sign of the angle from the robot center to the target.
+        // If the camera is left of robot center (the offset is positive)
+        // AND the target is right of the camera (the angle is negative)
+        // AND the target is left of robot center (camera "opposite" < abs(offset))
+        // then the angle from robot center to the target is positive.
 
-        // If the target is to the *left* of the camera (the angle is positive) and the
-        // camera is to the *left* of robot center (offset is positive) ...
-        // same as above
+        double robotCenterOpposite = 0;
+        double robotCenterSignum = Math.signum(pAngleCameraToTarget); // default
+        if (pOffsetRobotCenterToCameraCenter > 0) {
+            if (pAngleCameraToTarget > 0) { // target left of camera
+                robotCenterOpposite = Math.abs(cameraOpposite + Math.abs(pOffsetRobotCenterToCameraCenter));
+            } else if (pAngleCameraToTarget < 0) { // target right of camera
+                robotCenterOpposite = Math.abs(cameraOpposite - Math.abs(pOffsetRobotCenterToCameraCenter));
+                if (robotCenterOpposite < Math.abs(pOffsetRobotCenterToCameraCenter)) {
+                    robotCenterSignum = 1;
+                } else
+                    robotCenterSignum = -1;
+            } else { // the camera is in line with the target.
+                robotCenterOpposite = Math.abs(pOffsetRobotCenterToCameraCenter);
+            }
+        }
 
-        // If the target is to the *left* of the camera (the angle is positive) and the
-        // camera is to the *right* of robot center (offset is negative) ...
-        // then the calculations are the opposite of the above.
+        // If the camera is right of robot center (the offset is negative)
+        //  If the target is right of the camera (the angle is negative)
+        //    the robot center "opposite" extends to the right.
+        //  Else if the target is left of the camera (the angle is positive)
+        //    reduce the robot center "opposite".
+        //  Else
+        //    the camera is in line with the target.
 
-        // If the target is to the *left* of the camera (the angle is positive) and the
-        // camera is *directly opposite* robot center (offset is 0) ...
-        // robot center opposite == camera opposite (math above works)
+        // Also set the sign of the angle from the robot center to the target.
+        // If the camera is right of robot center (the offset is negative)
+        // AND the target is left of the camera (the angle is positive)
+        // AND the target is right of robot center (camera "opposite" < abs(offset))
+        // then the angle from robot center to the target is negative.
+        if (pOffsetRobotCenterToCameraCenter < 0) {
+            if (pAngleCameraToTarget < 0) { // target right of camera
+                robotCenterOpposite = Math.abs(cameraOpposite + Math.abs(pOffsetRobotCenterToCameraCenter));
+            } else if (pAngleCameraToTarget > 0) { // target left of camera
+                robotCenterOpposite = Math.abs(cameraOpposite - Math.abs(pOffsetRobotCenterToCameraCenter));
+                if (robotCenterOpposite < Math.abs(pOffsetRobotCenterToCameraCenter)) {
+                    robotCenterSignum = -1;
+                } else
+                    robotCenterSignum = 1;
+            } else { // the camera is in line with the target.
+                robotCenterOpposite = Math.abs(pOffsetRobotCenterToCameraCenter);
+            }
+        }
 
-        // If the target is *directly opposite* the camera and the camera is *right*
-        // of robot center then ...
+        // The camera is in line with the robot center; the angle from robot center
+        // to the target is the same as that of the camera, which is the default.
+        // else {
+        //    robotCenterSignum = Math.signum(pAngleCameraToTarget);
+        // }
 
-        // If the target is *directly opposite* the camera and the camera is *left*
-        // of robot center then ...
-
-        // Then get the adjacent edge of the robot center triangle.
+        // Get the "adjacent" edge of the robot center triangle.
         double robotCenterAdjacent = pDistanceRobotCenterToCameraFace + cameraAdjacent;
         System.out.println("Robot center triangle opposite " + robotCenterOpposite + ", adjacent " + robotCenterAdjacent);
 
@@ -80,9 +114,6 @@ public class CameraToCenterCorrections {
         System.out.println("Raw angle from robot center to target " + degreesFromRobotCenterToTarget);
 
         // Determine the FTC sign of the angle from robot center to target center.
-        //**TODO BROKEN - the only surefire way to know the direction of the angle is
-        // to compare the x position of the robot with that of the target ...
-        double robotCenterSignum = cameraOpposite < Math.abs(pDistanceRobotCenterToCameraFace) ? -1 : 1;
         degreesFromRobotCenterToTarget *= robotCenterSignum;
         System.out.println("FTC angle from robot center to target " + degreesFromRobotCenterToTarget);
 

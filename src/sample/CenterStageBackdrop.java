@@ -388,7 +388,8 @@ public class CenterStageBackdrop extends Application {
             AngleDistance fromRobotCenter = CameraToCenterCorrections.getCorrectedAngleAndDistance(degreesFromCameraToAprilTag,
                     distanceFromCameraToAprilTag,
                     centerStageRobot.cameraCenterFromRobotCenterPX + RobotFXCenterStageLG.CAMERA_HEIGHT / 2,
-                    centerStageRobot.cameraOffsetFromRobotCenterPX);
+                    centerStageRobot.cameraOffsetFromRobotCenterPX,
+                    centerStageRobot.deviceCenterFromRobotCenterPX, centerStageRobot.deviceOffsetFromRobotCenterPX);
 
             System.out.println("Angle from robot center to AprilTag " + fromRobotCenter.angle);
             System.out.println("Distance from robot center to AprilTag " + fromRobotCenter.distance);
@@ -422,7 +423,7 @@ public class CenterStageBackdrop extends Application {
             double finalDegreesFromRobotCenterToTarget = fromRobotCenter.angle;
             if (deviceCenterX.get() > aprilTagCenterX.get())
                 finalDegreesFromRobotCenterToDevice *= -1;
-            if (robotCoordX.get() < aprilTagCenterX.get())
+            if (robotCoordX.get() > aprilTagCenterX.get()); // > works for RED, device on right; overturns (21 deg) for device on left
                 finalDegreesFromRobotCenterToTarget *= -1;
 
             rotateDeviceTowardsAprilTag.setByAngle(finalDegreesFromRobotCenterToDevice + finalDegreesFromRobotCenterToTarget);
