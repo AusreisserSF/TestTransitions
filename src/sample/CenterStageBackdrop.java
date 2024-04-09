@@ -385,13 +385,11 @@ public class CenterStageBackdrop extends Application {
             // centerStageRobot.cameraOffsetFromRobotCenterPX are already signed correctly
             // for FTC.
             //**TODO Comment: need to include 1/2 of the height of the camera ...
-            AngleDistance fromRobotCenter = CameraToCenterCorrections.getCorrectedAngleAndDistance2(degreesFromCameraToAprilTag,
+            AngleDistance fromRobotCenter = CameraToCenterCorrections.getCorrectedAngleAndDistance(degreesFromCameraToAprilTag,
                     distanceFromCameraToAprilTag,
                     centerStageRobot.cameraCenterFromRobotCenterPX + RobotFXCenterStageLG.CAMERA_HEIGHT / 2,
                     centerStageRobot.cameraOffsetFromRobotCenterPX);
 
-            //AngleDistance fromRobotCenter = CameraToCenterCorrections.getCorrectedAngleAndDistance(centerStageRobot.cameraCenterFromRobotCenterPX,
-            //        centerStageRobot.cameraOffsetFromRobotCenterPX, distanceFromCameraToAprilTag, degreesFromCameraToAprilTag);
             System.out.println("Angle from robot center to AprilTag " + fromRobotCenter.angle);
             System.out.println("Distance from robot center to AprilTag " + fromRobotCenter.distance);
 
@@ -419,7 +417,7 @@ public class CenterStageBackdrop extends Application {
 
             // Set the number of degrees to rotate so that the device is facing
             // the AprilTag.
-            //**TODO Convert from FTC rotation to FX rotation.
+            //**TODO Convert from FTC rotation to FX rotation. What if == ??
             double finalDegreesFromRobotCenterToDevice = degreesFromRobotCenter;
             double finalDegreesFromRobotCenterToTarget = fromRobotCenter.angle;
             if (deviceCenterX.get() > aprilTagCenterX.get())
