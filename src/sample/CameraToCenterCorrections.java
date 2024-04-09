@@ -37,8 +37,38 @@ public class CameraToCenterCorrections {
         // angle from the center of the robot to the target.
 
         // First get the opposite edge of the robot center triangle.
+        //**TODO BROKEN - does not work when the camera is left of center ...
+        double angleRobotCenterToTargetSignum = 0;
+        // If the target is to the *right* of the camera (the angle is negative) and the
+        // camera is to the *right* of robot center (offset is negative) ...
         double robotCenterOpposite = pAngleCameraToTarget < 0 ? Math.abs(cameraOpposite + Math.abs(pOffsetRobotCenterToCameraCenter)) :
-                Math.abs(cameraOpposite - Math.abs(pOffsetRobotCenterToCameraCenter)) ;
+                Math.abs(cameraOpposite - Math.abs(pOffsetRobotCenterToCameraCenter));
+
+        // If the target is to the *right* of the camera (the angle is negative) and the
+        // camera is to the *left* of robot center (offset is positive) ...
+        // then the calculations are the opposite of the above.
+
+        // If the target is to the *right* of the camera (the angle is negative) and the
+        // camera is *directly opposite* robot center (offset is 0) ...
+        // robot center opposite == camera opposite (math above works)
+
+        // If the target is to the *left* of the camera (the angle is positive) and the
+        // camera is to the *left* of robot center (offset is positive) ...
+        // same as above
+
+        // If the target is to the *left* of the camera (the angle is positive) and the
+        // camera is to the *right* of robot center (offset is negative) ...
+        // then the calculations are the opposite of the above.
+
+        // If the target is to the *left* of the camera (the angle is positive) and the
+        // camera is *directly opposite* robot center (offset is 0) ...
+        // robot center opposite == camera opposite (math above works)
+
+        // If the target is *directly opposite* the camera and the camera is *right*
+        // of robot center then ...
+
+        // If the target is *directly opposite* the camera and the camera is *left*
+        // of robot center then ...
 
         // Then get the adjacent edge of the robot center triangle.
         double robotCenterAdjacent = pDistanceRobotCenterToCameraFace + cameraAdjacent;
@@ -50,6 +80,8 @@ public class CameraToCenterCorrections {
         System.out.println("Raw angle from robot center to target " + degreesFromRobotCenterToTarget);
 
         // Determine the FTC sign of the angle from robot center to target center.
+        //**TODO BROKEN - the only surefire way to know the direction of the angle is
+        // to compare the x position of the robot with that of the target ...
         double robotCenterSignum = cameraOpposite < Math.abs(pDistanceRobotCenterToCameraFace) ? -1 : 1;
         degreesFromRobotCenterToTarget *= robotCenterSignum;
         System.out.println("FTC angle from robot center to target " + degreesFromRobotCenterToTarget);
