@@ -62,7 +62,7 @@ public class CameraToCenterCorrections {
                 robotCenterOpposite = Math.abs(cameraOpposite + Math.abs(pOffsetRobotCenterToCameraCenter));
             } else if (pAngleCameraToTarget < 0) { // target right of camera
                 robotCenterOpposite = Math.abs(cameraOpposite - Math.abs(pOffsetRobotCenterToCameraCenter));
-                if (robotCenterOpposite < Math.abs(pOffsetRobotCenterToCameraCenter)) {
+                if (cameraOpposite < Math.abs(pOffsetRobotCenterToCameraCenter)) {
                     robotCenterSignum = 1;
                 } else
                     robotCenterSignum = -1;
@@ -89,7 +89,7 @@ public class CameraToCenterCorrections {
                 robotCenterOpposite = Math.abs(cameraOpposite + Math.abs(pOffsetRobotCenterToCameraCenter));
             } else if (pAngleCameraToTarget > 0) { // target left of camera
                 robotCenterOpposite = Math.abs(cameraOpposite - Math.abs(pOffsetRobotCenterToCameraCenter));
-                if (robotCenterOpposite < Math.abs(pOffsetRobotCenterToCameraCenter)) {
+                if (cameraOpposite < Math.abs(pOffsetRobotCenterToCameraCenter)) {
                     robotCenterSignum = -1;
                 } else
                     robotCenterSignum = 1;
