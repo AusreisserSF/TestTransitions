@@ -419,14 +419,41 @@ public class CenterStageBackdrop extends Application {
             // Set the number of degrees to rotate so that the device is facing
             // the AprilTag.
             //**TODO Convert from FTC rotation to FX rotation. What if == ??
+            // If the device is left of robot center
+            //
+            //
+            // If the device is right of robot center
+            //  If the target is right of robot center
+            //    invert the robot center to device angle
+
+
             double finalDegreesFromRobotCenterToDevice = degreesFromRobotCenter;
             double finalDegreesFromRobotCenterToTarget = fromRobotCenter.angle;
+            if (deviceCenterX.get() < robotCoordX.get()) {
+                if (aprilTagCenterX.get() > robotCoordX.get()) {
+                    finalDegreesFromRobotCenterToDevice *= -1;
+                }
+            }
+
+
+            if (deviceCenterX.get() > robotCoordX.get()) {
+                if (aprilTagCenterX.get() < robotCoordX.get()) {
+                    finalDegreesFromRobotCenterToDevice *= -1;
+                }
+            }
+
+/*
             if (deviceCenterX.get() > aprilTagCenterX.get())
                 finalDegreesFromRobotCenterToDevice *= -1;
-            if (robotCoordX.get() > aprilTagCenterX.get()); // > works for RED, device on right; overturns (21 deg) for device on left
+            if (robotCoordX.get() > aprilTagCenterX.get()) // > works for RED, device on right; overturns (21 deg) for device on left
                 finalDegreesFromRobotCenterToTarget *= -1;
+                 */
 
-            rotateDeviceTowardsAprilTag.setByAngle(finalDegreesFromRobotCenterToDevice + finalDegreesFromRobotCenterToTarget);
+            System.out.println("Final FX finalDegreesFromRobotCenterToDevice " + finalDegreesFromRobotCenterToDevice);
+            System.out.println("Final FX finalDegreesFromRobotCenterToTarget " + finalDegreesFromRobotCenterToTarget);
+
+            // Invert for FX vs FTC.
+            rotateDeviceTowardsAprilTag.setByAngle(-(finalDegreesFromRobotCenterToDevice + finalDegreesFromRobotCenterToTarget));
         });
 
         PauseTransition pauseT = new PauseTransition(Duration.millis(2500));
