@@ -418,42 +418,40 @@ public class CenterStageBackdrop extends Application {
 
             // Set the number of degrees to rotate so that the device is facing
             // the AprilTag.
-            //**TODO Convert from FTC rotation to FX rotation. What if == ??
-            // If the device is left of robot center
-            //
-            //
-            // If the device is right of robot center
-            //  If the target is right of robot center
-            //    invert the robot center to device angle
+            //**TODO What if == ??
 
+            double finalTurn = 0.0;
 
-            double finalDegreesFromRobotCenterToDevice = degreesFromRobotCenter;
-            double finalDegreesFromRobotCenterToTarget = fromRobotCenter.angle;
-            if (deviceCenterX.get() < robotCoordX.get()) {
-                if (aprilTagCenterX.get() > robotCoordX.get()) {
-                    finalDegreesFromRobotCenterToDevice *= -1;
-                }
+            // If the signs of the FTC angles from robot center to device and
+            // robot center to target are not the same then for the final turn
+            // add their absolute values.
+            //**TODO degreesFromRobotCenter is always positive. The next two if
+            // statements work for "BLUE - device left", which ix the only example
+            // of this condition.
+            if (deviceCenterX.get() > robotCoordX.get())
+                degreesFromRobotCenter *= -1;
+
+            if (Math.signum(degreesFromRobotCenter) != Math.signum(fromRobotCenter.angle))
+                finalTurn = Math.abs(degreesFromRobotCenter) + Math.abs(fromRobotCenter.angle);
+
+            //**TODO Here we get into trouble; focus on "RED - device left" ...
+            // If the signs of the FTC angles from robot center to device and
+            // device to target are the same then for the final turn take the
+            // absolute value of their difference.
+            else
+                //**TODO this works for "RED - device left", both AT 4 and AT 6
+                //**TODO NEXT: RED - device right
+                finalTurn = Math.abs(Math.abs(degreesFromRobotCenter) - Math.abs(fromRobotCenter.angle));
+
+            // The sign of the final turn is the inverse of the sign of the angle
+            // from device to target.
+            if (deviceCenterX.get() < aprilTagCenterX.get()) {
+                finalTurn *= -1;
             }
-
-
-            if (deviceCenterX.get() > robotCoordX.get()) {
-                if (aprilTagCenterX.get() < robotCoordX.get()) {
-                    finalDegreesFromRobotCenterToDevice *= -1;
-                }
-            }
-
-/*
-            if (deviceCenterX.get() > aprilTagCenterX.get())
-                finalDegreesFromRobotCenterToDevice *= -1;
-            if (robotCoordX.get() > aprilTagCenterX.get()) // > works for RED, device on right; overturns (21 deg) for device on left
-                finalDegreesFromRobotCenterToTarget *= -1;
-                 */
-
-            System.out.println("Final FX finalDegreesFromRobotCenterToDevice " + finalDegreesFromRobotCenterToDevice);
-            System.out.println("Final FX finalDegreesFromRobotCenterToTarget " + finalDegreesFromRobotCenterToTarget);
 
             // Invert for FX vs FTC.
-            rotateDeviceTowardsAprilTag.setByAngle(-(finalDegreesFromRobotCenterToDevice + finalDegreesFromRobotCenterToTarget));
+            System.out.println("Final FX turn " + -finalTurn);
+            rotateDeviceTowardsAprilTag.setByAngle(-finalTurn);
         });
 
         PauseTransition pauseT = new PauseTransition(Duration.millis(2500));
