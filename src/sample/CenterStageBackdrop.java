@@ -383,7 +383,10 @@ public class CenterStageBackdrop extends Application {
             // The fields centerStageRobot.cameraCenterFromRobotCenterPX and
             // centerStageRobot.cameraOffsetFromRobotCenterPX are already signed correctly
             // for FTC.
-            //**TODO Comment: need to include 1/2 of the height of the camera ...
+            // Note that cameraCenterFromRobotCenterPX measures center-to-center and so does
+            // not include the distance from the camera center to its face. We need this
+            // because it is part of the full distance from robot center to target center -
+            // so add 1/2 of the height of the camera here.
             AngleDistance fromRobotCenter = CameraToCenterCorrections.getCorrectedAngleAndDistance(degreesFromCameraToAprilTag,
                     distanceFromCameraToAprilTag,
                     centerStageRobot.cameraCenterFromRobotCenterPX + RobotFXCenterStageLG.CAMERA_HEIGHT / 2,
