@@ -56,6 +56,9 @@ public class CameraToCenterCorrections {
         // AND the target is left of robot center (camera "opposite" < abs(offset))
         // then the angle from robot center to the target is positive.
 
+        //**TODO ?Is it possible to work in the signed strafe distance and signed
+        // fore/aft distance here?
+
         double robotCenterOpposite = 0;
         double robotCenterSignum = Math.signum(pAngleCameraToTarget); // default
         if (pOffsetRobotCenterToCameraCenter > 0) {
@@ -123,26 +126,34 @@ public class CameraToCenterCorrections {
         System.out.println("Distance from robot center to target " + distanceRobotCenterToTarget);
 
         return new AngleDistance(degreesFromRobotCenterToTarget, distanceRobotCenterToTarget);
-     }
-
-     /*
-        public static CorrectionData getCameraToDeviceCorrections(double pAngleCameraToTarget, double pDistanceCameraToTarget,
-                                                             double pDistanceRobotCenterToCameraFace, double pOffsetRobotCenterToCameraCenter,
-                                                             double pDistanceRobotCenterToDeliveryDevice, double pOffsetRobotCenterToDeliveryDevice) {
-           //*TODO Calculate the strafe here but don't calculate it in this
-            // way (based on coordinates).
-            // Support a strafe that positions the delivery device opposite the AT.
-            // Positive: strafe to the left; negative: strafe to the right.
-            // The sign of the strafe is the same as that of the pOffsetRobotCenterToDeliveryDevice
-
-            double distanceToStrafe = aprilTagCenterX.get() - deviceCenterX.get();
-            System.out.println("Distance to strafe x " + distanceToStrafe);
+    }
 
 
-            //**TODO This is from CenterStageBackdrop but it's cheating because it uses the
-            // position of the device *after* the JavaFX rotation but we really have
-            // to calculate the position here in advance.
+    //public static CorrectionData getCameraToDeviceCorrections(double pAngleCameraToTarget, double pDistanceCameraToTarget,
+    //                                                     double pDistanceRobotCenterToCameraFace, double pOffsetRobotCenterToCameraCenter,
+    //                                                     double pDistanceRobotCenterToDeliveryDevice, double pOffsetRobotCenterToDeliveryDevice) {
 
+    // Support a strafe that positions the delivery device opposite the AT.
+    // Positive: strafe to the left; negative: strafe to the right.
+    // The sign of the strafe is the same as that of the pOffsetRobotCenterToDeliveryDevice.
+
+    //*TODO Calculate the strafe here but don't calculate it in this
+    // way (based on coordinates).
+    //double distanceToStrafe = aprilTagCenterX.get() - deviceCenterX.get();
+    // System.out.println("Distance to strafe x " + distanceToStrafe);
+
+    // Instead get robot center to target as above,
+    // then add robot center to device (+ or -)
+    //**TODO while being mindful of sign flipping. ?Make use of the signum logic above?
+
+    //**TODO Calculate the distance from the device to the target.
+    // This is from CenterStageBackdrop but it's cheating because it uses the
+    // position of the device *after* the JavaFX rotation. The calculation *can* be
+    // done here because we know the distance from the center of the robot to the
+    // target, which doesn't change with rotation, and we know the position of the
+    // device in relation to robot center.
+
+    /*
                           // One last thing: we need the distance from the delivery device
                 // to the AprilTag. This is the hypotenuse of a right triangle.
                 // double deviceHypotenuseSquared = deviceAdjacentSquared + deviceOppositeSquared
@@ -168,7 +179,7 @@ public class CameraToCenterCorrections {
         public final double postRotationDeviceToTargetDistance;
 
         public CorrectionData(double pStrafeDeviceToTargetDistance, double pStrafeDeviceToTargetForeAft,
-                double pRotateRobotCenterToAlignDevice, double pPostRotationDeviceToTargetDistance) {
+                              double pRotateRobotCenterToAlignDevice, double pPostRotationDeviceToTargetDistance) {
             strafeDeviceToTargetDistance = pStrafeDeviceToTargetDistance;
             strafeDeviceToTargetForeAft = pStrafeDeviceToTargetForeAft;
             rotateRobotCenterToAlignDevice = pRotateRobotCenterToAlignDevice;
