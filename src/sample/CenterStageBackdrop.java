@@ -184,9 +184,6 @@ public class CenterStageBackdrop extends Application {
     }
 
     //**TODO Put all of this into a separate class. Then make AtomicReferences class fields.
-    //**TODO There are four triangles involved in the animation of the robot: camera to target,
-    // robot center to target, robot center to device, device to target.
-    //**TODO Make naming conform to these triangles (or abbreviations).
     private void runAnimation(RobotConstants.Alliance pAlliance, Pane pField, Group pRobot, Button pPlayPauseButton) {
 
         //## As a demonstration start the robot facing inward from the BLUE
