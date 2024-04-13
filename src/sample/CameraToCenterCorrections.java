@@ -57,7 +57,18 @@ public class CameraToCenterCorrections {
         // then the angle from robot center to the target is positive.
 
         //**TODO ?Is it possible to work in the signed strafe distance and signed
-        // fore/aft distance here?
+        // fore/aft distance here? No, don't think so - but the logic for the device,
+        // namely to get the adjacent side of the triangle from robot center to
+        // target to the line through the device parallel to the side of the robot,
+        // is the same. Make a method?
+
+        //**TODO This is actually the robot center to target triangle. We also
+        // need the post-rotation robot center to device triangle. The other
+        // triangle is robot center to a line that bisects the device and
+        // meets the adjacent side of a triangle whose apex is at robot
+        // center. You called this robotCenterDevice[Opposite] but you need
+        // a better name because now you have two triangle with their apexes
+        // at robot center ...
 
         double robotCenterOpposite = 0;
         double robotCenterSignum = Math.signum(pAngleCameraToTarget); // default
@@ -144,7 +155,7 @@ public class CameraToCenterCorrections {
 
     // Instead get robot center to target as above,
     // then add robot center to device (+ or -)
-    //**TODO while being mindful of sign flipping. ?Make use of the signum logic above?
+    //**TODO while being mindful of sign flipping. ?Make use of the camera/signum logic above?
 
     //**TODO Calculate the distance from the device to the target.
     // This is from CenterStageBackdrop but it's cheating because it uses the
@@ -153,6 +164,8 @@ public class CameraToCenterCorrections {
     // target, which doesn't change with rotation, and we know the position of the
     // device in relation to robot center.
 
+
+    //**TODO THIS is wrong - don't use it!
     /*
                           // One last thing: we need the distance from the delivery device
                 // to the AprilTag. This is the hypotenuse of a right triangle.

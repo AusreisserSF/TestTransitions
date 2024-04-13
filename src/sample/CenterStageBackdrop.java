@@ -505,6 +505,7 @@ public class CenterStageBackdrop extends Application {
                 lineRCAH.setStrokeWidth(3.0);
                 pField.getChildren().add(lineRCAH);
 
+                //**TODO It's WRONG to do this here. The robot hasn't been rotated yet!
                 // One last thing: we need the distance from the delivery device
                 // to the AprilTag. This is the hypotenuse of a right triangle.
                 // double deviceHypotenuseSquared = deviceAdjacentSquared + deviceOppositeSquared
