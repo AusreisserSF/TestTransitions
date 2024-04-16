@@ -423,7 +423,7 @@ public class CenterStageBackdrop extends Application {
             // Set the number of degrees to rotate so that the device is facing
             // the AprilTag. Use the FTC convention: positive angle for a CCW
             // turn, negative for CW.
-            double finalTurn = 0.0;
+            double finalTurn;
 
             // The angle degreesFromRobotCenter is always zero or positive. The
             // next if statement works for "BLUE - device left", which is the only
@@ -447,10 +447,31 @@ public class CenterStageBackdrop extends Application {
                 // works for BLUE - device right, AT 3
                 finalTurn = Math.abs(Math.abs(degreesFromRobotCenter) - Math.abs(fromRobotCenter.angle));
 
+            //**TODO clean up conditions ...
+            if (deviceCenterX.get() < aprilTagCenterX.get()) {
+                //**TODO For comparison
+                System.out.println("Inverting final turn based on screen coordinates from " + finalTurn + " to " + -finalTurn);
+                //finalTurn *= -1;
+            }
+
             // The FTC sign of the final turn is the inverse of the sign of the angle
             // from device to target.
-            if (deviceCenterX.get() < aprilTagCenterX.get()) {
-                finalTurn *= -1; // device is left of target, FTC CW
+            if (fromRobotCenter.angle > 0) { // target is left of robot center
+                if (centerStageRobot.deviceOffsetFromRobotCenterPX < 0) {
+                    finalTurn *= -1; // device is right of target, turn FTC CCW
+                } else // pOffsetRobotCenterToDeliveryDevice >= 0
+                    if (Math.abs(centerStageRobot.deviceOffsetFromRobotCenterPX) > robotATOpposite) {
+                        finalTurn *= -1; // device is left of target, turn is negative
+                    }
+            }
+
+            if (fromRobotCenter.angle < 0) { // target is right of robot center
+                if (centerStageRobot.deviceOffsetFromRobotCenterPX > 0) {
+                    finalTurn *= -1; // device is left of target, turn FTC CCW
+                } else // pOffsetRobotCenterToDeliveryDevice >= 0
+                    if (Math.abs(centerStageRobot.deviceOffsetFromRobotCenterPX) <= robotATOpposite) {
+                        finalTurn *= 1; // device is left of target, turn is negative
+                    }
             }
 
             // The angle is correct for FTC but we need to invert for FX.
