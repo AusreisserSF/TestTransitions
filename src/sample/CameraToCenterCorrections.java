@@ -274,8 +274,8 @@ public class CameraToCenterCorrections {
         double rdcPreRotationAngle = Math.toDegrees(Math.asin(rcdPreRotationSin));
         System.out.println("Angle from robot center to right angle between device and target " + rdcPreRotationAngle);
 
-        // Set the number of degrees to rotate so that the device is facing the target.
-        // Use the FTC convention: positive angle for a CCW turn, negative for CW.
+        // Set the angle to rotate so that the device is facing the target. Use
+        // the FTC convention: positive angle for a CCW turn, negative for CW.
         double finalTurn;
 
         // The angle rdcPreRotationAngle is always zero or positive.
@@ -287,20 +287,29 @@ public class CameraToCenterCorrections {
         if (pOffsetRobotCenterToDeliveryDevice < 0.0)
             rdcPreRotationAngle *= -1;
 
+        // Now determine the final FTC sign of the angle to turn the robot so
+        // that the device faces the target. Along the way gather information
+        // to use in determining the distance and sign of the strafe that will
+        // place the device opposite the target.
+        double strafeDistance = rctOpposite; // start with robot center to target distance
+
         // If the signs of the FTC angles from robot center to device and
         // robot center to target are not the same then for the final turn
         // add their absolute values. The robot has to turn further.
-        if (Math.signum(rdcPreRotationAngle) != Math.signum(rctAngle))
+        if (Math.signum(rdcPreRotationAngle) != Math.signum(rctAngle)) {
+            strafeDistance += rcdPreRotationOpposite;
             finalTurn = Math.abs(rdcPreRotationAngle) + Math.abs(rctAngle);
-
-            // If the signs of the FTC angles from robot center to device and
-            // device to target are the same then the angles overlap so for the
+        }
+            // The signs of the FTC angles from robot center to device and
+            // device to target are the same so the angles overlap; for the
             // final turn take the absolute value of their difference.
-        else
+        else {
             // This works for "RED - device left", both AT 4 and AT 6;
             // works for RED - device right, AT 6;
             // works for BLUE - device right, AT 3
+            strafeDistance -= rcdPreRotationOpposite;
             finalTurn = Math.abs(Math.abs(rdcPreRotationAngle) - Math.abs(rctAngle));
+        }
 
         // The FTC sign of the final turn is the inverse of the sign of the angle
         // from device to target.
@@ -322,12 +331,16 @@ public class CameraToCenterCorrections {
                 }
         }
 
-            //**TODO At this point we have enough information to determine the distance
-            // and sign of the strafe that will place the device opposite the target.
+        // The FTC sign of the strafe is the same as that of the angle between the
+        // device and the target.
+        strafeDistance *= Math.signum(finalTurn);
+
+        // We need one more value: the post-rotation distance from the device to
+        // the target.
 
 
-            //**TODO  To calculate the post-rotation distance from the device
-            // to the target we also
+
+            //**TODO  To calculate this we
             // need the post-rotation robot center to device triangle. This
             // triangle is robot center to a line that bisects the device and
             // meets the adjacent side of a triangle whose apex is at robot
@@ -336,18 +349,6 @@ public class CameraToCenterCorrections {
             // at robot center ... rcDevicePostRotation
 
 
-            // Support a strafe that positions the delivery device opposite the AT.
-            // Positive: strafe to the left; negative: strafe to the right.
-            // The sign of the strafe is the same as that of the pOffsetRobotCenterToDeliveryDevice.
-
-            //*TODO Calculate the strafe here but don't calculate it in this
-            // way (based on coordinates).
-            //double distanceToStrafe = aprilTagCenterX.get() - deviceCenterX.get();
-            // System.out.println("Distance to strafe x " + distanceToStrafe);
-
-            // Instead get robot center to target as above,
-            // then add robot center to device (+ or -)
-            //**TODO while being mindful of sign flipping. ?Make use of the camera/signum logic above?
 
             //**TODO Calculate the distance from the device to the target.
             // This is from CenterStageBackdrop but it's cheating because it uses the
@@ -357,18 +358,7 @@ public class CameraToCenterCorrections {
             // device in relation to robot center.
 
 
-            //**TODO THIS is wrong - don't use it!
-    /*
-                          // One last thing: we need the distance from the delivery device
-                // to the AprilTag. This is the hypotenuse of a right triangle.
-                // double deviceHypotenuseSquared = deviceAdjacentSquared + deviceOppositeSquared
-                double deviceAdjacent = deviceCenterY.get() - aprilTagCenterY.get();
-                double deviceOpposite = Math.abs(deviceCenterX.get() - aprilTagCenterX.get());
-                double deviceHypotenuseSquared = Math.pow(deviceAdjacent, 2) + Math.pow(deviceOpposite, 2);
-                double deviceToAprilTag = Math.sqrt(deviceHypotenuseSquared);
-                System.out.println("Distance from device to AprilTag " + deviceToAprilTag);
 
-      */
 
             //**TODO TEMP placeholder
             return new CorrectionData(0, 0, 0, 0);
