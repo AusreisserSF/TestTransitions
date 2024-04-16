@@ -325,14 +325,6 @@ public class CenterStageBackdrop extends Application {
             aprilTagCenterY.set(aprilTagCoord.getY() + aprilTag.getHeight() / 2);
             System.out.println("AprilTag center x " + aprilTagCenterX + ", y " + aprilTagCenterY);
 
-            //*TODO Don't calculate the strafe here and don't calculate it in this
-            // way (based on coordinates).
-            // Support a strafe that positions the delivery device opposite the AT.
-            // Positive: strafe to the left; negative: strafe to the right.
-            double distanceToStrafe = aprilTagCenterX.get() - deviceCenterX.get();
-            System.out.println("Distance to strafe x " + distanceToStrafe);
-            ttStrafe.setByX(distanceToStrafe);
-
             // Get the angle from the camera to the AprilTag.
             double cameraAdjacent = Math.abs(cameraFaceY - aprilTagCenterY.get());
             double cameraOpposite = Math.abs(cameraFaceX - aprilTagCenterX.get());
@@ -388,95 +380,24 @@ public class CenterStageBackdrop extends Application {
             // not include the distance from the camera center to its face. We need this
             // because it is part of the full distance from robot center to target center -
             // so add 1/2 of the height of the camera here.
-            AngleDistance fromRobotCenter = CameraToCenterCorrections.getCorrectedAngleAndDistance(degreesFromCameraToAprilTag,
+            CameraToDeviceCorrections.CorrectionData corrections = CameraToDeviceCorrections.getCameraToDeviceCorrections(degreesFromCameraToAprilTag,
                     distanceFromCameraToAprilTag,
                     centerStageRobot.cameraCenterFromRobotCenterPX + RobotFXCenterStageLG.CAMERA_HEIGHT / 2,
-                    centerStageRobot.cameraOffsetFromRobotCenterPX);
+                    centerStageRobot.cameraOffsetFromRobotCenterPX,
+                    centerStageRobot.deviceCenterFromRobotCenterPX, centerStageRobot.deviceOffsetFromRobotCenterPX);
 
-            //**TODO include with call to getCameraToDeviceCorrections
-            // centerStageRobot.deviceCenterFromRobotCenterPX, centerStageRobot.deviceOffsetFromRobotCenterPX);
+            // In case a strafe was selected from the start parameters.
+            // Support a strafe that positions the delivery device opposite the AT.
+            // Positive: strafe to the left; negative: strafe to the right. So
+            // invert the FTC direction for FX.
+            double finalStrafe = -corrections.strafeDistanceDeviceOppositeTarget;
+            System.out.println("Distance to strafe " + finalStrafe);
+            ttStrafe.setByX(finalStrafe);
 
-            System.out.println("Angle from robot center to AprilTag " + fromRobotCenter.angle);
-            System.out.println("Distance from robot center to AprilTag " + fromRobotCenter.distance);
-
-            // sine of fromRobotCenter.angle = robotATOpposite / fromRobotCenter.distance;
-            double robotATOpposite = Math.sin(Math.toRadians(Math.abs(fromRobotCenter.angle))) * fromRobotCenter.distance;
-            // fromRobotCenter.distance squared = robotATOpposite squared + robotATAdjacent squared
-            double robotATAdjacentSquared = Math.pow(fromRobotCenter.distance, 2) - Math.pow(robotATOpposite, 2);
-            double robotATAdjacent = Math.sqrt(robotATAdjacentSquared);
-
-            // We have the right triangle with a hypotenuse from the center of the robot to
-            // the AprilTag. Now we need the right triangle with a hypotenuse from the center
-            // of the robot to the point where a vertical line from the delivery device
-            // intersects the horizontal line that intersects the centers of all 3 AprilTags.
-            // The opposite side of the triangle is the same as the offset from the center of
-            // the robot to the center of the device.
-            double robotCenterDeviceOpposite = Math.abs(centerStageRobot.deviceOffsetFromRobotCenterPX);
-            double robotDeviceHypotenuseSquared = Math.pow(robotATAdjacent, 2) + Math.pow(robotCenterDeviceOpposite, 2);
-            double robotDeviceHypotenuse = Math.sqrt(robotDeviceHypotenuseSquared);
-
-            // Get the angle at the center of the robot given the triangle defined above.
-            double robotDeviceATSin = robotCenterDeviceOpposite / robotDeviceHypotenuse;
-            double degreesFromRobotCenter = Math.toDegrees(Math.asin(robotDeviceATSin));
-            System.out.println("Degrees from robot center to AprilTag horizontal opposite the device " + degreesFromRobotCenter);
-
-            // Set the number of degrees to rotate so that the device is facing
-            // the AprilTag. Use the FTC convention: positive angle for a CCW
-            // turn, negative for CW.
-            double finalTurn;
-
-            // The angle degreesFromRobotCenter is always zero or positive. The
-            // next if statement works for "BLUE - device left", which is the only
-            // example of this condition.
-            //**TODO TEST degreesFromRobotCenter == 0; should work.
-            if (deviceCenterX.get() > robotCoordX.get())
-                degreesFromRobotCenter *= -1;
-
-            // If the signs of the FTC angles from robot center to device and
-            // robot center to target are not the same then for the final turn
-            // add their absolute values. The robot has to turn further.
-            if (Math.signum(degreesFromRobotCenter) != Math.signum(fromRobotCenter.angle))
-                finalTurn = Math.abs(degreesFromRobotCenter) + Math.abs(fromRobotCenter.angle);
-
-            // If the signs of the FTC angles from robot center to device and
-            // device to target are the same then the angles overlap so for the
-                // final turn take the absolute value of their difference.
-            else
-                // This works for "RED - device left", both AT 4 and AT 6;
-                // works for RED - device right, AT 6;
-                // works for BLUE - device right, AT 3
-                finalTurn = Math.abs(Math.abs(degreesFromRobotCenter) - Math.abs(fromRobotCenter.angle));
-
-            //**TODO clean up conditions ...
-            if (deviceCenterX.get() < aprilTagCenterX.get()) {
-                //**TODO For comparison
-                System.out.println("Inverting final turn based on screen coordinates from " + finalTurn + " to " + -finalTurn);
-                //finalTurn *= -1;
-            }
-
-            // The FTC sign of the final turn is the inverse of the sign of the angle
-            // from device to target.
-            if (fromRobotCenter.angle > 0) { // target is left of robot center
-                if (centerStageRobot.deviceOffsetFromRobotCenterPX < 0) {
-                    finalTurn *= -1; // device is right of target, turn FTC CCW
-                } else // pOffsetRobotCenterToDeliveryDevice >= 0
-                    if (Math.abs(centerStageRobot.deviceOffsetFromRobotCenterPX) > robotATOpposite) {
-                        finalTurn *= -1; // device is left of target, turn is negative
-                    }
-            }
-
-            if (fromRobotCenter.angle < 0) { // target is right of robot center
-                if (centerStageRobot.deviceOffsetFromRobotCenterPX > 0) {
-                    finalTurn *= -1; // device is left of target, turn FTC CCW
-                } else // pOffsetRobotCenterToDeliveryDevice >= 0
-                    if (Math.abs(centerStageRobot.deviceOffsetFromRobotCenterPX) <= robotATOpposite) {
-                        finalTurn *= 1; // device is left of target, turn is negative
-                    }
-            }
-
+            // In case a turn was selected from the start parameters.
             // The angle is correct for FTC but we need to invert for FX.
-            System.out.println("Final FX turn " + -finalTurn);
-            rotateDeviceTowardsAprilTag.setByAngle(-finalTurn);
+            System.out.println("Final FX turn " + -corrections.rotateRobotCenterToAlignDevice);
+            rotateDeviceTowardsAprilTag.setByAngle(-corrections.rotateRobotCenterToAlignDevice);
         });
 
         PauseTransition pauseT = new PauseTransition(Duration.millis(2500));
@@ -522,16 +443,6 @@ public class CenterStageBackdrop extends Application {
                 lineRCAH.getStrokeDashArray().addAll(10.0);
                 lineRCAH.setStrokeWidth(3.0);
                 pField.getChildren().add(lineRCAH);
-
-                //**TODO It's WRONG to do this here. The robot hasn't been rotated yet!
-                // One last thing: we need the distance from the delivery device
-                // to the AprilTag. This is the hypotenuse of a right triangle.
-                // double deviceHypotenuseSquared = deviceAdjacentSquared + deviceOppositeSquared
-                double deviceAdjacent = deviceCenterY.get() - aprilTagCenterY.get();
-                double deviceOpposite = Math.abs(deviceCenterX.get() - aprilTagCenterX.get());
-                double deviceHypotenuseSquared = Math.pow(deviceAdjacent, 2) + Math.pow(deviceOpposite, 2);
-                double deviceToAprilTag = Math.sqrt(deviceHypotenuseSquared);
-                System.out.println("Distance from device to AprilTag " + deviceToAprilTag);
             }
         });
 

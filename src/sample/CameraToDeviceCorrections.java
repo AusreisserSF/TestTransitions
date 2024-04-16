@@ -6,12 +6,9 @@ Notre Dame High School
 November 2022
  */
 
-//**TODO Rename, e.g. CameraToDeviceCorrections ...
-public class CameraToCenterCorrections {
+public class CameraToDeviceCorrections {
 
-    //## Replacement for FTC season 2022 and 2023 getCorrectedAngleAndDistance.
-    //**TODO Extend so that this method returns the angle and distance from the
-    // delivery device to the target.
+    //**TODO OBSOLETE
     public static AngleDistance getCorrectedAngleAndDistance(double pAngleCameraToTarget, double pDistanceCameraToTarget,
                                                              double pDistanceRobotCenterToCameraFace, double pOffsetRobotCenterToCameraCenter) {
 
