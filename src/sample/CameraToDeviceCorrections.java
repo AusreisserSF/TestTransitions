@@ -146,7 +146,7 @@ public class CameraToDeviceCorrections {
 
         // Set the angle to rotate so that the device is facing the target. Use
         // the FTC convention: positive angle for a CCW turn, negative for CW.
-        double finalTurn;
+        double finalTurnFromRobotCenter;
 
         // The angle rdcPreRotationAngle is always zero or positive.
         // The next if statement works for "BLUE - device left", which is the only
@@ -168,7 +168,7 @@ public class CameraToDeviceCorrections {
         // add their absolute values. The robot has to turn further.
         if (Math.signum(rdcPreRotationAngle) != Math.signum(rctAngle)) {
             strafeDistance += rcdPreRotationOpposite;
-            finalTurn = Math.abs(rdcPreRotationAngle) + Math.abs(rctAngle);
+            finalTurnFromRobotCenter = Math.abs(rdcPreRotationAngle) + Math.abs(rctAngle);
         }
         // The signs of the FTC angles from robot center to device and
         // device to target are the same so the angles overlap; for the
@@ -177,49 +177,47 @@ public class CameraToDeviceCorrections {
             // This works for "RED - device left", both AT 4 and AT 6;
             // works for RED - device right, AT 6;
             // works for BLUE - device right, AT 3
-            strafeDistance -= rcdPreRotationOpposite;
-            finalTurn = Math.abs(Math.abs(rdcPreRotationAngle) - Math.abs(rctAngle));
+            strafeDistance = Math.abs(strafeDistance - rcdPreRotationOpposite);
+            finalTurnFromRobotCenter = Math.abs(Math.abs(rdcPreRotationAngle) - Math.abs(rctAngle));
         }
 
         // The FTC sign of the final turn is the inverse of the sign of the angle
         // from device to target.
         if (rctAngle > 0) { // target is left of robot center
             if (pOffsetRobotCenterToDeliveryDevice < 0) {
-                finalTurn *= -1; // device is right of target, turn FTC CCW
+                finalTurnFromRobotCenter *= -1; // device is right of target, turn FTC CCW
             } else // pOffsetRobotCenterToDeliveryDevice >= 0
                 if (Math.abs(pOffsetRobotCenterToDeliveryDevice) > rctOpposite) {
-                    finalTurn *= -1; // device is left of target, turn is negative
+                    finalTurnFromRobotCenter *= -1; // device is left of target, turn is negative
                 }
         }
 
         if (rctAngle < 0) { // target is right of robot center
             if (pOffsetRobotCenterToDeliveryDevice > 0) {
-                finalTurn *= -1; // device is left of target, turn FTC CCW
+                finalTurnFromRobotCenter *= -1; // device is left of target, turn FTC CCW
             } else // pOffsetRobotCenterToDeliveryDevice >= 0
                 if (Math.abs(pOffsetRobotCenterToDeliveryDevice) <= rctOpposite) {
-                    finalTurn *= 1; // device is left of target, turn is negative
+                    finalTurnFromRobotCenter *= 1; // device is left of target, turn is negative
                 }
         }
 
-        // The FTC sign of the strafe is the same as that of the angle between the
-        // device and the target.
-        strafeDistance *= Math.signum(finalTurn);
+        // The FTC sign of the strafe is the same as that of the angle between
+        // robot center and target.
+        strafeDistance *= Math.signum(finalTurnFromRobotCenter);
 
         // After the strafe is complete we need to know the distance from the device
         // to the target.
         double postStrafeDistanceDeviceToTarget = rcdPreRotationAdjacent - pDistanceRobotCenterToDeliveryDevice;
 
-        // We need one more value: the post-rotation distance from the device to
-        // the target.
-
-        // To calculate this we need the triangle formed post-rotation from robot
+        // Calculate the post-rotation distance from the device to target.
+        // For this we need the triangle formed post-rotation from robot
         // center to device. The hypotenuse of this triangle is the line from
         // robot center to target - this line does not change as the robot rotates.
         // The right angle of the triangle is formed by a line from robot center
         // that intersects a line from device to target. The length of the first
         // line is the same as the absolute value of the offset of the device from
         // robot center. The second line forms the basis of the final distance from
-        // device to target. No angles are needed.
+        // device to target.
         // rctDistance squared = pOffsetRobotCenterToDeliveryDevice squared + device
         // to target distance (dtDistance) squared.
         double dtDistancePostRotationSquared = Math.abs(Math.pow(rctDistance, 2) - Math.pow(pOffsetRobotCenterToDeliveryDevice, 2));
@@ -230,7 +228,7 @@ public class CameraToDeviceCorrections {
         dtPostRotationDistance -= pDistanceRobotCenterToDeliveryDevice; // negative increases the distance
         System.out.println("Post-rotation distance from device to target " + dtPostRotationDistance);
 
-        return new CorrectionData(strafeDistance, postStrafeDistanceDeviceToTarget, finalTurn, dtPostRotationDistance);
+        return new CorrectionData(strafeDistance, postStrafeDistanceDeviceToTarget, finalTurnFromRobotCenter, dtPostRotationDistance);
     }
 
     public static class CorrectionData {
