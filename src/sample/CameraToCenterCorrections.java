@@ -55,21 +55,6 @@ public class CameraToCenterCorrections {
         // AND the target is right of the camera (the angle is negative)
         // AND the target is left of robot center (camera "opposite" < abs(offset))
         // then the angle from robot center to the target is positive.
-
-        //**TODO ?Is it possible to work in the signed strafe distance and signed
-        // fore/aft distance here? No, don't think so - but the logic for the device,
-        // namely to get the adjacent side of the triangle from robot center to
-        // target to the line through the device parallel to the side of the robot,
-        // is the same. Make a method?
-
-        //**TODO This is actually the robot center to target triangle. We also
-        // need the post-rotation robot center to device triangle. The other
-        // triangle is robot center to a line that bisects the device and
-        // meets the adjacent side of a triangle whose apex is at robot
-        // center. You called this robotCenterDevice[Opposite] but you need
-        // a better name because now you have two triangle with their apexes
-        // at robot center ...
-
         double robotCenterOpposite = 0;
         double robotCenterSignum = Math.signum(pAngleCameraToTarget); // default
         if (pOffsetRobotCenterToCameraCenter > 0) {
@@ -145,7 +130,7 @@ public class CameraToCenterCorrections {
     // to target can be derived from robot center to target (opposite) and robot center to device
     // pre-rotation (opposite). Note that the adjacent sides of the robot center to target and
     // robot center to device pre-rotation are the same.
-    //**TODO Make naming conform to these triangles (or abbreviations). Need drawings in Dia also.
+    //**TODO Need drawings in Dia.
 
     public static CorrectionData getCameraToDeviceCorrections(double pAngleCameraFaceToTarget, double pDistanceCameraFaceToTarget,
                                                               double pDistanceRobotCenterToCameraFace, double pOffsetRobotCenterToCameraCenter,
@@ -300,9 +285,9 @@ public class CameraToCenterCorrections {
             strafeDistance += rcdPreRotationOpposite;
             finalTurn = Math.abs(rdcPreRotationAngle) + Math.abs(rctAngle);
         }
-            // The signs of the FTC angles from robot center to device and
-            // device to target are the same so the angles overlap; for the
-            // final turn take the absolute value of their difference.
+        // The signs of the FTC angles from robot center to device and
+        // device to target are the same so the angles overlap; for the
+        // final turn take the absolute value of their difference.
         else {
             // This works for "RED - device left", both AT 4 and AT 6;
             // works for RED - device right, AT 6;
@@ -335,54 +320,53 @@ public class CameraToCenterCorrections {
         // device and the target.
         strafeDistance *= Math.signum(finalTurn);
 
+        // After the strafe is complete we need to know the distance from the device
+        // to the target.
+        double postStrafeDistanceDeviceToTarget = rcdPreRotationAdjacent - pDistanceRobotCenterToDeliveryDevice;
+
         // We need one more value: the post-rotation distance from the device to
         // the target.
 
+        // To calculate this we need the triangle formed post-rotation from robot
+        // center to device. The hypotenuse of this triangle is the line from
+        // robot center to target - this line does not change as the robot rotates.
+        // The right angle of the triangle is formed by a line from robot center
+        // that intersects a line from device to target. The length of the first
+        // line is the same as the absolute value of the offset of the device from
+        // robot center. The second line forms the basis of the final distance from
+        // device to target. No angles are needed.
+        // rctDistance squared = pOffsetRobotCenterToDeliveryDevice squared + device
+        // to target distance (dtDistance) squared.
+        double dtDistancePostRotationSquared = Math.abs(Math.pow(rctDistance, 2) - Math.pow(pOffsetRobotCenterToDeliveryDevice, 2));
+        double dtPostRotationDistance = Math.sqrt(dtDistancePostRotationSquared);
 
+        // We're not quite done: the device may be either closer to the target than
+        // robot center or further away. So we need an adjustment.
+        dtPostRotationDistance -= pDistanceRobotCenterToDeliveryDevice; // negative increases the distance
+        System.out.println("Post-rotation distance from device to target " + dtPostRotationDistance);
 
-            //**TODO  To calculate this we
-            // need the post-rotation robot center to device triangle. This
-            // triangle is robot center to a line that bisects the device and
-            // meets the adjacent side of a triangle whose apex is at robot
-            // center. You called this robotCenterDevice[Opposite] but you need
-            // a better name because now you have two triangles with their apexes
-            // at robot center ... rcDevicePostRotation
-
-
-
-            //**TODO Calculate the distance from the device to the target.
-            // This is from CenterStageBackdrop but it's cheating because it uses the
-            // position of the device *after* the JavaFX rotation. The calculation *can* be
-            // done here because we know the distance from the center of the robot to the
-            // target, which doesn't change with rotation, and we know the position of the
-            // device in relation to robot center.
-
-
-
-
-            //**TODO TEMP placeholder
-            return new CorrectionData(0, 0, 0, 0);
-        }
-
-        public static class CorrectionData {
-
-            public final double strafeDistanceDeviceOppositeTarget; // FTC: positive to the left, negative to the right
-            public final double postStrafeDistanceDeviceToTarget;
-
-            // Amount by which to rotate the robot about its center so that the device
-            // points at the target.
-            public final double rotateRobotCenterToAlignDevice;
-
-            // Distance from the device to the target after rotation.
-            public final double postRotationDeviceToTargetDistance;
-
-            public CorrectionData(double pStrafeDistanceDeviceOppositeTarget, double pPostStrafeDistanceDeviceToTarget,
-                                  double pRotateRobotCenterToAlignDevice, double pPostRotationDeviceToTargetDistance) {
-                strafeDistanceDeviceOppositeTarget = pStrafeDistanceDeviceOppositeTarget;
-                postStrafeDistanceDeviceToTarget = pPostStrafeDistanceDeviceToTarget;
-                rotateRobotCenterToAlignDevice = pRotateRobotCenterToAlignDevice;
-                postRotationDeviceToTargetDistance = pPostRotationDeviceToTargetDistance;
-            }
-        }
-
+        return new CorrectionData(strafeDistance, postStrafeDistanceDeviceToTarget, finalTurn, dtPostRotationDistance);
     }
+
+    public static class CorrectionData {
+
+        public final double strafeDistanceDeviceOppositeTarget; // FTC: positive to the left, negative to the right
+        public final double postStrafeDistanceDeviceToTarget;
+
+        // Amount by which to rotate the robot about its center so that the device
+        // points at the target.
+        public final double rotateRobotCenterToAlignDevice;
+
+        // Distance from the device to the target after rotation.
+        public final double postRotationDeviceToTargetDistance;
+
+        public CorrectionData(double pStrafeDistanceDeviceOppositeTarget, double pPostStrafeDistanceDeviceToTarget,
+                              double pRotateRobotCenterToAlignDevice, double pPostRotationDeviceToTargetDistance) {
+            strafeDistanceDeviceOppositeTarget = pStrafeDistanceDeviceOppositeTarget;
+            postStrafeDistanceDeviceToTarget = pPostStrafeDistanceDeviceToTarget;
+            rotateRobotCenterToAlignDevice = pRotateRobotCenterToAlignDevice;
+            postRotationDeviceToTargetDistance = pPostRotationDeviceToTargetDistance;
+        }
+    }
+
+}
