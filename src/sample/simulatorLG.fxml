@@ -124,8 +124,8 @@
                 <TextField fx:id="camera_offset_from_robot_center" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                 <TextField fx:id="device_center_from_robot_center" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                 <TextField fx:id="device_offset_from_robot_center" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                <TextField fx:id="position_x" text="36.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-                <TextField fx:id="position_y" text="36.0" GridPane.columnIndex="2" GridPane.rowIndex="6" />
+                <TextField fx:id="robot_position_at_backdrop_x" text="36.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                <TextField fx:id="robot_position_at_backdrop_y" text="36.0" GridPane.columnIndex="2" GridPane.rowIndex="6" />
                 <Spinner fx:id="april_tag_spinner" editable="true" GridPane.columnIndex="1" GridPane.rowIndex="7" />
 
                 <RadioButton fx:id="strafe_to_id" selected="true" text="Strafe to" GridPane.columnIndex="1" GridPane.rowIndex="8">

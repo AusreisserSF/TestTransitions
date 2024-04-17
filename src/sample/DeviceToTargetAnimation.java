@@ -48,6 +48,7 @@ public class DeviceToTargetAnimation {
         //**TODO The curves are a proof-of-concept. They will be different depending
         // on the user's selection for the final position in front of the backdrop.
         // CubicCurveTo constructor parameters: controlX1, controlX2, controlY1, controlY2, endX, endY
+        // The coordinates is those of the center of the robot.
         float rotation;
         if (pAlliance == RobotConstants.Alliance.BLUE) {
             path.getElements().add(new CubicCurveTo(400, 300, 300, 300, 200, 275));

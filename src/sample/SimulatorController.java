@@ -28,9 +28,9 @@ public class SimulatorController {
     @FXML
     public TextField device_offset_from_robot_center;
     @FXML
-    public TextField position_x;
+    public TextField robot_position_at_backdrop_x;
     @FXML
-    public TextField position_y;
+    public TextField robot_position_at_backdrop_y;
     @FXML
     public Spinner<Integer> april_tag_spinner;
     @FXML
