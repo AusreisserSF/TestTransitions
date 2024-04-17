@@ -17,6 +17,7 @@ public class DeviceToTargetAnimation {
     private final Pane field;
     private final RobotFXCenterStageLG centerStageRobot;
     private final Group robotGroup;
+    private final StartParameterValidation startParameters;
 
     private double robotCoordX;
     private double robotCoordY;
@@ -25,11 +26,13 @@ public class DeviceToTargetAnimation {
     private double aprilTagCenterX;
     private double aprilTagCenterY;
 
-    public DeviceToTargetAnimation(SimulatorController pController, Pane pField, RobotFXCenterStageLG pCenterStageRobot) {
+    public DeviceToTargetAnimation(SimulatorController pController, Pane pField, RobotFXCenterStageLG pCenterStageRobot,
+                                   StartParameterValidation pStartParameters) {
         controller = pController;
         field = pField;
         centerStageRobot = pCenterStageRobot;
         robotGroup = centerStageRobot.getRobot();
+        startParameters = pStartParameters;
     }
 
     public void runDeviceToTargetAnimation(RobotConstants.Alliance pAlliance, Button pPlayPauseButton) {
@@ -49,12 +52,16 @@ public class DeviceToTargetAnimation {
         // on the user's selection for the final position in front of the backdrop.
         // CubicCurveTo constructor parameters: controlX1, controlX2, controlY1, controlY2, endX, endY
         // The coordinates is those of the center of the robot.
+        double robotPositionAtBackdropX = startParameters.getStartParameter(StartParameterValidation.StartParameter.ROBOT_POSITION_AT_BACKDROP_X) * FieldFXCenterStageBackdropLG.PX_PER_INCH;
+        double robotPositionAtBackdropY = startParameters.getStartParameter(StartParameterValidation.StartParameter.ROBOT_POSITION_AT_BACKDROP_Y) * FieldFXCenterStageBackdropLG.PX_PER_INCH;
         float rotation;
         if (pAlliance == RobotConstants.Alliance.BLUE) {
-            path.getElements().add(new CubicCurveTo(400, 300, 300, 300, 200, 275));
+            //path.getElements().add(new CubicCurveTo(400, 300, 300, 300, 200, 275));
+            path.getElements().add(new CubicCurveTo(400, 300, 300, 300, robotPositionAtBackdropX,  robotPositionAtBackdropY));
             rotation = -90.0f;
         } else { // RED
-            path.getElements().add(new CubicCurveTo(200, 300, 300, 300, 400, 275));
+            //path.getElements().add(new CubicCurveTo(200, 300, 300, 300, 400, 275));
+            path.getElements().add(new CubicCurveTo(200, 300, 300, 300,  robotPositionAtBackdropX,  robotPositionAtBackdropY));
             rotation = 90.0f;
         }
 
@@ -157,6 +164,7 @@ public class DeviceToTargetAnimation {
             Point2D deviceCoord = deviceOnRobot.localToScene(deviceOnRobot.getCenterX(), deviceOnRobot.getCenterY());
             deviceCenterX = deviceCoord.getX();
             deviceCenterY = deviceCoord.getY();
+            System.out.println("Device center x " + deviceCenterX + ", y " + deviceCenterY);
 
             // Get the coordinates of the target AprilTag.
             Integer targetAprilTag = controller.april_tag_spinner.getValue();

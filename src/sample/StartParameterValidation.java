@@ -16,16 +16,13 @@ import java.util.EnumMap;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-//**TODO For the animation the robot's wheels are shown outside
-// the body; this allows for a better representation of the camera
-// and delivery device.
 public class StartParameterValidation {
     public static final double MIN_ROBOT_BODY_DIMENSION = 12.0;
     public static final double MAX_ROBOT_BODY_DIMENSION = 18.0;
-    public static final double ROBOT_POSITION_AT_BACKDROP_X_MIN = 0.0; //**TODO get inches
-    public static final double ROBOT_POSITION_AT_BACKDROP_X_MAX = 0.0; //**TODO get inches
-    public static final double ROBOT_POSITION_AT_BACKDROP_Y_MIN = 0.0; //**TODO get inches
-    public static final double ROBOT_POSITION_AT_BACKDROP_Y_MAX = 0.0; //**TODO get inches
+    public static final double ROBOT_POSITION_AT_BACKDROP_X_MIN_PX = 175.0;
+    public static final double ROBOT_POSITION_AT_BACKDROP_X_MAX_PX = 425.0;
+    public static final double ROBOT_POSITION_AT_BACKDROP_Y_MIN_PX = 225.0;
+    public static final double ROBOT_POSITION_AT_BACKDROP_Y_MAX_PX = 325.0;
 
     public enum StartParameter {
         ROBOT_WIDTH, ROBOT_HEIGHT,
@@ -41,7 +38,8 @@ public class StartParameterValidation {
 
         // Create one listener for each start parameter that takes a range of double values.
         // Robot width.
-        startParameters.put(StartParameter.ROBOT_WIDTH, new StartParameterInfo(0.0, false));
+        //**TODO You can't put the parameter into the map until it has been validated!
+        startParameters.put(StartParameter.ROBOT_WIDTH, new StartParameterInfo(pSimulatorController.robot_width.getText(), false));
         PredicateChangeListener widthListener = (new PredicateChangeListener(
                 widthP -> {
                     // If the user doesn't enter a value for the width the animation runs
@@ -61,7 +59,7 @@ public class StartParameterValidation {
         validateStartParameter(pSimulatorController.robot_width, widthListener);
 
         // Robot height.
-        startParameters.put(StartParameter.ROBOT_HEIGHT, new StartParameterInfo(0.0, false));
+        startParameters.put(StartParameter.ROBOT_HEIGHT, new StartParameterInfo(pSimulatorController.robot_height.getText(), false));
         PredicateChangeListener heightListener = (new PredicateChangeListener(
                 heightP -> {
                     // If the user doesn't enter a value for the height the animation runs
@@ -83,7 +81,7 @@ public class StartParameterValidation {
         // CAMERA_CENTER_FROM_ROBOT_CENTER_ID
         // constraint - camera top or bottom edge may be no more than half the height of the robot from the center
         // the edge depends on the sign of the parameter.
-        startParameters.put(StartParameter.CAMERA_CENTER_FROM_ROBOT_CENTER, new StartParameterInfo(0.0, true));
+        startParameters.put(StartParameter.CAMERA_CENTER_FROM_ROBOT_CENTER, new StartParameterInfo(pSimulatorController.camera_center_from_robot_center.getText(), true));
         PredicateChangeListener cameraCenterListener = (new PredicateChangeListener(
                 cameraCenterP -> {
                     // If the user doesn't enter a value the animation runs but when the
@@ -110,7 +108,7 @@ public class StartParameterValidation {
         // CAMERA_OFFSET_FROM_ROBOT_CENTER_ID
         // constraint - camera left or right edge may be no more than half the width of the robot from the center
         // the edge depends on the sign of the parameter.
-        startParameters.put(StartParameter.CAMERA_OFFSET_FROM_ROBOT_CENTER, new StartParameterInfo(0.0, true));
+        startParameters.put(StartParameter.CAMERA_OFFSET_FROM_ROBOT_CENTER, new StartParameterInfo(pSimulatorController.camera_offset_from_robot_center.getText(), true));
         PredicateChangeListener cameraOffsetListener = (new PredicateChangeListener(
                 cameraOffsetP -> {
                     // If the user doesn't enter a value the animation runs but when the
@@ -136,7 +134,7 @@ public class StartParameterValidation {
         // DEVICE_CENTER_FROM_ROBOT_CENTER_ID
         // constraint - device top or bottom edge may be no more than half the height of the robot from the center
         // the edge depends on the sign of the parameter.
-        startParameters.put(StartParameter.DEVICE_CENTER_FROM_ROBOT_CENTER, new StartParameterInfo(0.0, true));
+        startParameters.put(StartParameter.DEVICE_CENTER_FROM_ROBOT_CENTER, new StartParameterInfo(pSimulatorController.device_center_from_robot_center.getText(), true));
         PredicateChangeListener deviceCenterListener = (new PredicateChangeListener(
                 deviceCenterP -> {
                     // If the user doesn't enter a value the animation runs but when the
@@ -162,7 +160,7 @@ public class StartParameterValidation {
         // DEVICE_OFFSET_FROM_ROBOT_CENTER_ID
         // constraint - device left or right edge may be no more than half the width of the robot from the center
         // the edge depends on the sign of the parameter.
-        startParameters.put(StartParameter.DEVICE_OFFSET_FROM_ROBOT_CENTER, new StartParameterInfo(0.0, true));
+        startParameters.put(StartParameter.DEVICE_OFFSET_FROM_ROBOT_CENTER, new StartParameterInfo(pSimulatorController.device_offset_from_robot_center.getText(), true));
         PredicateChangeListener deviceOffsetListener = (new PredicateChangeListener(
                 deviceOffsetP -> {
                     // If the user doesn't enter a value the animation runs but when the
@@ -197,7 +195,7 @@ public class StartParameterValidation {
 
         // ROBOT_POSITION_AT_BACKDROP_X
         // constraints: center x no less than 175 PX, no greater than 425 PX
-        startParameters.put(StartParameter.ROBOT_POSITION_AT_BACKDROP_X, new StartParameterInfo(0.0, true));
+        startParameters.put(StartParameter.ROBOT_POSITION_AT_BACKDROP_X, new StartParameterInfo(pSimulatorController.robot_position_at_backdrop_x.getText(), true));
         PredicateChangeListener backdropXListener = (new PredicateChangeListener(
                 backdropXP -> {
                     // If the user doesn't enter a value the animation runs but when the
@@ -208,9 +206,9 @@ public class StartParameterValidation {
 
                     // Make sure that the robot's x position at the backdrop has already been set.
                     StartParameterInfo backdropXInfo = startParameters.get(StartParameter.ROBOT_POSITION_AT_BACKDROP_X);
-                    backdropXInfo.setParameterValue(backdropXP);
-                    boolean backdropXValid = (backdropXInfo.getParameterValue() > ROBOT_POSITION_AT_BACKDROP_X_MIN &&
-                            backdropXInfo.getParameterValue() < ROBOT_POSITION_AT_BACKDROP_X_MAX);
+                    backdropXInfo.setParameterValue(backdropXP * FieldFXCenterStageBackdropLG.PX_PER_INCH);
+                    boolean backdropXValid = (backdropXInfo.getParameterValue() >= ROBOT_POSITION_AT_BACKDROP_X_MIN_PX &&
+                            backdropXInfo.getParameterValue() <= ROBOT_POSITION_AT_BACKDROP_X_MAX_PX);
                     backdropXInfo.setValidity(backdropXValid);
                     return backdropXValid;
                 },
@@ -220,7 +218,7 @@ public class StartParameterValidation {
 
         // ROBOT_POSITION_AT_BACKDROP_Y
         // constraints: center y no less than 225 PX, no greater than 325 PX.
-        startParameters.put(StartParameter.ROBOT_POSITION_AT_BACKDROP_Y, new StartParameterInfo(0.0, true));
+        startParameters.put(StartParameter.ROBOT_POSITION_AT_BACKDROP_Y, new StartParameterInfo(pSimulatorController.robot_position_at_backdrop_y.getText(), true));
         PredicateChangeListener backdropYListener = (new PredicateChangeListener(
                 backdropYP -> {
                     // If the user doesn't enter a value the animation runs but when the
@@ -231,9 +229,9 @@ public class StartParameterValidation {
 
                     // Make sure that the robot's y position at the backdrop has already been set.
                     StartParameterInfo backdropYInfo = startParameters.get(StartParameter.ROBOT_POSITION_AT_BACKDROP_Y);
-                    backdropYInfo.setParameterValue(backdropYP);
-                    boolean backdropYValid = (backdropYInfo.getParameterValue() > ROBOT_POSITION_AT_BACKDROP_Y_MIN &&
-                            backdropYInfo.getParameterValue() < ROBOT_POSITION_AT_BACKDROP_Y_MAX);
+                    backdropYInfo.setParameterValue(backdropYP * FieldFXCenterStageBackdropLG.PX_PER_INCH);
+                    boolean backdropYValid = (backdropYInfo.getParameterValue() >= ROBOT_POSITION_AT_BACKDROP_Y_MIN_PX &&
+                            backdropYInfo.getParameterValue() <= ROBOT_POSITION_AT_BACKDROP_Y_MAX_PX);
                     backdropYInfo.setValidity(backdropYValid);
                     return backdropYValid;
                 },
@@ -248,7 +246,6 @@ public class StartParameterValidation {
     }
 
     public boolean allStartParametersValid() {
-        boolean allValid = true;
         Optional<StartParameterInfo> invalidEntry = startParameters.values().stream()
                 .filter(e -> !e.getValidity())
                 .findAny();
@@ -257,8 +254,8 @@ public class StartParameterValidation {
 
     private void validateStartParameter(TextField pTextField,
                                         PredicateChangeListener pPredicateChangeListener) {
-
-        ObjectProperty<Double> valueProperty = new SimpleObjectProperty<>(0.0);
+        double initialValue = Double.parseDouble(pTextField.getText());
+        ObjectProperty<Double> valueProperty = new SimpleObjectProperty<>(initialValue);
         TextFormatter<Double> textFormatter = new TextFormatter<>(new DoubleStringConverter());
         textFormatter.valueProperty().bindBidirectional(valueProperty);
         pTextField.setTextFormatter(textFormatter);
@@ -269,8 +266,8 @@ public class StartParameterValidation {
         private double parameterValue;
         private boolean valid;
 
-        public StartParameterInfo(double pParameterValue, boolean pValid) {
-            parameterValue = pParameterValue;
+        public StartParameterInfo(String pParameterValue, boolean pValid) {
+            parameterValue = Double.parseDouble(pParameterValue);
             valid = pValid;
         }
 

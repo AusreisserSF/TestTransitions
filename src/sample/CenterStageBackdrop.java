@@ -141,7 +141,7 @@ public class CenterStageBackdrop extends Application {
             // the target.
             //**TODO System.out.println() -- all start parameters.
 
-            DeviceToTargetAnimation animation = new DeviceToTargetAnimation(controller, field, centerStageRobot);
+            DeviceToTargetAnimation animation = new DeviceToTargetAnimation(controller, field, centerStageRobot, startParameterValidation);
             animation.runDeviceToTargetAnimation(alliance, playPauseButton);
         });
 
