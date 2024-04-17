@@ -27,7 +27,7 @@ public class StartParameterValidation {
         ROBOT_WIDTH, ROBOT_HEIGHT,
         CAMERA_CENTER_FROM_ROBOT_CENTER, CAMERA_OFFSET_FROM_ROBOT_CENTER,
         DEVICE_CENTER_FROM_ROBOT_CENTER, DEVICE_OFFSET_FROM_ROBOT_CENTER,
-        POSITION_X_ID, POSITION_Y_ID
+        ROBOT_POSITION_AT_BACKDROP_X, ROBOT_POSITION_AT_BACKDROP_Y
     }
 
     private final EnumMap<StartParameter, StartParameterInfo> startParameters =
@@ -35,8 +35,7 @@ public class StartParameterValidation {
 
     public StartParameterValidation(SimulatorController pSimulatorController) {
 
-        //**TODO One listener for each start parameter with a range of double values.
-
+        // Create one listener for each start parameter that takes a range of double values.
         // Robot width.
         startParameters.put(StartParameter.ROBOT_WIDTH, new StartParameterInfo(0.0, false));
         PredicateChangeListener widthListener = (new PredicateChangeListener(
@@ -184,13 +183,19 @@ public class StartParameterValidation {
         validateStartParameter(pSimulatorController.device_offset_from_robot_center, deviceOffsetListener);
 
         //**TODO There must be limits on the approach position - neither
-        // too close nor too far left or right (camera field of view?)
-        // nor too far from the backdrop.
+        // too close [nor too far left or right (camera field of view?)]
+        // nor too far from the backdrop (must be in the second row of tiles).
+        // Position by drag-and-drop of marker? Upper left? center?
 
         //## Normally you would want to position the robot opposite the
         // target AprilTag but you can use the values below to test different
         // positions.
-        // POSITION_X_ID, POSITION_Y_ID
+
+        //  ROBOT_POSITION_AT_BACKDROP_X
+
+
+
+        //  ROBOT_POSITION_AT_BACKDROP_Y
 
     }
 

@@ -105,8 +105,8 @@ public class CenterStageBackdrop extends Application {
 
             playPauseButton.removeEventHandler(ActionEvent.ACTION, event.get());
 
-            //**TODO How do you freeze the start parameters after the Play button has been
-            // hit?
+            // Freeze the start parameters after the Play button has been hit.
+            controller.start_parameters.setDisable(true);
 
             //**TODO Here it looks like the position of the robot is that
             // of the upper left corner; Paths use the center point.
@@ -135,6 +135,11 @@ public class CenterStageBackdrop extends Application {
 
             Group robot = centerStageRobot.getRobot();
             field.getChildren().add(robot);
+
+            // Animate the movements of the robot from its starting position
+            // to its final position in which the delivery device is aligned with
+            // the target.
+            //**TODO System.out.println() -- all start parameters.
 
             DeviceToTargetAnimation animation = new DeviceToTargetAnimation(controller, field, centerStageRobot);
             animation.runDeviceToTargetAnimation(alliance, playPauseButton);

@@ -3,6 +3,7 @@ package sample;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 
 public class SimulatorController {
@@ -11,6 +12,8 @@ public class SimulatorController {
     public BorderPane ftc_center_stage_display;
     @FXML
     public Pane field;
+    @FXML
+    public GridPane start_parameters;
     public Label alliance;
     @FXML
     public TextField robot_width;
