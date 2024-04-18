@@ -80,6 +80,7 @@ public class FieldFXCenterStageBackdropLG {
         return collidables;
     }
 
+    //**TODO 4/18/2024 Spacing is still not quite right. ??Exact thickness of border?? See getInsets().
     private void initializeField() {
         //**TODO Once you work out the spacing move setBorder to the end.
         field.setBorder(new Border(new BorderStroke(Color.BLACK,
@@ -94,8 +95,8 @@ public class FieldFXCenterStageBackdropLG {
         Line hLine;
         for (int i = 1; i < 4; i++) {
             // vertical
-            vLine = new Line(TILE_DIMENSIONS * i, PX_PER_INCH,
-                    TILE_DIMENSIONS * i, VIEW_HEIGHT - (PX_PER_INCH * 2));
+            vLine = new Line(TILE_DIMENSIONS * i, FIELD_OUTSIDE_BORDER_SIZE,
+                    TILE_DIMENSIONS * i, VIEW_HEIGHT - (FIELD_OUTSIDE_BORDER_SIZE * 2));
             vLine.setStroke(Color.DIMGRAY);
             vLine.setStrokeWidth(3.0); //**TODO Do not hardcode
             field.getChildren().add(vLine);
@@ -104,7 +105,7 @@ public class FieldFXCenterStageBackdropLG {
         // Center Stage: partial field: three tiles
         for (int i = 1; i < 3; i++) {
             // horizontal
-            hLine = new Line(PX_PER_INCH, (TILE_DIMENSIONS * i) + PX_PER_INCH, VIEW_WIDTH - (PX_PER_INCH * 2), (TILE_DIMENSIONS * i) + PX_PER_INCH);
+            hLine = new Line(FIELD_OUTSIDE_BORDER_SIZE, (TILE_DIMENSIONS * i) + FIELD_OUTSIDE_BORDER_SIZE, VIEW_WIDTH - (FIELD_OUTSIDE_BORDER_SIZE * 2), (TILE_DIMENSIONS * i) + FIELD_OUTSIDE_BORDER_SIZE);
             hLine.setStroke(Color.DIMGRAY);
             hLine.setStrokeWidth(3.0);
             field.getChildren().add(hLine);
@@ -157,15 +158,15 @@ public class FieldFXCenterStageBackdropLG {
             aprilTagRightStack.getChildren().add(new Text("3"));
 
             // Place the Backstage tape lines according to the field assembly guide.
-            Line backstageBoundaryBlue = new Line(PX_PER_INCH, TILE_DIMENSIONS,
-                    PX_PER_INCH + (TILE_DIMENSIONS * 2) + BACKSTAGE_BOUNDARY_TO_ANGLE, TILE_DIMENSIONS);
+            Line backstageBoundaryBlue = new Line(FIELD_OUTSIDE_BORDER_SIZE, TILE_DIMENSIONS,
+                    FIELD_OUTSIDE_BORDER_SIZE + (TILE_DIMENSIONS * 2) + BACKSTAGE_BOUNDARY_TO_ANGLE, TILE_DIMENSIONS);
             backstageBoundaryBlue.setStroke(Color.BLUE);
             backstageBoundaryBlue.setStrokeWidth(TAPE_WIDTH);
             backstageBoundaryBlue.setStrokeLineJoin(StrokeLineJoin.MITER);
             field.getChildren().add(backstageBoundaryBlue);
 
-            Line backstageAngledLineBlue = new Line(PX_PER_INCH + (TILE_DIMENSIONS * 2) + BACKSTAGE_BOUNDARY_TO_ANGLE,
-                    TILE_DIMENSIONS, TILE_DIMENSIONS * 3, PX_PER_INCH);
+            Line backstageAngledLineBlue = new Line(FIELD_OUTSIDE_BORDER_SIZE + (TILE_DIMENSIONS * 2) + BACKSTAGE_BOUNDARY_TO_ANGLE,
+                    TILE_DIMENSIONS, TILE_DIMENSIONS * 3, FIELD_OUTSIDE_BORDER_SIZE);
             backstageAngledLineBlue.setStroke(Color.BLUE);
             backstageAngledLineBlue.setStrokeWidth(TAPE_WIDTH);
             backstageAngledLineBlue.setStrokeLineJoin(StrokeLineJoin.MITER);
@@ -181,15 +182,15 @@ public class FieldFXCenterStageBackdropLG {
             aprilTagRightRect.setId(APRIL_TAG_6_ID);
             aprilTagRightStack.getChildren().add(new Text("6"));
 
-            Line backstageAngledLineRed = new Line(0,
-                    0, TILE_DIMENSIONS - BACKSTAGE_BOUNDARY_TO_ANGLE, TILE_DIMENSIONS);
+            Line backstageAngledLineRed = new Line(FIELD_OUTSIDE_BORDER_SIZE,
+                    FIELD_OUTSIDE_BORDER_SIZE, TILE_DIMENSIONS - BACKSTAGE_BOUNDARY_TO_ANGLE, TILE_DIMENSIONS);
             backstageAngledLineRed.setStroke(Color.RED);
             backstageAngledLineRed.setStrokeWidth(TAPE_WIDTH);
             backstageAngledLineRed.setStrokeLineJoin(StrokeLineJoin.MITER);
             field.getChildren().add(backstageAngledLineRed);
 
             Line backstageBoundaryRed = new Line(TILE_DIMENSIONS - BACKSTAGE_BOUNDARY_TO_ANGLE, TILE_DIMENSIONS,
-                    TILE_DIMENSIONS * 3, TILE_DIMENSIONS);
+                    (TILE_DIMENSIONS * 3) - FIELD_OUTSIDE_BORDER_SIZE, TILE_DIMENSIONS);
             backstageBoundaryRed.setStroke(Color.RED);
             backstageBoundaryRed.setStrokeWidth(TAPE_WIDTH);
             backstageBoundaryRed.setStrokeLineJoin(StrokeLineJoin.MITER);

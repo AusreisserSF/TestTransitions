@@ -7,10 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceDialog;
-import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.TilePane;
@@ -57,7 +54,7 @@ public class CenterStageBackdrop extends Application {
         // the root scene.
         pStage.setScene(rootScene); // reset to primary Pane
 
-        FieldFXCenterStageBackdropLG fieldCenterStageBackdrop = new FieldFXCenterStageBackdropLG(alliance, field);
+        new FieldFXCenterStageBackdropLG(alliance, field); // show the field
 
         // Show the alliance id in its color.
         controller.alliance.setText(allianceString);
@@ -129,21 +126,35 @@ public class CenterStageBackdrop extends Application {
                 startingRotation = -90.0;
             }
 
+            // Collect start parameters.
+            double cameraCenterFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_CENTER_FROM_ROBOT_CENTER);
+            double cameraOffsetFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_OFFSET_FROM_ROBOT_CENTER);
+            double deviceCenterFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.DEVICE_CENTER_FROM_ROBOT_CENTER);
+            double deviceOffsetFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.DEVICE_OFFSET_FROM_ROBOT_CENTER);
+            double robotPositionAtBackdropX = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_POSITION_AT_BACKDROP_X) * FieldFXCenterStageBackdropLG.PX_PER_INCH;
+            double robotPositionAtBackdropY = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_POSITION_AT_BACKDROP_Y) * FieldFXCenterStageBackdropLG.PX_PER_INCH;
+            Integer targetAprilTag = controller.april_tag_spinner.getValue();
+            String radioButtonText = ((RadioButton) controller.approach_toggle.getSelectedToggle()).getText();
+
             centerStageRobot = new RobotFXCenterStageLG(robotWidthIn, robotHeightIn, Color.GREEN,
-                    startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_CENTER_FROM_ROBOT_CENTER),
-                    startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_OFFSET_FROM_ROBOT_CENTER),
-                    startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.DEVICE_CENTER_FROM_ROBOT_CENTER),
-                    startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.DEVICE_OFFSET_FROM_ROBOT_CENTER),
+                    cameraCenterFromRobotCenter, cameraOffsetFromRobotCenter, deviceCenterFromRobotCenter, deviceOffsetFromRobotCenter,
                     startingPosition, startingRotation);
 
             Group robot = centerStageRobot.getRobot();
             field.getChildren().add(robot);
 
+            System.out.println("Alliance " + alliance);
+            System.out.println("Camera center from robot center " + cameraCenterFromRobotCenter);
+            System.out.println("Camera offset from robot center " + cameraOffsetFromRobotCenter);
+            System.out.println("Device center from robot center " + deviceCenterFromRobotCenter);
+            System.out.println("Device offset from robot center " + deviceOffsetFromRobotCenter);
+            System.out.println("Position at backdrop " + robotPositionAtBackdropX + ", y " + robotPositionAtBackdropY);
+            System.out.println("AprilTag Id " + targetAprilTag);
+            System.out.println("Approach " + radioButtonText);
+
             // Animate the movements of the robot from its starting position
             // to its final position in which the delivery device is aligned with
             // the target.
-            //**TODO System.out.println() -- all start parameters.
-
             DeviceToTargetAnimation animation = new DeviceToTargetAnimation(controller, field, centerStageRobot, startParameterValidation);
             animation.runDeviceToTargetAnimation(alliance, playPauseButton);
         });
