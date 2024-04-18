@@ -196,16 +196,6 @@ public class StartParameterValidation {
 
         validateStartParameter(pSimulatorController.device_offset_from_robot_center, deviceOffsetListener);
 
-        //**TODO There must be limits on the approach position - neither
-        // too close [nor too far left or right (camera field of view?)]
-        // nor too far from the backdrop (must be in the second row of tiles).
-        // Set default position to the center of the center tile.
-        // Position by drag-and-drop of marker? Upper left? center?
-
-        //## Normally you would want to position the robot opposite the
-        // target AprilTag but you can use the values below to test different
-        // positions. Default position is 36.0 in x, 36.0 in y.
-
         // ROBOT_POSITION_AT_BACKDROP_X
         // constraints: center x no less than 175 PX, no greater than 425 PX
         startParameters.put(StartParameter.ROBOT_POSITION_AT_BACKDROP_X,
@@ -259,9 +249,12 @@ public class StartParameterValidation {
         validateStartParameter(pSimulatorController.robot_position_at_backdrop_y, backdropYListener);
     }
 
-    //**TODO What if the parameter is not valid?
+    // This method must only be called after all parameters have been validated.
     public double getStartParameter(StartParameter pSelectedParameter) {
-        return startParameters.get(pSelectedParameter).getParameterValue();
+        StartParameterInfo info = startParameters.get(pSelectedParameter);
+        if (!info.valid)
+            throw new IllegalStateException("Requested start parameter " + pSelectedParameter + " is not valid");
+        return info.parameterValue;
     }
 
     public boolean allStartParametersValid() {
@@ -325,9 +318,7 @@ public class StartParameterValidation {
                 errorAlert.setHeaderText("Input not valid");
                 errorAlert.setContentText(errorMsg);
                 errorAlert.showAndWait();
-            } else
-                //**TODO TEMP
-                System.out.println("Value changed -> Old Value: " + oldValue + ", New Value: " + newValue);
+            }
         }
     }
 

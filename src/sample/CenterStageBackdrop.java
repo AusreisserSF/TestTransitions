@@ -103,13 +103,17 @@ public class CenterStageBackdrop extends Application {
                 return;
             }
 
+            //**TODO Is there a way to validate the approach position by the
+            // camera's field of view? Yes, if you make room on the start paramters
+            // screen and set a parameter for it.
+
             playPauseButton.removeEventHandler(ActionEvent.ACTION, event.get());
 
             // Freeze the start parameters after the Play button has been hit.
             controller.start_parameters.setDisable(true);
 
-            //**TODO Here it looks like the position of the robot is that
-            // of the upper left corner; Paths use the center point.
+            //## Here it looks like the position of the robot is that of the
+            // upper left corner; Paths use the center point.
 
             // Place the robot on the field with the dimensions entered by the user.
             double robotWidthIn = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_WIDTH);
@@ -189,7 +193,7 @@ public class CenterStageBackdrop extends Application {
         return allianceSelection;
     }
 
-    //**TODO Not using these but don't want to lose track of them.
+    //**TODO Not using these methods but don't want to lose track of them.
     // Given the screen coordinates of a corner of a rectangle and its rotation angle,
     // get the screen coordinates of the center of the rectangle.
     // The angle is in the FTC range (0 to +180 not inclusive, 0 to -180 inclusive) but

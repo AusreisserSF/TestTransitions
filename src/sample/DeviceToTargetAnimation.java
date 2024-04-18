@@ -80,8 +80,9 @@ public class DeviceToTargetAnimation {
         // strafe is only known after the ParallelTransition is complete.
         TranslateTransition ttStrafe = new TranslateTransition(Duration.millis(2000));
         ttStrafe.setNode(robotGroup);
-        ttStrafe.setOnFinished(event -> { //**TODO See OneNote - stackoverflow answer from jewelsea
+        ttStrafe.setOnFinished(event -> {
             System.out.println("After strafe layoutX " + robotGroup.getLayoutX() + ", translateX " + robotGroup.getTranslateX());
+            // See answer from jewelsea in https://stackoverflow.com/questions/30338598/translatetransition-does-not-change-x-y-co-ordinates
             robotGroup.setLayoutX(robotGroup.getLayoutX() + robotGroup.getTranslateX());
             robotGroup.setLayoutY(robotGroup.getLayoutY() + robotGroup.getTranslateY());
             robotGroup.setTranslateX(0);
@@ -111,7 +112,7 @@ public class DeviceToTargetAnimation {
         RotateTransition rotateDeviceTowardsAprilTag = new RotateTransition(Duration.seconds(2));
         rotateDeviceTowardsAprilTag.setNode(robotGroup);
         rotateDeviceTowardsAprilTag.setOnFinished(event -> {
-            // The following made no difference ...
+            //**TODO Why did the following make no difference?
             /*
             robotGroup.setLayoutX(robotGroup.getLayoutX() + robotGroup.getTranslateX());
             robotGroup.setLayoutY(robotGroup.getLayoutY() + robotGroup.getTranslateY());
@@ -121,7 +122,7 @@ public class DeviceToTargetAnimation {
 
             System.out.println("Angle after rotation " + robotGroup.getRotate());
 
-            //**NOTHING TODO - this worked!
+            //## But this worked!
             // Draw a line from the device to the AprilTag.
             Circle deviceOnRobot = (Circle) robotGroup.lookup("#" + robotGroup.getId() + "_" + RobotFXCenterStageLG.DEVICE_ON_ROBOT_ID);
             Point2D deviceCoord = deviceOnRobot.localToScene(deviceOnRobot.getCenterX(), deviceOnRobot.getCenterY());
@@ -135,7 +136,8 @@ public class DeviceToTargetAnimation {
 
         // Follow the cubic curve and rotate in parallel.
         ParallelTransition parallelT = new ParallelTransition(pathTransition, rotateTransition);
-        parallelT.setOnFinished(event -> { //**TODO See OneNote - stackoverflow answer from jewelsea
+        parallelT.setOnFinished(event -> {
+            // See answer from jewelsea in https://stackoverflow.com/questions/30338598/translatetransition-does-not-change-x-y-co-ordinates
             robotGroup.setLayoutX(robotGroup.getLayoutX() + robotGroup.getTranslateX());
             robotGroup.setLayoutY(robotGroup.getLayoutY() + robotGroup.getTranslateY());
             robotGroup.setTranslateX(0);
@@ -316,7 +318,6 @@ public class DeviceToTargetAnimation {
         else
             seqTransition.getChildren().addAll(preRotationPauseT, rotateDeviceTowardsAprilTag);
 
-        //**TODO static method??
         new PlayPauseToggle(pPlayPauseButton, seqTransition);
     }
 }
