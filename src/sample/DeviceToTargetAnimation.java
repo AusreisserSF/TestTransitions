@@ -112,17 +112,8 @@ public class DeviceToTargetAnimation {
         RotateTransition rotateDeviceTowardsAprilTagT = new RotateTransition(Duration.seconds(2));
         rotateDeviceTowardsAprilTagT.setNode(robotGroup);
         rotateDeviceTowardsAprilTagT.setOnFinished(event -> {
-            //**TODO Why did the following make no difference?
-            /*
-            robotGroup.setLayoutX(robotGroup.getLayoutX() + robotGroup.getTranslateX());
-            robotGroup.setLayoutY(robotGroup.getLayoutY() + robotGroup.getTranslateY());
-            robotGroup.setTranslateX(0);
-            robotGroup.setTranslateY(0);
-            */
-
             System.out.println("Angle after rotation " + robotGroup.getRotate());
 
-            //## But this worked!
             // Draw a line from the device to the AprilTag.
             Circle deviceOnRobot = (Circle) robotGroup.lookup("#" + robotGroup.getId() + "_" + RobotFXCenterStageLG.DEVICE_ON_ROBOT_ID);
             Point2D deviceCoord = deviceOnRobot.localToScene(deviceOnRobot.getCenterX(), deviceOnRobot.getCenterY());

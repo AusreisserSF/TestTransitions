@@ -8,12 +8,11 @@ November 2022
 
 public class CameraToDeviceCorrections {
 
-    //**TODO There are four triangles involved in the animation of the robot: camera to target,
-    // robot center to target, robot center to device pre-rotation (rcdPreRotation), and
-    // robot center to device post-rotation (rcdPostRotation). The distance from device
-    // to target can be derived from robot center to target (opposite) and robot center to device
-    // pre-rotation (opposite). Note that the adjacent sides of the robot center to target and
-    // robot center to device pre-rotation are the same.
+    // There are four triangles involved in the animation of the robot: camera to
+    // target, robot center to target, robot center to device pre-rotation, and
+    // device to target post-rotation. Note that the adjacent sides of the robot
+    // center to target triangle and the robot center to device triangle
+    // pre-rotation are the same.
     //**TODO Need drawings in Dia.
 
     public static CorrectionData getCameraToDeviceCorrections(double pAngleCameraFaceToTarget, double pDistanceCameraFaceToTarget,
@@ -151,7 +150,8 @@ public class CameraToDeviceCorrections {
         // The angle rdcPreRotationAngle is always zero or positive.
         // The next if statement works for "BLUE - device left", which is the only
         // example of this condition.
-        //**TODO TEST degreesFromRobotCenter == 0; should work.
+        //**TODO TEST degreesFromRobotCenter == 0; should work. Test other cases
+        // where there is no triangle.
 
         // If the device is to the right of robot center then invert the sign of the angle.
         if (pOffsetRobotCenterToDeliveryDevice < 0.0)

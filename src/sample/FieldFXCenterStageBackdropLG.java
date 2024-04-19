@@ -18,21 +18,22 @@ public class FieldFXCenterStageBackdropLG {
     // are 24" square but the Field Setup Guide includes a "Critical
     // Mandatory Step: Trim all outer tabs from the 20 soft tiles on the
     // outside edges of the field."
+
     // But for the simulation, instead of 141" or 3581.4mm per side we'll
-    // just use 141.7" per side or 3600mm.
-    //**TODO Then scale down to 1/6 for pixels per side, i.e. 100px/tile
+    // just use 141.7" per side or 3600mm. Then scale down to 1/6 for pixels
+    // per side, i.e. 600, as defined in the fxml. For the CenterStage backdrop
+    // show a closeup view of 3 x 3 double-sized tiles.
+    public static final double PIXEL_SCALE = 6; // 6 tiles in 600 pixels
+    public static final double VIEW_SCALE = 2; // We'll use double-scale or 200px/tile
+
     // By convention the width is the distance across the wall facing the audience.
-
-    // For the CenterStage backdrop show a closeup view of 3 x 3 tiles
-    public static final double PIXEL_SCALE = 6;
-    public static final double VIEW_SCALE = 2; //**TODO 200px/tile
-
     public static final double FIELD_DIMENSIONS_IN = 141.7;
     public static final double FIELD_DIMENSIONS_MM = 3600;
     public static final double FIELD_DIMENSIONS_PX = FIELD_DIMENSIONS_MM / PIXEL_SCALE; // pixels
     public static final double PX_PER_INCH = (FIELD_DIMENSIONS_PX / FIELD_DIMENSIONS_IN) * VIEW_SCALE;
     public static final double FIELD_OUTSIDE_BORDER_SIZE = PX_PER_INCH * 1;
     public static final double TILE_DIMENSIONS = FIELD_DIMENSIONS_PX / (PIXEL_SCALE / VIEW_SCALE);
+    public static final double TILE_BOUNDARY_WIDTH = 3.0;
     public static final double VIEW_WIDTH = TILE_DIMENSIONS * 3; // number of tiles to show horizontally
     public static final double VIEW_HEIGHT = TILE_DIMENSIONS * 3; // number of tiles to show vertically
 
@@ -84,7 +85,7 @@ public class FieldFXCenterStageBackdropLG {
             vLine = new Line(TILE_DIMENSIONS * i, 0, //FIELD_OUTSIDE_BORDER_SIZE,
                     TILE_DIMENSIONS * i, VIEW_HEIGHT); // - (FIELD_OUTSIDE_BORDER_SIZE * 2));
             vLine.setStroke(Color.DIMGRAY);
-            vLine.setStrokeWidth(3.0); //**TODO Do not hardcode
+            vLine.setStrokeWidth(TILE_BOUNDARY_WIDTH);
             field.getChildren().add(vLine);
         }
 
