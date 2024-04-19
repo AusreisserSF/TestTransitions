@@ -1,11 +1,9 @@
 package sample;
 
+import javafx.geometry.Insets;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
-import javafx.scene.shape.StrokeLineJoin;
+import javafx.scene.shape.*;
 import javafx.scene.text.Text;
 
 import java.util.ArrayList;
@@ -25,7 +23,7 @@ public class FieldFXCenterStageBackdropLG {
     //**TODO Then scale down to 1/6 for pixels per side, i.e. 100px/tile
     // By convention the width is the distance across the wall facing the audience.
 
-    //**TODO For the CenterStage backdrop show a closeup view of 3 x 3 tiles
+    // For the CenterStage backdrop show a closeup view of 3 x 3 tiles
     public static final double PIXEL_SCALE = 6;
     public static final double VIEW_SCALE = 2; //**TODO 200px/tile
 
@@ -36,7 +34,7 @@ public class FieldFXCenterStageBackdropLG {
     public static final double FIELD_OUTSIDE_BORDER_SIZE = PX_PER_INCH * 1;
     public static final double TILE_DIMENSIONS = FIELD_DIMENSIONS_PX / (PIXEL_SCALE / VIEW_SCALE);
     public static final double VIEW_WIDTH = TILE_DIMENSIONS * 3; // number of tiles to show horizontally
-    public static final double VIEW_HEIGHT = TILE_DIMENSIONS * 3; // nuber of tiles to show vertically
+    public static final double VIEW_HEIGHT = TILE_DIMENSIONS * 3; // number of tiles to show vertically
 
     public static final double TAPE_WIDTH = PX_PER_INCH * 1; // looks better at 1"
     public static final double BACKDROP_HEIGHT = PX_PER_INCH * 10.75;
@@ -44,15 +42,10 @@ public class FieldFXCenterStageBackdropLG {
     public static final double APRIL_TAG_HEIGHT = PX_PER_INCH * 3.0;
     public static final double APRIL_TAG_OFFSET = APRIL_TAG_HEIGHT + (PX_PER_INCH * 1.0); // from the bottom of the backdrop
 
-    //**TODO These should be in a Group with the backstop ... advantage?
     public final double APRIL_TAG_LEFT = PX_PER_INCH * 2.0;
     public final double APRIL_TAG_CENTER = (TILE_DIMENSIONS / 2) - (APRIL_TAG_WIDTH / 2);
     public final double APRIL_TAG_RIGHT = TILE_DIMENSIONS - (APRIL_TAG_WIDTH + (PX_PER_INCH * 2.0));
     public static final double BACKSTAGE_BOUNDARY_TO_ANGLE = PX_PER_INCH + (PX_PER_INCH * 10.75);
-
-    //**TODO Expand to include the serrations on the backdrop, support the
-    // placement of a yellow pixel on the backdrop, and then show the
-    // movements of the robot and pixel delivery.
 
     // Identifiers for field objects.
     // Identifiers are used during animation to get a specific object via Pane.lookup().
@@ -80,14 +73,7 @@ public class FieldFXCenterStageBackdropLG {
         return collidables;
     }
 
-    //**TODO 4/18/2024 Spacing is still not quite right. ??Exact thickness of border?? See getInsets().
     private void initializeField() {
-        //**TODO Once you work out the spacing move setBorder to the end.
-        field.setBorder(new Border(new BorderStroke(Color.BLACK,
-                BorderStrokeStyle.SOLID, CornerRadii.EMPTY,
-                new BorderWidths(FIELD_OUTSIDE_BORDER_SIZE, FIELD_OUTSIDE_BORDER_SIZE,
-                        FIELD_OUTSIDE_BORDER_SIZE, FIELD_OUTSIDE_BORDER_SIZE))));
-
         // Place horizontal and vertical lines on the field.
         // The lines represent the edges of the interlocking tiles.
         // See jewelsea's answer in https://stackoverflow.com/questions/11881834/what-are-a-lines-exact-dimensions-in-javafx-2
@@ -95,8 +81,8 @@ public class FieldFXCenterStageBackdropLG {
         Line hLine;
         for (int i = 1; i < 4; i++) {
             // vertical
-            vLine = new Line(TILE_DIMENSIONS * i, FIELD_OUTSIDE_BORDER_SIZE,
-                    TILE_DIMENSIONS * i, VIEW_HEIGHT - (FIELD_OUTSIDE_BORDER_SIZE * 2));
+            vLine = new Line(TILE_DIMENSIONS * i, 0, //FIELD_OUTSIDE_BORDER_SIZE,
+                    TILE_DIMENSIONS * i, VIEW_HEIGHT); // - (FIELD_OUTSIDE_BORDER_SIZE * 2));
             vLine.setStroke(Color.DIMGRAY);
             vLine.setStrokeWidth(3.0); //**TODO Do not hardcode
             field.getChildren().add(vLine);
@@ -105,7 +91,8 @@ public class FieldFXCenterStageBackdropLG {
         // Center Stage: partial field: three tiles
         for (int i = 1; i < 3; i++) {
             // horizontal
-            hLine = new Line(FIELD_OUTSIDE_BORDER_SIZE, (TILE_DIMENSIONS * i) + FIELD_OUTSIDE_BORDER_SIZE, VIEW_WIDTH - (FIELD_OUTSIDE_BORDER_SIZE * 2), (TILE_DIMENSIONS * i) + FIELD_OUTSIDE_BORDER_SIZE);
+            //hLine = new Line(FIELD_OUTSIDE_BORDER_SIZE, (TILE_DIMENSIONS * i) + FIELD_OUTSIDE_BORDER_SIZE, VIEW_WIDTH - (FIELD_OUTSIDE_BORDER_SIZE * 2), (TILE_DIMENSIONS * i) + FIELD_OUTSIDE_BORDER_SIZE);
+            hLine = new Line(0, TILE_DIMENSIONS * i, VIEW_WIDTH, TILE_DIMENSIONS * i);
             hLine.setStroke(Color.DIMGRAY);
             hLine.setStrokeWidth(3.0);
             field.getChildren().add(hLine);
@@ -158,15 +145,15 @@ public class FieldFXCenterStageBackdropLG {
             aprilTagRightStack.getChildren().add(new Text("3"));
 
             // Place the Backstage tape lines according to the field assembly guide.
-            Line backstageBoundaryBlue = new Line(FIELD_OUTSIDE_BORDER_SIZE, TILE_DIMENSIONS,
-                    FIELD_OUTSIDE_BORDER_SIZE + (TILE_DIMENSIONS * 2) + BACKSTAGE_BOUNDARY_TO_ANGLE, TILE_DIMENSIONS);
+            Line backstageBoundaryBlue = new Line(FIELD_OUTSIDE_BORDER_SIZE, TILE_DIMENSIONS - TAPE_WIDTH,
+                    FIELD_OUTSIDE_BORDER_SIZE + (TILE_DIMENSIONS * 2) + BACKSTAGE_BOUNDARY_TO_ANGLE, TILE_DIMENSIONS - TAPE_WIDTH);
             backstageBoundaryBlue.setStroke(Color.BLUE);
             backstageBoundaryBlue.setStrokeWidth(TAPE_WIDTH);
             backstageBoundaryBlue.setStrokeLineJoin(StrokeLineJoin.MITER);
             field.getChildren().add(backstageBoundaryBlue);
 
             Line backstageAngledLineBlue = new Line(FIELD_OUTSIDE_BORDER_SIZE + (TILE_DIMENSIONS * 2) + BACKSTAGE_BOUNDARY_TO_ANGLE,
-                    TILE_DIMENSIONS, TILE_DIMENSIONS * 3, FIELD_OUTSIDE_BORDER_SIZE);
+                    TILE_DIMENSIONS - TAPE_WIDTH, (TILE_DIMENSIONS * 3) - FIELD_OUTSIDE_BORDER_SIZE, FIELD_OUTSIDE_BORDER_SIZE);
             backstageAngledLineBlue.setStroke(Color.BLUE);
             backstageAngledLineBlue.setStrokeWidth(TAPE_WIDTH);
             backstageAngledLineBlue.setStrokeLineJoin(StrokeLineJoin.MITER);
@@ -183,19 +170,26 @@ public class FieldFXCenterStageBackdropLG {
             aprilTagRightStack.getChildren().add(new Text("6"));
 
             Line backstageAngledLineRed = new Line(FIELD_OUTSIDE_BORDER_SIZE,
-                    FIELD_OUTSIDE_BORDER_SIZE, TILE_DIMENSIONS - BACKSTAGE_BOUNDARY_TO_ANGLE, TILE_DIMENSIONS);
+                    FIELD_OUTSIDE_BORDER_SIZE, TILE_DIMENSIONS - BACKSTAGE_BOUNDARY_TO_ANGLE, TILE_DIMENSIONS - TAPE_WIDTH);
             backstageAngledLineRed.setStroke(Color.RED);
             backstageAngledLineRed.setStrokeWidth(TAPE_WIDTH);
             backstageAngledLineRed.setStrokeLineJoin(StrokeLineJoin.MITER);
             field.getChildren().add(backstageAngledLineRed);
 
-            Line backstageBoundaryRed = new Line(TILE_DIMENSIONS - BACKSTAGE_BOUNDARY_TO_ANGLE, TILE_DIMENSIONS,
-                    (TILE_DIMENSIONS * 3) - FIELD_OUTSIDE_BORDER_SIZE, TILE_DIMENSIONS);
+            Line backstageBoundaryRed = new Line(TILE_DIMENSIONS - BACKSTAGE_BOUNDARY_TO_ANGLE, TILE_DIMENSIONS - TAPE_WIDTH,
+                    (TILE_DIMENSIONS * 3) - FIELD_OUTSIDE_BORDER_SIZE, TILE_DIMENSIONS - TAPE_WIDTH);
             backstageBoundaryRed.setStroke(Color.RED);
             backstageBoundaryRed.setStrokeWidth(TAPE_WIDTH);
             backstageBoundaryRed.setStrokeLineJoin(StrokeLineJoin.MITER);
             field.getChildren().add(backstageBoundaryRed);
         }
+
+        // Draw the border on top of the field.
+        Rectangle border = new Rectangle(0, 0, VIEW_WIDTH, VIEW_HEIGHT);
+        border.setStroke(Color.BLACK);
+        border.setStrokeWidth(FIELD_OUTSIDE_BORDER_SIZE);
+        border.setFill(Color.TRANSPARENT);
+        field.getChildren().add(border);
     }
 
 }
