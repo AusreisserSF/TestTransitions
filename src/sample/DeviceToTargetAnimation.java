@@ -101,6 +101,7 @@ public class DeviceToTargetAnimation {
 
             Bounds robotBP = robotGroup.getBoundsInParent();
             System.out.println("Robot position after strafe x " + robotBP.getCenterX() + ", y " + robotBP.getCenterY());
+            //**TODO Show or at least log post-strafe position in FTC field coordinates.
         });
 
         RadioButton selectedRadioButton = (RadioButton) controller.approach_toggle.getSelectedToggle();
@@ -138,8 +139,9 @@ public class DeviceToTargetAnimation {
             robotCoordX = robotBP.getCenterX();
             robotCoordY = robotBP.getCenterY();
 
-            System.out.println("Robot center after ParallelTransition x " + robotCoordX + ", y " + robotCoordY);
-            System.out.println("Robot rotation after ParallelTransition x " + robotGroup.getRotate());
+            System.out.println("Robot center in front of backdrop x " + robotCoordX + ", y " + robotCoordY);
+            //**TODO Show or at least log position in FTC field coordinates?
+            System.out.println("Robot rotation after positioning in front of backdrop x " + robotGroup.getRotate());
 
             //## All of these coordinates and calculations can only be made after
             // the ParallelTranstion is complete, i.e. now.

@@ -17,23 +17,16 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
-// Combination of
-// https://www.infoworld.com/article/2074529/javafx-2-animation--path-transitions.html
-// and
-// https://docs.oracle.com/javafx/2/animations/basics.htm#CJAJJAGI
+//**TODO Migrate all classes and fxml (some copy, some move) from this
+// test project, TestTransitions, into its own project.
 public class CenterStageBackdrop extends Application {
 
     private SimulatorController controller;
     private StartParameterValidation startParameterValidation;
     private RobotFXCenterStageLG centerStageRobot;
 
-    //**TODO Show all positions in FTC field coordinates? Or at least report the field coordinates.
     @Override
     public void start(final Stage pStage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader();
@@ -47,13 +40,11 @@ public class CenterStageBackdrop extends Application {
         pStage.setScene(rootScene);
         pStage.show(); // show the empty field
 
-        String allianceString = allianceSelection(pStage);
+        String allianceString = allianceSelection(pStage, rootScene);
         RobotConstants.Alliance alliance = RobotConstants.Alliance.valueOf(allianceString);
-        //**TODO Or send the Stage and primary Scene to allianceSelection and let it restore
-        // the root scene.
-        pStage.setScene(rootScene); // reset to primary Pane
 
-        new FieldFXCenterStageBackdropLG(alliance, field); // show the field
+        // Draw the alliance-specific view of the field.
+        new FieldFXCenterStageBackdropLG(alliance, field);
 
         // Show the alliance id in its color.
         controller.alliance.setText(allianceString);
@@ -100,7 +91,8 @@ public class CenterStageBackdrop extends Application {
 
             //**TODO Is there a way to use the camera's FOV to validate the approach
             // position. Yes, if you make room on the start parameters screen and set
-            // a parameter for it.
+            // a parameter for it. Or just hardcode 78 degrees and put up an alert
+            // after you get the camera to target angle in DeviceToTargetAnimation.
 
             playPauseButton.removeEventHandler(ActionEvent.ACTION, event.get());
 
@@ -164,7 +156,7 @@ public class CenterStageBackdrop extends Application {
     //**TODO What I really want is a RadioButtonDialog, which doesn't exist.
     // But it looks like you may be able make a custom Dialog with
     // RadioButton(s)/Toggle group inside it. But this will take some work.
-    private String allianceSelection(Stage pStage) {
+    private String allianceSelection(Stage pStage, Scene pRootScene) {
         /*
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(getClass().getResource("allianceToggle.fxml"));
@@ -198,6 +190,9 @@ public class CenterStageBackdrop extends Application {
         // Create a scene for the dialog and show it.
         Scene dialogScene = new Scene(dialogTilePane, 200, 200);
         pStage.setScene(dialogScene);
+
+        // Restore the main scene.
+        pStage.setScene(pRootScene);
 
         return allianceSelection;
     }
