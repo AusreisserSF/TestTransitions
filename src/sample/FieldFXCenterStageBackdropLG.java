@@ -1,9 +1,12 @@
 package sample;
 
-import javafx.geometry.Insets;
-import javafx.scene.layout.*;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.*;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
+import javafx.scene.shape.StrokeLineJoin;
 import javafx.scene.text.Text;
 
 import java.util.ArrayList;
