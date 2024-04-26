@@ -1,4 +1,4 @@
-package sample;
+package sample.auto.xml;
 
 import org.firstinspires.ftc.ftcdevcommon.AutonomousRobotException;
 import org.firstinspires.ftc.ftcdevcommon.platform.intellij.RobotLogCommon;
@@ -33,6 +33,11 @@ public class StartParametersXML {
      */
     // End IntelliJ only
 
+    //**TODO The values in the XML file are meant to override the values in the fxml file.
+    // But the XML values should be validated against the rules set up in StartParameterValidation,
+    // which are currently triggered via a ChangeListener ... Need to validate the XML against
+    // the ranges in StartParameterValidation, e.g. robot width, and if they are out of range
+    // mark them as invalid, i.e. requiring change, during initialization.
     public StartParametersXML(String pXMLDirectory) throws ParserConfigurationException, SAXException, IOException {
 
         // IntelliJ only
@@ -139,14 +144,13 @@ public class StartParametersXML {
             throw new AutonomousRobotException(TAG, "Invalid number format in element 'april_tag_id'");
         }
 
-        // <approach>STRAFE</approach>
+        // <approach>
         Node approach_node = apriltag_node.getNextSibling();
         approach_node = XMLUtils.getNextElement(approach_node);
         if (approach_node == null || !approach_node.getNodeName().equals("approach")
                 || approach_node.getTextContent().isEmpty())
             throw new AutonomousRobotException(TAG, "Element 'approach' not found");
 
-        //**TODO valueOf enum
         StartParameters.ApproachBackdrop approachBackdrop;
         switch (approach_node.getTextContent()) {
             case "Strafe to" -> approachBackdrop = StartParameters.ApproachBackdrop.STRAFE_TO;

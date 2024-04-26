@@ -1,4 +1,4 @@
-package sample;
+package sample.auto;
 
 import javafx.animation.Animation;
 import javafx.animation.SequentialTransition;

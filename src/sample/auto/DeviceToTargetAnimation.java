@@ -1,4 +1,4 @@
-package sample;
+package sample.auto;
 
 import javafx.animation.*;
 import javafx.geometry.Bounds;
@@ -10,10 +10,13 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.util.Duration;
+import sample.auto.fx.FieldFXCenterStageBackdropLG;
+import sample.auto.fx.RobotFXCenterStageLG;
+import sample.auto.fx.CenterStageControllerLG;
 
 public class DeviceToTargetAnimation {
 
-    private final SimulatorController controller;
+    private final CenterStageControllerLG controller;
     private final Pane field;
     private final RobotFXCenterStageLG centerStageRobot;
     private final Group robotGroup;
@@ -26,7 +29,7 @@ public class DeviceToTargetAnimation {
     private double aprilTagCenterX;
     private double aprilTagCenterY;
 
-    public DeviceToTargetAnimation(SimulatorController pController, Pane pField, RobotFXCenterStageLG pCenterStageRobot,
+    public DeviceToTargetAnimation(CenterStageControllerLG pController, Pane pField, RobotFXCenterStageLG pCenterStageRobot,
                                    StartParameterValidation pStartParameters) {
         controller = pController;
         field = pField;
@@ -104,6 +107,8 @@ public class DeviceToTargetAnimation {
             //**TODO Show or at least log post-strafe position in FTC field coordinates.
         });
 
+        //**TODO Her I get the text of the RadioButton toggle directly but I would prefer to
+        // use the enum instead. How to do that?
         RadioButton selectedRadioButton = (RadioButton) controller.approach_toggle.getSelectedToggle();
         String radioButtonText = selectedRadioButton.getText();
 

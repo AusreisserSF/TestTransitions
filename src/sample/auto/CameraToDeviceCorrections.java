@@ -1,4 +1,4 @@
-package sample;
+package sample.auto;
 
 /*
 Based on the orginal contribution from Christian Giron-Michel

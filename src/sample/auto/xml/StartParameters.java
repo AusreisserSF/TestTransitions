@@ -1,4 +1,4 @@
-package sample;
+package sample.auto.xml;
 
 public class StartParameters {
 

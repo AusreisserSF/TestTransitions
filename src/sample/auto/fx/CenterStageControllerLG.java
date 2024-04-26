@@ -1,4 +1,4 @@
-package sample;
+package sample.auto.fx;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -6,7 +6,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 
-public class SimulatorController {
+public class CenterStageControllerLG {
 
     @FXML
     public BorderPane ftc_center_stage_display;

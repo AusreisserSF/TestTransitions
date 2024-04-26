@@ -1,4 +1,4 @@
-package sample;
+package sample.auto.fx;
 
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;

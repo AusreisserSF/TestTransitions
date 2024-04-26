@@ -8,5 +8,15 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="lib" level="project" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/../FTCDevCommonIntelliJ/out/artifacts/ftcdevcommon_2_3_jar" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+        <jarDirectory url="file://$MODULE_DIR$/../FTCDevCommonIntelliJ/out/artifacts/ftcdevcommon_2_3_jar" recursive="false" />
+      </library>
+    </orderEntry>
   </component>
 </module>

@@ -1,4 +1,4 @@
-package sample;
+package sample.auto.fx;
 
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -8,6 +8,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.shape.StrokeLineJoin;
 import javafx.scene.text.Text;
+import sample.auto.RobotConstants;
 
 import java.util.ArrayList;
 import java.util.List;

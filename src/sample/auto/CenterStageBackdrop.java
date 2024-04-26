@@ -1,4 +1,4 @@
-package sample;
+package sample.auto;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -15,6 +15,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+import sample.auto.fx.FieldFXCenterStageBackdropLG;
+import sample.auto.fx.RobotFXCenterStageLG;
+import sample.auto.fx.CenterStageControllerLG;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -23,14 +26,14 @@ import java.util.concurrent.atomic.AtomicReference;
 // test project, TestTransitions, into its own project.
 public class CenterStageBackdrop extends Application {
 
-    private SimulatorController controller;
+    private CenterStageControllerLG controller;
     private StartParameterValidation startParameterValidation;
     private RobotFXCenterStageLG centerStageRobot;
 
     @Override
     public void start(final Stage pStage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader();
-        fxmlLoader.setLocation(getClass().getResource("simulatorLG.fxml"));
+        fxmlLoader.setLocation(getClass().getResource("/sample/auto/fx/centerStageLG.fxml")); // absolute path under src
         BorderPane root = fxmlLoader.load();
         controller = fxmlLoader.getController();
         Pane field = controller.field;

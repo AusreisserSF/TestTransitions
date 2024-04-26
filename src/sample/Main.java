@@ -1,6 +1,7 @@
 package sample;
 
 import javafx.application.Application;
+import sample.auto.CenterStageBackdrop;
 
 public class Main {
 

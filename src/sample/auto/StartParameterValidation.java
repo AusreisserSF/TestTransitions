@@ -1,4 +1,4 @@
-package sample;
+package sample.auto;
 
 
 // From https://www.pragmaticcoding.ca/javafx/textformatter1
@@ -11,6 +11,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.util.converter.DoubleStringConverter;
+import sample.auto.fx.FieldFXCenterStageBackdropLG;
+import sample.auto.fx.CenterStageControllerLG;
 
 import java.util.EnumMap;
 import java.util.Optional;
@@ -34,12 +36,12 @@ public class StartParameterValidation {
     private final EnumMap<StartParameter, StartParameterInfo> startParameters =
             new EnumMap<>(StartParameter.class);
 
-    public StartParameterValidation(SimulatorController pSimulatorController) {
+    public StartParameterValidation(CenterStageControllerLG pCenterStageControllerLG) {
 
         // Create one listener for each start parameter that takes a range of double values.
         // Robot width.
         startParameters.put(StartParameter.ROBOT_WIDTH,
-                new StartParameterInfo(pSimulatorController.robot_width.getText(), false)); // set default
+                new StartParameterInfo(pCenterStageControllerLG.robot_width.getText(), false)); // set default
         PredicateChangeListener widthListener = (new PredicateChangeListener(
                 widthP -> {
                     // If the user doesn't enter a value for the width the animation runs
@@ -58,11 +60,11 @@ public class StartParameterValidation {
                 },
                 "The width of the robot must be between " + MIN_ROBOT_BODY_DIMENSION + " and " + MAX_ROBOT_BODY_DIMENSION));
 
-        validateStartParameter(pSimulatorController.robot_width, widthListener);
+        validateStartParameter(pCenterStageControllerLG.robot_width, widthListener);
 
         // Robot height.
         startParameters.put(StartParameter.ROBOT_HEIGHT,
-                new StartParameterInfo(pSimulatorController.robot_height.getText(), false)); // set default
+                new StartParameterInfo(pCenterStageControllerLG.robot_height.getText(), false)); // set default
         PredicateChangeListener heightListener = (new PredicateChangeListener(
                 heightP -> {
                     // If the user doesn't enter a value for the height the animation runs
@@ -81,13 +83,13 @@ public class StartParameterValidation {
                 },
                 "The height of the robot must be between " + MIN_ROBOT_BODY_DIMENSION + " and " + MAX_ROBOT_BODY_DIMENSION));
 
-        validateStartParameter(pSimulatorController.robot_height, heightListener);
+        validateStartParameter(pCenterStageControllerLG.robot_height, heightListener);
 
         // CAMERA_CENTER_FROM_ROBOT_CENTER_ID
         // constraint - camera top or bottom edge may be no more than half the height of the robot from the center
         // the edge depends on the sign of the parameter.
         startParameters.put(StartParameter.CAMERA_CENTER_FROM_ROBOT_CENTER,
-                new StartParameterInfo(pSimulatorController.camera_center_from_robot_center.getText(), true)); // set default
+                new StartParameterInfo(pCenterStageControllerLG.camera_center_from_robot_center.getText(), true)); // set default
         PredicateChangeListener cameraCenterListener = (new PredicateChangeListener(
                 cameraCenterP -> {
                     // If the user doesn't enter a value the animation runs but when the
@@ -109,14 +111,14 @@ public class StartParameterValidation {
                 },
                 "The fore/aft distance from camera center to robot center must be less than 1/2 the height of the robot"));
 
-        validateStartParameter(pSimulatorController.camera_center_from_robot_center, cameraCenterListener);
+        validateStartParameter(pCenterStageControllerLG.camera_center_from_robot_center, cameraCenterListener);
 
 
         // CAMERA_OFFSET_FROM_ROBOT_CENTER_ID
         // constraint - camera left or right edge may be no more than half the width of the robot from the center
         // the edge depends on the sign of the parameter.
         startParameters.put(StartParameter.CAMERA_OFFSET_FROM_ROBOT_CENTER,
-                new StartParameterInfo(pSimulatorController.camera_offset_from_robot_center.getText(), true)); // set default
+                new StartParameterInfo(pCenterStageControllerLG.camera_offset_from_robot_center.getText(), true)); // set default
         PredicateChangeListener cameraOffsetListener = (new PredicateChangeListener(
                 cameraOffsetP -> {
                     // If the user doesn't enter a value the animation runs but when the
@@ -138,13 +140,13 @@ public class StartParameterValidation {
                 },
                 "The left/right distance from camera center to robot center must be less than 1/2 the width of the robot"));
 
-        validateStartParameter(pSimulatorController.camera_offset_from_robot_center, cameraOffsetListener);
+        validateStartParameter(pCenterStageControllerLG.camera_offset_from_robot_center, cameraOffsetListener);
 
         // DEVICE_CENTER_FROM_ROBOT_CENTER_ID
         // constraint - device top or bottom edge may be no more than half the height of the robot from the center
         // the edge depends on the sign of the parameter.
         startParameters.put(StartParameter.DEVICE_CENTER_FROM_ROBOT_CENTER,
-                new StartParameterInfo(pSimulatorController.device_center_from_robot_center.getText(), true)); // set default
+                new StartParameterInfo(pCenterStageControllerLG.device_center_from_robot_center.getText(), true)); // set default
         PredicateChangeListener deviceCenterListener = (new PredicateChangeListener(
                 deviceCenterP -> {
                     // If the user doesn't enter a value the animation runs but when the
@@ -166,13 +168,13 @@ public class StartParameterValidation {
                 },
                 "The fore/aft distance from device center to robot center must be less than 1/2 the height of the robot"));
 
-        validateStartParameter(pSimulatorController.device_center_from_robot_center, deviceCenterListener);
+        validateStartParameter(pCenterStageControllerLG.device_center_from_robot_center, deviceCenterListener);
 
         // DEVICE_OFFSET_FROM_ROBOT_CENTER_ID
         // constraint - device left or right edge may be no more than half the width of the robot from the center
         // the edge depends on the sign of the parameter.
         startParameters.put(StartParameter.DEVICE_OFFSET_FROM_ROBOT_CENTER,
-                new StartParameterInfo(pSimulatorController.device_offset_from_robot_center.getText(), true)); // set default
+                new StartParameterInfo(pCenterStageControllerLG.device_offset_from_robot_center.getText(), true)); // set default
         PredicateChangeListener deviceOffsetListener = (new PredicateChangeListener(
                 deviceOffsetP -> {
                     // If the user doesn't enter a value the animation runs but when the
@@ -194,12 +196,12 @@ public class StartParameterValidation {
                 },
                 "The left/right distance from device center to robot center must be less than 1/2 the width of the robot"));
 
-        validateStartParameter(pSimulatorController.device_offset_from_robot_center, deviceOffsetListener);
+        validateStartParameter(pCenterStageControllerLG.device_offset_from_robot_center, deviceOffsetListener);
 
         // ROBOT_POSITION_AT_BACKDROP_X
         // constraints: center x no less than 175 PX, no greater than 425 PX
         startParameters.put(StartParameter.ROBOT_POSITION_AT_BACKDROP_X,
-                new StartParameterInfo(pSimulatorController.robot_position_at_backdrop_x.getText(), true)); // set default
+                new StartParameterInfo(pCenterStageControllerLG.robot_position_at_backdrop_x.getText(), true)); // set default
         PredicateChangeListener backdropXListener = (new PredicateChangeListener(
                 backdropXP -> {
                     // If the user doesn't enter a value the animation runs but when the
@@ -220,12 +222,12 @@ public class StartParameterValidation {
                 },
                 "The x position of the robot at the backstop is out of range"));
 
-        validateStartParameter(pSimulatorController.robot_position_at_backdrop_x, backdropXListener);
+        validateStartParameter(pCenterStageControllerLG.robot_position_at_backdrop_x, backdropXListener);
 
         // ROBOT_POSITION_AT_BACKDROP_Y
         // constraints: center y no less than 225 PX, no greater than 325 PX.
         startParameters.put(StartParameter.ROBOT_POSITION_AT_BACKDROP_Y,
-                new StartParameterInfo(pSimulatorController.robot_position_at_backdrop_y.getText(), true)); // set default
+                new StartParameterInfo(pCenterStageControllerLG.robot_position_at_backdrop_y.getText(), true)); // set default
         PredicateChangeListener backdropYListener = (new PredicateChangeListener(
                 backdropYP -> {
                     // If the user doesn't enter a value the animation runs but when the
@@ -246,7 +248,7 @@ public class StartParameterValidation {
                 },
                 "The y position of the robot at the backstop is out of range"));
 
-        validateStartParameter(pSimulatorController.robot_position_at_backdrop_y, backdropYListener);
+        validateStartParameter(pCenterStageControllerLG.robot_position_at_backdrop_y, backdropYListener);
     }
 
     // This method must only be called after all parameters have been validated.
