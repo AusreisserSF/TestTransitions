@@ -107,8 +107,6 @@ public class DeviceToTargetAnimation {
             //**TODO Show or at least log post-strafe position in FTC field coordinates.
         });
 
-        //**TODO Her I get the text of the RadioButton toggle directly but I would prefer to
-        // use the enum instead. How to do that?
         RadioButton selectedRadioButton = (RadioButton) controller.approach_toggle.getSelectedToggle();
         String radioButtonText = selectedRadioButton.getText();
 

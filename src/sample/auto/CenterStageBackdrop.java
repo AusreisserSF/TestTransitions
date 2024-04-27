@@ -20,6 +20,7 @@ import org.xml.sax.SAXException;
 import sample.auto.fx.FieldFXCenterStageBackdropLG;
 import sample.auto.fx.RobotFXCenterStageLG;
 import sample.auto.fx.CenterStageControllerLG;
+import sample.auto.xml.StartParameters;
 import sample.auto.xml.StartParametersXML;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -59,14 +60,15 @@ public class CenterStageBackdrop extends Application {
         Color allianceColor = (alliance == RobotConstants.Alliance.BLUE) ? Color.BLUE : Color.RED;
         controller.alliance.setTextFill(allianceColor); // or jewelsea setStyle("-fx-text-inner-color: red;");
 
-        //**TODO ??Need a way to read parameters from an XML file
-        // Only the robot dimensions, camera placement, device placement.
-        // Parse and validate the start parameters that have a range of double values.
+        // Set up the start parameters with the value specified in the fxml.
         startParameterValidation = new StartParameterValidation(controller);
 
-        // Read the StartParameters.xml file and override any default values
-        // that have been overridden.
+        // Read start parameters from an XML file and for each value that is different
+        // from the current fxml default trigger the change listener already set up in
+        // StartParameterValidation.
         StartParametersXML startParametersXML = new StartParametersXML(WorkingDirectory.getWorkingDirectory() + RobotConstants.XML_DIR);
+        StartParameters startParameters = startParametersXML.getStartParameters();
+        overrideStartParameters(startParameters);
 
         SpinnerValueFactory.IntegerSpinnerValueFactory spinnerValueFactory;
         if (alliance == RobotConstants.Alliance.BLUE)
@@ -206,6 +208,61 @@ public class CenterStageBackdrop extends Application {
         pStage.setScene(pRootScene);
 
         return allianceSelection;
+    }
+
+    private void overrideStartParameters(StartParameters pStartParameters) {
+        /*
+           @FXML
+    public TextField robot_width;
+    @FXML
+    public TextField robot_height;
+    @FXML
+    public TextField camera_center_from_robot_center;
+    @FXML
+    public TextField camera_offset_from_robot_center;
+    @FXML
+    public TextField device_center_from_robot_center;
+    @FXML
+    public TextField device_offset_from_robot_center;
+    @FXML
+    public TextField robot_position_at_backdrop_x;
+    @FXML
+    public TextField robot_position_at_backdrop_y;
+         */
+
+        // Any change to a TextField will trigger the ChangeListener already
+        // registered in StartParameterValidation.
+        if (!pStartParameters.robotWidth.equals(controller.robot_width.getText())) {
+            controller.robot_width.setText(pStartParameters.robotWidth);
+        }
+
+        if (!pStartParameters.robotHeight.equals(controller.robot_height.getText())) {
+            controller.robot_height.setText(pStartParameters.robotHeight);
+        }
+
+        if (!pStartParameters.cameraCenterFromRobotCenter.equals(controller.camera_center_from_robot_center)) {
+            controller.camera_center_from_robot_center.setText(pStartParameters.cameraCenterFromRobotCenter);
+        }
+
+        if (!pStartParameters.cameraOffsetFromRobotCenter.equals(controller.camera_offset_from_robot_center)) {
+            controller.camera_offset_from_robot_center.setText(pStartParameters.cameraOffsetFromRobotCenter);
+        }
+
+        if (!pStartParameters.deviceCenterFromRobotCenter.equals(controller.device_center_from_robot_center)) {
+            controller.device_center_from_robot_center.setText(pStartParameters.deviceCenterFromRobotCenter);
+        }
+
+        if (!pStartParameters.deviceOffsetFromRobotCenter.equals(controller.device_offset_from_robot_center)) {
+            controller.device_offset_from_robot_center.setText(pStartParameters.deviceOffsetFromRobotCenter);
+        }
+
+        if (!pStartParameters.robotPositionAtBackdropX.equals(controller.robot_position_at_backdrop_x)) {
+            controller.robot_position_at_backdrop_x.setText(pStartParameters.robotPositionAtBackdropX);
+        }
+
+        if (!pStartParameters.robotPositionAtBackdropY.equals(controller.robot_position_at_backdrop_y)) {
+            controller.robot_position_at_backdrop_x.setText(pStartParameters.robotPositionAtBackdropY);
+        }
     }
 
 }
