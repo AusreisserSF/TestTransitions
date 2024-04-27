@@ -38,6 +38,12 @@ public class StartParameterValidation {
 
     public StartParameterValidation(CenterStageControllerLG pCenterStageControllerLG) {
 
+        //**TODO How to suppress multiple alerts: for example, if the robot's height is
+        // invalid then the predicate for CAMERA_CENTER_FROM_ROBOT_CENTER_ID will also
+        // fail. Disable all other TextFields until the error is fixed.
+        // disableStartParameterInput(except TextField pKeepAlive)
+        // enableAllStartParameterInput()
+
         // Create one listener for each start parameter that takes a range of double values.
         // Robot width.
         startParameters.put(StartParameter.ROBOT_WIDTH,

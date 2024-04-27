@@ -240,27 +240,27 @@ public class CenterStageBackdrop extends Application {
             controller.robot_height.setText(pStartParameters.robotHeight);
         }
 
-        if (!pStartParameters.cameraCenterFromRobotCenter.equals(controller.camera_center_from_robot_center)) {
+        if (!pStartParameters.cameraCenterFromRobotCenter.equals(controller.camera_center_from_robot_center.getText())) {
             controller.camera_center_from_robot_center.setText(pStartParameters.cameraCenterFromRobotCenter);
         }
 
-        if (!pStartParameters.cameraOffsetFromRobotCenter.equals(controller.camera_offset_from_robot_center)) {
+        if (!pStartParameters.cameraOffsetFromRobotCenter.equals(controller.camera_offset_from_robot_center.getText())) {
             controller.camera_offset_from_robot_center.setText(pStartParameters.cameraOffsetFromRobotCenter);
         }
 
-        if (!pStartParameters.deviceCenterFromRobotCenter.equals(controller.device_center_from_robot_center)) {
+        if (!pStartParameters.deviceCenterFromRobotCenter.equals(controller.device_center_from_robot_center.getText())) {
             controller.device_center_from_robot_center.setText(pStartParameters.deviceCenterFromRobotCenter);
         }
 
-        if (!pStartParameters.deviceOffsetFromRobotCenter.equals(controller.device_offset_from_robot_center)) {
+        if (!pStartParameters.deviceOffsetFromRobotCenter.equals(controller.device_offset_from_robot_center.getText())) {
             controller.device_offset_from_robot_center.setText(pStartParameters.deviceOffsetFromRobotCenter);
         }
 
-        if (!pStartParameters.robotPositionAtBackdropX.equals(controller.robot_position_at_backdrop_x)) {
+        if (!pStartParameters.robotPositionAtBackdropX.equals(controller.robot_position_at_backdrop_x.getText())) {
             controller.robot_position_at_backdrop_x.setText(pStartParameters.robotPositionAtBackdropX);
         }
 
-        if (!pStartParameters.robotPositionAtBackdropY.equals(controller.robot_position_at_backdrop_y)) {
+        if (!pStartParameters.robotPositionAtBackdropY.equals(controller.robot_position_at_backdrop_y.getText())) {
             controller.robot_position_at_backdrop_x.setText(pStartParameters.robotPositionAtBackdropY);
         }
     }
