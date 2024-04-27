@@ -40,9 +40,10 @@ public class StartParameterValidation {
 
         //**TODO How to suppress multiple alerts: for example, if the robot's height is
         // invalid then the predicate for CAMERA_CENTER_FROM_ROBOT_CENTER_ID will also
-        // fail. Disable all other TextFields until the error is fixed.
-        // disableStartParameterInput(except TextField pKeepAlive)
-        // enableAllStartParameterInput()
+        // fail. Disabling a TextField only disables mouse click events - see
+        // https://stackoverflow.com/questions/30597430/fx-textfield-disabled-node-events
+        // so I either have to suspend the ChangeListeners or suppress multiple Alert
+        // boxes. Will binding work here?
 
         // Create one listener for each start parameter that takes a range of double values.
         // Robot width.
