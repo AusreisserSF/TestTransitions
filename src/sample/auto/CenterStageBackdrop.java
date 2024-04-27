@@ -68,7 +68,7 @@ public class CenterStageBackdrop extends Application {
         // StartParameterValidation.
         StartParametersXML startParametersXML = new StartParametersXML(WorkingDirectory.getWorkingDirectory() + RobotConstants.XML_DIR);
         StartParameters startParameters = startParametersXML.getStartParameters();
-        overrideStartParameters(startParameters);
+        //overrideStartParameters(startParameters);
 
         SpinnerValueFactory.IntegerSpinnerValueFactory spinnerValueFactory;
         if (alliance == RobotConstants.Alliance.BLUE)
@@ -169,6 +169,7 @@ public class CenterStageBackdrop extends Application {
     //**TODO What I really want is a RadioButtonDialog, which doesn't exist.
     // But it looks like you may be able make a custom Dialog with
     // RadioButton(s)/Toggle group inside it. But this will take some work.
+    // See https://stackoverflow.com/questions/31556373/javafx-dialog-with-2-input-fields
     private String allianceSelection(Stage pStage, Scene pRootScene) {
         /*
         FXMLLoader fxmlLoader = new FXMLLoader();

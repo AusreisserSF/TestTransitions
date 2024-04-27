@@ -217,7 +217,7 @@ public class StartParameterValidation {
                     if (backdropXP == null)
                         return true;
 
-                    // Make sure that the robot's x position at the backdrop has already been set.
+                    // Make sure that the robot's x position at the backdrop is in range.
                     StartParameterInfo backdropXInfo = startParameters.get(StartParameter.ROBOT_POSITION_AT_BACKDROP_X);
                     if (backdropXInfo.getParameterValue() < ROBOT_POSITION_AT_BACKDROP_X_MIN ||
                             backdropXInfo.getParameterValue() > ROBOT_POSITION_AT_BACKDROP_X_MAX)
@@ -243,7 +243,7 @@ public class StartParameterValidation {
                     if (backdropYP == null)
                         return true;
 
-                    // Make sure that the robot's y position at the backdrop has already been set.
+                    // Make sure that the robot's y position at the backdrop is in range.
                     StartParameterInfo backdropYInfo = startParameters.get(StartParameter.ROBOT_POSITION_AT_BACKDROP_Y);
                     if (backdropYInfo.getParameterValue() < ROBOT_POSITION_AT_BACKDROP_Y_MIN &&
                             backdropYInfo.getParameterValue() > ROBOT_POSITION_AT_BACKDROP_Y_MAX)
@@ -262,6 +262,7 @@ public class StartParameterValidation {
     public double getStartParameter(StartParameter pSelectedParameter) {
         StartParameterInfo info = startParameters.get(pSelectedParameter);
         if (!info.valid)
+            //**TODO Use AutonomousRobotException
             throw new IllegalStateException("Requested start parameter " + pSelectedParameter + " is not valid");
         return info.parameterValue;
     }
@@ -324,6 +325,9 @@ public class StartParameterValidation {
             errorMsg = pErrorMsg;
         }
 
+        //**TODO Instead of putting up an Alert can I use a text dialog to get a corrected
+        // value and then call validateStartParameter? Watch out for multiple instances of
+        // the same listener?
         @Override
         public void changed(ObservableValue<? extends Double> observable, Double oldValue, Double newValue) {
             if (!changePredicate.test(newValue)) {
