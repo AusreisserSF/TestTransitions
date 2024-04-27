@@ -24,31 +24,27 @@ public class StartParametersXML {
 
     private final StartParameters startParameters;
 
-    // IntelliJ only
-    /*
-     * private static final String JAXP_SCHEMA_LANGUAGE =
-     * "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
-     * private static final String W3C_XML_SCHEMA =
-     * "http://www.w3.org/2001/XMLSchema";
-     */
+    // IntelliJ only - if you want a validating parser.
+     private static final String JAXP_SCHEMA_LANGUAGE =
+     "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
+     private static final String W3C_XML_SCHEMA =
+     "http://www.w3.org/2001/XMLSchema";
     // End IntelliJ only
 
-    //**TODO The values in the XML file are meant to override the values in the fxml file.
-    // But the XML values should be validated against the rules set up in StartParameterValidation,
-    // which are currently triggered via a ChangeListener ... Need to validate the XML against
-    // the ranges in StartParameterValidation, e.g. robot width, and if they are out of range
-    // mark them as invalid, i.e. requiring change, during initialization.
+    // Read start parameters from from an XML file but do not include those that are more easily
+    // changed via the UI: the AprilTag target (Spinner) and the RadioButton/ToggleGroup for the
+    // way the robot should approach the target - strafe or turn.
     public StartParametersXML(String pXMLDirectory) throws ParserConfigurationException, SAXException, IOException {
 
         // IntelliJ only
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         dbFactory.setIgnoringComments(true);
         dbFactory.setNamespaceAware(true);
-        dbFactory.setValidating(true);
+        //dbFactory.setValidating(true);
         //dbFactory.setAttribute(JAXP_SCHEMA_LANGUAGE, W3C_XML_SCHEMA);
 
         // ## ONLY works with a validating parser.
-        dbFactory.setIgnoringElementContentWhitespace(true);
+        //dbFactory.setIgnoringElementContentWhitespace(true);
         // End IntelliJ only
 
         xmlDirectory = pXMLDirectory;
@@ -65,7 +61,8 @@ public class StartParametersXML {
                 || robot_width_node.getTextContent().isEmpty())
             throw new AutonomousRobotException(TAG, "Element 'robot_width' not found");
 
-        double robotWidth = getDoubleContent(robot_width_node.getTextContent(), "robot_width");
+        String robotWidth = robot_width_node.getTextContent();
+        validateDoubleContent(robotWidth, "robot_width");
 
         // <robot_height>
         Node robot_height_node = robot_width_node.getNextSibling();
@@ -74,7 +71,8 @@ public class StartParametersXML {
                 || robot_height_node.getTextContent().isEmpty())
             throw new AutonomousRobotException(TAG, "Element 'robot_height' not found");
 
-        double robotHeight = getDoubleContent(robot_height_node.getTextContent(), "robot_height");
+        String robotHeight = robot_height_node.getTextContent();
+        validateDoubleContent(robotHeight, "robot_height");
 
         // <camera_center_from_robot_center>
         Node camera_center_node = robot_height_node.getNextSibling();
@@ -83,7 +81,8 @@ public class StartParametersXML {
                 || camera_center_node.getTextContent().isEmpty())
             throw new AutonomousRobotException(TAG, "Element 'camera_center_from_robot_center' not found");
 
-        double cameraCenter = getDoubleContent(camera_center_node.getTextContent(), "camera_center_from_robot_center");
+        String cameraCenter = camera_center_node.getTextContent();
+        validateDoubleContent(cameraCenter, "camera_center_from_robot_center");
 
         // <camera_offset_from_robot_center>
         Node camera_offset_node = camera_center_node.getNextSibling();
@@ -92,16 +91,18 @@ public class StartParametersXML {
                 || camera_center_node.getTextContent().isEmpty())
             throw new AutonomousRobotException(TAG, "Element 'camera_offset_from_robot_center' not found");
 
-        double cameraOffset = getDoubleContent(camera_offset_node.getTextContent(), "camera_offset_from_robot_center");
+        String cameraOffset = camera_offset_node.getTextContent();
+        validateDoubleContent(cameraOffset, "camera_offset_from_robot_center");
 
         // <device_center_from_robot_center>
-        Node device_center_node = camera_center_node.getNextSibling();
+        Node device_center_node = camera_offset_node.getNextSibling();
         device_center_node = XMLUtils.getNextElement(device_center_node);
         if (device_center_node == null || !device_center_node.getNodeName().equals("device_center_from_robot_center")
                 || camera_center_node.getTextContent().isEmpty())
             throw new AutonomousRobotException(TAG, "Element 'device_center_from_robot_center' not found");
 
-        double deviceCenter = getDoubleContent(device_center_node.getTextContent(), "device_center_from_robot_center");
+        String deviceCenter = device_center_node.getTextContent();
+        validateDoubleContent(deviceCenter, "device_center_from_robot_center");
 
         // <device_offset_from_robot_center>
         Node device_offset_node = device_center_node.getNextSibling();
@@ -110,16 +111,18 @@ public class StartParametersXML {
                 || camera_center_node.getTextContent().isEmpty())
             throw new AutonomousRobotException(TAG, "Element 'device_offset_from_robot_center' not found");
 
-        double deviceOffset = getDoubleContent(device_offset_node.getTextContent(), "device_offset_from_robot_center");
+        String deviceOffset = device_offset_node.getTextContent();
+        validateDoubleContent(deviceOffset, "device_offset_from_robot_center");
 
-        // <robot_position_at_backdrop_x>36.0</robot_position_at_backdrop_x>
+        // <robot_position_at_backdrop_x>
         Node backdrop_x_node = device_offset_node.getNextSibling();
         backdrop_x_node = XMLUtils.getNextElement(backdrop_x_node);
         if (backdrop_x_node == null || !backdrop_x_node.getNodeName().equals("robot_position_at_backdrop_x")
                 || camera_center_node.getTextContent().isEmpty())
             throw new AutonomousRobotException(TAG, "Element 'robot_position_at_backdrop_x' not found");
 
-        double backdropX = getDoubleContent(backdrop_x_node.getTextContent(), "robot_position_at_backdrop_x");
+        String backdropX = backdrop_x_node.getTextContent();
+        validateDoubleContent(backdropX, "robot_position_at_backdrop_x");
 
         // <robot_position_at_backdrop_y>
         Node backdrop_y_node = backdrop_x_node.getNextSibling();
@@ -128,39 +131,11 @@ public class StartParametersXML {
                 || camera_center_node.getTextContent().isEmpty())
             throw new AutonomousRobotException(TAG, "Element 'robot_position_at_backdrop_y' not found");
 
-        double backdropY = getDoubleContent(backdrop_y_node.getTextContent(), "robot_position_at_backdrop_y");
-
-        // <april_tag_id>
-        Node apriltag_node = backdrop_y_node.getNextSibling();
-        apriltag_node = XMLUtils.getNextElement(apriltag_node);
-        if (apriltag_node == null || !apriltag_node.getNodeName().equals("april_tag_id")
-                || apriltag_node.getTextContent().isEmpty())
-            throw new AutonomousRobotException(TAG, "Element 'april_tag_id' not found");
-
-        int aprilTagId;
-        try {
-            aprilTagId = Integer.parseInt(apriltag_node.getTextContent());
-        } catch (NumberFormatException nex) {
-            throw new AutonomousRobotException(TAG, "Invalid number format in element 'april_tag_id'");
-        }
-
-        // <approach>
-        Node approach_node = apriltag_node.getNextSibling();
-        approach_node = XMLUtils.getNextElement(approach_node);
-        if (approach_node == null || !approach_node.getNodeName().equals("approach")
-                || approach_node.getTextContent().isEmpty())
-            throw new AutonomousRobotException(TAG, "Element 'approach' not found");
-
-        StartParameters.ApproachBackdrop approachBackdrop;
-        switch (approach_node.getTextContent()) {
-            case "Strafe to" -> approachBackdrop = StartParameters.ApproachBackdrop.STRAFE_TO;
-            case "Turn to" -> approachBackdrop = StartParameters.ApproachBackdrop.TURN_TO;
-            default ->
-                throw new AutonomousRobotException(TAG, "Invalid approach to backdrop");
-        }
+        String backdropY = backdrop_y_node.getTextContent();
+        validateDoubleContent(backdropY, "robot_position_at_backdrop_y");
 
         startParameters = new StartParameters(robotWidth, robotHeight, cameraCenter, cameraOffset,
-                deviceCenter, deviceOffset, backdropX, backdropY, aprilTagId, approachBackdrop);
+                deviceCenter, deviceOffset, backdropX, backdropY);
 
         RobotLogCommon.c(TAG, "In StartParametersXML; opened and parsed the XML file");
     }
@@ -169,9 +144,9 @@ public class StartParametersXML {
         return startParameters;
     }
 
-    private double getDoubleContent(String pElementText, String pElementName) {
+    private void validateDoubleContent(String pElementText, String pElementName) {
         try {
-            return Double.parseDouble(pElementText);
+            Double.parseDouble(pElementText);
         } catch (NumberFormatException nex) {
             throw new AutonomousRobotException(TAG, "Invalid number format in element '" + pElementName + "'");
         }

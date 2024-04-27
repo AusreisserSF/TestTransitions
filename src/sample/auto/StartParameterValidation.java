@@ -281,8 +281,12 @@ public class StartParameterValidation {
         private boolean valid;
 
         public StartParameterInfo(String pParameterValue, boolean pValid) {
-            parameterValue = Double.parseDouble(pParameterValue);
             valid = pValid;
+            try {
+                parameterValue = Double.parseDouble(pParameterValue);
+            } catch (NumberFormatException nex) {
+                valid = false;
+            }
         }
 
         public void setParameterValue(double pValue) {

@@ -15,10 +15,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+import org.firstinspires.ftc.ftcdevcommon.platform.intellij.WorkingDirectory;
+import org.xml.sax.SAXException;
 import sample.auto.fx.FieldFXCenterStageBackdropLG;
 import sample.auto.fx.RobotFXCenterStageLG;
 import sample.auto.fx.CenterStageControllerLG;
+import sample.auto.xml.StartParametersXML;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -31,7 +35,7 @@ public class CenterStageBackdrop extends Application {
     private RobotFXCenterStageLG centerStageRobot;
 
     @Override
-    public void start(final Stage pStage) throws IOException {
+    public void start(final Stage pStage) throws IOException, ParserConfigurationException, SAXException {
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(getClass().getResource("/sample/auto/fx/centerStageLG.fxml")); // absolute path under src
         BorderPane root = fxmlLoader.load();
@@ -56,9 +60,13 @@ public class CenterStageBackdrop extends Application {
         controller.alliance.setTextFill(allianceColor); // or jewelsea setStyle("-fx-text-inner-color: red;");
 
         //**TODO ??Need a way to read parameters from an XML file
-        // back out?? Only the robot dimensions, camera placement, device placement.
+        // Only the robot dimensions, camera placement, device placement.
         // Parse and validate the start parameters that have a range of double values.
         startParameterValidation = new StartParameterValidation(controller);
+
+        // Read the StartParameters.xml file and override any default values
+        // that have been overridden.
+        StartParametersXML startParametersXML = new StartParametersXML(WorkingDirectory.getWorkingDirectory() + RobotConstants.XML_DIR);
 
         SpinnerValueFactory.IntegerSpinnerValueFactory spinnerValueFactory;
         if (alliance == RobotConstants.Alliance.BLUE)
@@ -68,8 +76,8 @@ public class CenterStageBackdrop extends Application {
 
         controller.april_tag_spinner.setValueFactory(spinnerValueFactory);
 
-        // Show the play button now but do not start the animation until
-        // all start parameters have been validated.
+        // Show the play button now but when it is pressed then validate all of
+        // the start parameters before allowing the animation to proceed.
         Button playPauseButton = new Button("Play");
         playPauseButton.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
 
