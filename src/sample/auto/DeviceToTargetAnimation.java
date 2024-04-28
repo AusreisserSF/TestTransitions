@@ -20,7 +20,7 @@ public class DeviceToTargetAnimation {
     private final Pane field;
     private final RobotFXCenterStageLG centerStageRobot;
     private final Group robotGroup;
-    private final StartParameterValidation startParameters;
+    private final StartParameterValidation2 startParameters;
 
     private double robotCoordX;
     private double robotCoordY;
@@ -30,7 +30,7 @@ public class DeviceToTargetAnimation {
     private double aprilTagCenterY;
 
     public DeviceToTargetAnimation(CenterStageControllerLG pController, Pane pField, RobotFXCenterStageLG pCenterStageRobot,
-                                   StartParameterValidation pStartParameters) {
+                                   StartParameterValidation2 pStartParameters) {
         controller = pController;
         field = pField;
         centerStageRobot = pCenterStageRobot;
@@ -55,8 +55,8 @@ public class DeviceToTargetAnimation {
         // on the user's selection for the final position in front of the backdrop.
         // CubicCurveTo constructor parameters: controlX1, controlX2, controlY1, controlY2, endX, endY
         // The coordinates is those of the center of the robot.
-        double robotPositionAtBackdropX = startParameters.getStartParameter(StartParameterValidation.StartParameter.ROBOT_POSITION_AT_BACKDROP_X) * FieldFXCenterStageBackdropLG.PX_PER_INCH;
-        double robotPositionAtBackdropY = startParameters.getStartParameter(StartParameterValidation.StartParameter.ROBOT_POSITION_AT_BACKDROP_Y) * FieldFXCenterStageBackdropLG.PX_PER_INCH;
+        double robotPositionAtBackdropX = startParameters.getStartParameter(StartParameterValidation2.StartParameter.ROBOT_POSITION_AT_BACKDROP_X) * FieldFXCenterStageBackdropLG.PX_PER_INCH;
+        double robotPositionAtBackdropY = startParameters.getStartParameter(StartParameterValidation2.StartParameter.ROBOT_POSITION_AT_BACKDROP_Y) * FieldFXCenterStageBackdropLG.PX_PER_INCH;
         float rotation;
         if (pAlliance == RobotConstants.Alliance.BLUE) {
             //path.getElements().add(new CubicCurveTo(400, 300, 300, 300, 200, 275));
