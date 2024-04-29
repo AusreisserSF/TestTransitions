@@ -63,6 +63,8 @@ public class StartParameterValidation2 {
                         return true;
 
                     if (widthP < MIN_ROBOT_BODY_DIMENSION || widthP > MAX_ROBOT_BODY_DIMENSION)
+                        //**TODO I think you need to update StartParameterInfo in the EnumMap with
+                        // a value of 0.0 and validity of false.
                         return false;
 
                     StartParameterInfo widthInfo = startParameters.get(StartParameter.ROBOT_WIDTH);
@@ -353,8 +355,9 @@ public class StartParameterValidation2 {
                 if (result.isEmpty()) {
                     System.out.println("You cancelled the dialog");
                 } else {
+                    double correctedValue;
                     try {
-                        Double.parseDouble(result.get());
+                        correctedValue = Double.parseDouble(result.get());
                     } catch (NumberFormatException nex) {
                         System.out.println("You did not enter a valid double");
                         return;
@@ -362,6 +365,14 @@ public class StartParameterValidation2 {
 
                     textField.setText(result.get());
                     System.out.println("You entered a corrected value of " + textField.getText());
+
+                    //**TODO Let's see if this works - it does but now you need a loop;
+                    // the only exits are if the user enters a valid value or cancels,
+                    // in which case the entry remains invalid.
+                    if (changePredicate.test(correctedValue))
+                        System.out.println("Parameter updated with corrected value");
+                    else
+                        System.out.println("Corrected value failed validity test");
                 }
             }
         }

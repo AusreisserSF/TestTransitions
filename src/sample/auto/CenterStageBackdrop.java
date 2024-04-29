@@ -99,6 +99,7 @@ public class CenterStageBackdrop extends Application {
         AtomicReference<EventHandler<ActionEvent>> event = new AtomicReference<>();
         event.set((e) -> {
             if (!startParameterValidation.allStartParametersValid()) {
+                //**TODO Need to show the user *which* parameters are still invalid ...
                 Alert errorAlert = new Alert(Alert.AlertType.ERROR);
                 errorAlert.setHeaderText("Invalid request to Play the animation");
                 errorAlert.setContentText("Not all start parameters have been set correctly");
