@@ -42,6 +42,7 @@ public class TextInput extends Application {
 
         private TextField widthParameter = new TextField();
         private boolean widthParameterValid = false;
+        //!! The next line needs to be here or the listener does not fire. WHY?
         private ObjectProperty<Double> valueProperty = new SimpleObjectProperty<>(0.0);
 
         public TestPane() {

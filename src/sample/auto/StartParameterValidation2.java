@@ -10,6 +10,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
+import javafx.scene.control.TextInputDialog;
 import javafx.util.converter.DoubleStringConverter;
 import sample.auto.fx.CenterStageControllerLG;
 import sample.auto.fx.FieldFXCenterStageBackdropLG;
@@ -338,20 +339,30 @@ public class StartParameterValidation2 {
             errorMsg = pErrorMsg;
         }
 
-        //**TODO Instead of putting up an Alert can I use a text dialog to get a corrected
-        // value and then call validateStartParameter? Watch out for multiple instances of
-        // the same listener?
-        // See also https://www.tabnine.com/code/java/classes/javafx.scene.control.TextInputDialog
+        // Use a TextDialog to get a corrected value.
+        // See https://code.makery.ch/blog/javafx-dialogs-official/
         @Override
         public void changed(ObservableValue<? extends Double> observable, Double oldValue, Double newValue) {
             if (!changePredicate.test(newValue)) {
-                Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-                errorAlert.setHeaderText("Input not valid");
-                errorAlert.setContentText(errorMsg);
-                errorAlert.showAndWait();
+                // TextInputDialog from https://code.makery.ch/blog/javafx-dialogs-official/
+                TextInputDialog dialog = new TextInputDialog("0.0");
+                dialog.setTitle("Error Correction Dialog");
+                dialog.setHeaderText(errorMsg);
+                dialog.setContentText("Please enter a new value:");
+                Optional<String> result = dialog.showAndWait();
+                if (result.isEmpty()) {
+                    System.out.println("You cancelled the dialog");
+                } else {
+                    try {
+                        Double.parseDouble(result.get());
+                    } catch (NumberFormatException nex) {
+                        System.out.println("You did not enter a valid double");
+                        return;
+                    }
 
-                //**TODO Highly experimental -  see if this changes the value -> WORKED!
-                textField.setText("17.0");
+                    textField.setText(result.get());
+                    System.out.println("You entered a corrected value of " + textField.getText());
+                }
             }
         }
 
