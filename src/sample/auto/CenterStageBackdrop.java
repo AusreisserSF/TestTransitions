@@ -36,6 +36,9 @@ public class CenterStageBackdrop extends Application {
     private StartParameterValidation2 startParameterValidation;
     private RobotFXCenterStageLG centerStageRobot;
 
+    //**TODO Improvement: use drag-and-drop to place the camera and device on the robot.
+    //**TODO Use the mouse to place a marker (e.g. image of an arrow or thumbs-up) at a
+    // legal position on the field for the "approach position".
     @Override
     public void start(final Stage pStage) throws IOException, ParserConfigurationException, SAXException {
         FXMLLoader fxmlLoader = new FXMLLoader();

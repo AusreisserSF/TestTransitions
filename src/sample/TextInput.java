@@ -12,6 +12,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -19,10 +20,11 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.converter.DoubleStringConverter;
 
+import java.util.Optional;
 import java.util.function.Predicate;
 
 public class TextInput extends Application {
-    public static final double MIN_ROBOT_WIDTH = 8.0;
+    public static final double MIN_ROBOT_WIDTH = 12.0;
     public static final double MAX_ROBOT_WIDTH = 18.0;
 
     public static void main(String[] args) {
@@ -36,30 +38,28 @@ public class TextInput extends Application {
         primaryStage.show();
     }
 
-    public class TestPane extends BorderPane {
+    public static class TestPane extends BorderPane {
 
-        private double widthParameter;
+        private TextField widthParameter = new TextField();
         private boolean widthParameterValid = false;
+        private ObjectProperty<Double> valueProperty = new SimpleObjectProperty<>(0.0);
 
         public TestPane() {
-            TextField textField = new TextField();
-            ObjectProperty<Double> valueProperty = new SimpleObjectProperty<>(0.0);
-
             TextFormatter<Double> textFormatter = new TextFormatter<>(new DoubleStringConverter());
             textFormatter.valueProperty().bindBidirectional(valueProperty);
-            textField.setTextFormatter(textFormatter);
+            widthParameter.setTextFormatter(textFormatter);
 
             valueProperty.addListener(new PredicateChangeListener(
                     widthP -> {
-                        widthParameter = widthP;
+                        widthParameter.setText(widthP.toString());
                         widthParameterValid = widthP >= MIN_ROBOT_WIDTH && widthP <= MAX_ROBOT_WIDTH;
                         return widthParameterValid;
                     },
-                    "The width of the robot must be between 8.0 and 18.0 inches"));
+                    "The width of the robot must be between 12.0 and 18.0 inches"));
 
             setCenter(new VBox(10,
-                    new HBox(6, new Text("TextField 1"), textField),
-                    new HBox(6, new Text("TextField 2"), new TextField())));
+                    new HBox(6, new Text("TextField 1"), widthParameter))); //,
+            //new HBox(6, new Text("TextField 2"), new TextField())));
         }
 
         // Based on this answer from Fabian --
@@ -76,15 +76,37 @@ public class TextInput extends Application {
             @Override
             public void changed(ObservableValue<? extends Double> observable, Double oldValue, Double newValue) {
                 if (!changePredicate.test(newValue)) {
+                    // Alert method
+                    /*
                     Alert errorAlert = new Alert(Alert.AlertType.ERROR);
                     errorAlert.setHeaderText("Input not valid");
                     errorAlert.setContentText(errorMsg);
                     errorAlert.showAndWait();
+                    */
+
+                    // TextInputDialog from https://code.makery.ch/blog/javafx-dialogs-official/
+                    TextInputDialog dialog = new TextInputDialog("0.0");
+                    dialog.setTitle("Error Correction Dialog");
+                    dialog.setHeaderText(errorMsg);
+                    dialog.setContentText("Please enter a new value:");
+                    Optional<String> result = dialog.showAndWait();
+                    if (result.isEmpty()) {
+                        System.out.println("You cancelled the dialog");
+                    } else {
+                        try {
+                           Double.parseDouble(result.get());
+                        } catch (NumberFormatException nex) {
+                            System.out.println("You did not enter a valid double");
+                            return;
+                        }
+
+                        widthParameter.setText(result.get());
+                        System.out.println("You entered a corrected value of " + widthParameter.getText());
+                    }
                 } else
-                    System.out.println("Value changed -> Old Value: " + oldValue + ", New Value: " + newValue);
+                    System.out.println("The original TextField passed the width filter " + newValue);
             }
         }
-
     }
 
 }
