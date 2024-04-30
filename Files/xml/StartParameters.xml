@@ -1,6 +1,6 @@
 <start_parameters>
    <robot_width>14.0</robot_width>
-   <robot_height>23.0</robot_height>
+   <robot_height>14.0</robot_height>
    <camera_center_from_robot_center>6.0</camera_center_from_robot_center>
    <camera_offset_from_robot_center>-6.0</camera_offset_from_robot_center>
    <device_center_from_robot_center>0.0</device_center_from_robot_center>

@@ -71,7 +71,7 @@ public class CenterStageBackdrop extends Application {
         // StartParameterValidation.
         StartParametersXML startParametersXML = new StartParametersXML(WorkingDirectory.getWorkingDirectory() + RobotConstants.XML_DIR);
         StartParameters startParameters = startParametersXML.getStartParameters();
-        //overrideStartParameters(startParameters);
+        overrideStartParameters(startParameters);
 
         SpinnerValueFactory.IntegerSpinnerValueFactory spinnerValueFactory;
         if (alliance == RobotConstants.Alliance.BLUE)
