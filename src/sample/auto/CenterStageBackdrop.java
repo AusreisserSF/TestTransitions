@@ -33,7 +33,7 @@ public class CenterStageBackdrop extends Application {
 
     private CenterStageControllerLG controller;
     //**TODO TEMP private StartParameterValidation startParameterValidation;
-    private StartParameterValidation2 startParameterValidation;
+    private StartParameterValidation startParameterValidation;
     private RobotFXCenterStageLG centerStageRobot;
 
     //**TODO Improvement: use drag-and-drop to place the camera and device on the robot.
@@ -65,7 +65,7 @@ public class CenterStageBackdrop extends Application {
         controller.alliance.setTextFill(allianceColor); // or jewelsea setStyle("-fx-text-inner-color: red;");
 
         // Set up the start parameters with the value specified in the fxml.
-        startParameterValidation = new StartParameterValidation2(controller); //**TODO TEMP
+        startParameterValidation = new StartParameterValidation(controller); //**TODO TEMP
 
         // Read start parameters from an XML file and for each value that is different
         // from the current fxml default trigger the change listener already set up in
@@ -121,8 +121,8 @@ public class CenterStageBackdrop extends Application {
             // upper left corner; Paths use the center point.
 
             // Place the robot on the field with the dimensions entered by the user.
-            double robotWidthIn = startParameterValidation.getStartParameter(StartParameterValidation2.StartParameter.ROBOT_WIDTH);
-            double robotHeightIn = startParameterValidation.getStartParameter(StartParameterValidation2.StartParameter.ROBOT_HEIGHT);
+            double robotWidthIn = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_WIDTH);
+            double robotHeightIn = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_HEIGHT);
             Point2D startingPosition;
             double startingRotation;
             if (alliance == RobotConstants.Alliance.BLUE) {
@@ -136,12 +136,12 @@ public class CenterStageBackdrop extends Application {
             }
 
             // Collect start parameters.
-            double cameraCenterFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation2.StartParameter.CAMERA_CENTER_FROM_ROBOT_CENTER);
-            double cameraOffsetFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation2.StartParameter.CAMERA_OFFSET_FROM_ROBOT_CENTER);
-            double deviceCenterFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation2.StartParameter.DEVICE_CENTER_FROM_ROBOT_CENTER);
-            double deviceOffsetFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation2.StartParameter.DEVICE_OFFSET_FROM_ROBOT_CENTER);
-            double robotPositionAtBackdropX = startParameterValidation.getStartParameter(StartParameterValidation2.StartParameter.ROBOT_POSITION_AT_BACKDROP_X) * FieldFXCenterStageBackdropLG.PX_PER_INCH;
-            double robotPositionAtBackdropY = startParameterValidation.getStartParameter(StartParameterValidation2.StartParameter.ROBOT_POSITION_AT_BACKDROP_Y) * FieldFXCenterStageBackdropLG.PX_PER_INCH;
+            double cameraCenterFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_CENTER_FROM_ROBOT_CENTER);
+            double cameraOffsetFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_OFFSET_FROM_ROBOT_CENTER);
+            double deviceCenterFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.DEVICE_CENTER_FROM_ROBOT_CENTER);
+            double deviceOffsetFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.DEVICE_OFFSET_FROM_ROBOT_CENTER);
+            double robotPositionAtBackdropX = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_POSITION_AT_BACKDROP_X) * FieldFXCenterStageBackdropLG.PX_PER_INCH;
+            double robotPositionAtBackdropY = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_POSITION_AT_BACKDROP_Y) * FieldFXCenterStageBackdropLG.PX_PER_INCH;
             Integer targetAprilTag = controller.april_tag_spinner.getValue();
             String radioButtonText = ((RadioButton) controller.approach_toggle.getSelectedToggle()).getText();
 
