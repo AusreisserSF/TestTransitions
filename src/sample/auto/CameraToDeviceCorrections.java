@@ -174,9 +174,6 @@ public class CameraToDeviceCorrections {
         // device to target are the same so the angles overlap; for the
         // final turn take the absolute value of their difference.
         else {
-            // This works for "RED - device left", both AT 4 and AT 6;
-            // works for RED - device right, AT 6;
-            // works for BLUE - device right, AT 3
             strafeDistance = Math.abs(strafeDistance - rcdPreRotationOpposite);
             finalTurnFromRobotCenter = Math.abs(Math.abs(rdcPreRotationAngle) - Math.abs(rctAngle));
         }
@@ -185,19 +182,21 @@ public class CameraToDeviceCorrections {
         // from device to target.
         if (rctAngle > 0) { // target is left of robot center
             if (pOffsetRobotCenterToDeliveryDevice < 0) {
-                finalTurnFromRobotCenter *= -1; // device is right of target, turn FTC CCW
+                finalTurnFromRobotCenter = Math.abs(finalTurnFromRobotCenter); // device is right of robot center, turn FTC CCW
             } else // pOffsetRobotCenterToDeliveryDevice >= 0
+                // Device is left of robot center; is the device still right of the target?
                 if (Math.abs(pOffsetRobotCenterToDeliveryDevice) > rctOpposite) {
-                    finalTurnFromRobotCenter *= -1; // device is left of target, turn is negative
+                    finalTurnFromRobotCenter = Math.abs(finalTurnFromRobotCenter); // device is left of target, FTC turn CCW
                 }
         }
 
         if (rctAngle < 0) { // target is right of robot center
             if (pOffsetRobotCenterToDeliveryDevice > 0) {
-                finalTurnFromRobotCenter *= -1; // device is left of target, turn FTC CCW
+                finalTurnFromRobotCenter = -Math.abs(finalTurnFromRobotCenter); // device is left of robot center, turn FTC CW
             } else // pOffsetRobotCenterToDeliveryDevice >= 0
+                // Device is right of robot center; is the device still left of the target?
                 if (Math.abs(pOffsetRobotCenterToDeliveryDevice) <= rctOpposite) {
-                    finalTurnFromRobotCenter *= 1; // device is left of target, turn is negative
+                    finalTurnFromRobotCenter = -Math.abs(finalTurnFromRobotCenter); // device is left of target, FTC turn CW
                 }
         }
 
