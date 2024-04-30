@@ -96,11 +96,12 @@ public class CameraToDeviceCorrections {
             }
         }
 
-        // The camera is in line with the robot center; the angle from robot center
-        // to the target is the same as that of the camera, which is the default.
-        // else {
-        //    rctSignum = Math.signum(pAngleCameraToTarget);
-        // }
+        // The camera is in line with the robot center; the angle and distance
+        // from robot center to target are the same as those of the camera.
+        if (pOffsetRobotCenterToCameraCenter == 0.0) {
+            rctSignum = Math.signum(pAngleCameraFaceToTarget);
+            rctOpposite = cameraOpposite;
+        }
 
         // Get the "adjacent" edge of the robot center triangle.
         double rctAdjacent = pDistanceRobotCenterToCameraFace + cameraAdjacent;
