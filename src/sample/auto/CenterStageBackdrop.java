@@ -30,15 +30,22 @@ import java.util.concurrent.atomic.AtomicReference;
 
 //**TODO Migrate all classes and fxml (some copy, some move) from this
 // test project, TestTransitions, into its own project.
+
+//**TODO Consider a turret simulation, i.e. one in which the body of
+// the robot is parallel to the plane of the target but the delivery
+// device itself turns towards the target, not the robot itself.
 public class CenterStageBackdrop extends Application {
 
     private CenterStageControllerLG controller;
     private StartParameterValidation startParameterValidation;
     private RobotFXCenterStageLG centerStageRobot;
 
-    //**TODO Improvement: use drag-and-drop to place the camera and device on the robot.
-    //**TODO Use the mouse to place a marker (e.g. image of an arrow or thumbs-up) at a
-    // legal position on the field for the "approach position".
+    //**TODO Improvement: use drag-and-drop to place the camera and device on a
+    // pre-Play representation of a fixed-size robot.
+    //**TODO Use the mouse to move the pre-Play representation of the robot to
+    // a legal position on the field for the "approach position". The Play button
+    // erases the image and starts the animation with the actual robot dimensions
+    // and scaled camera and device placement.
     @Override
     public void start(final Stage pStage) throws IOException, ParserConfigurationException, SAXException {
         FXMLLoader fxmlLoader = new FXMLLoader();
