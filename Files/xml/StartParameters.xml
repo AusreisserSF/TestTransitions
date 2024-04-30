@@ -2,9 +2,9 @@
    <robot_width>14.0</robot_width>
    <robot_height>14.0</robot_height>
    <camera_center_from_robot_center>6.0</camera_center_from_robot_center>
-   <camera_offset_from_robot_center>-6.0</camera_offset_from_robot_center>
-   <device_center_from_robot_center>0.0</device_center_from_robot_center>
-   <device_offset_from_robot_center>6.0</device_offset_from_robot_center>
+   <camera_offset_from_robot_center>6.0</camera_offset_from_robot_center>
+   <device_center_from_robot_center>6.0</device_center_from_robot_center>
+   <device_offset_from_robot_center>-6.0</device_offset_from_robot_center>
    <robot_position_at_backdrop_x>36.0</robot_position_at_backdrop_x>
    <robot_position_at_backdrop_y>36.0</robot_position_at_backdrop_y>
 </start_parameters>
