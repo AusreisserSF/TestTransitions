@@ -7,7 +7,6 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.TextInputDialog;
@@ -62,14 +61,13 @@ public class StartParameterValidation2 {
                     if (widthP == null)
                         return true;
 
-                    if (widthP < MIN_ROBOT_BODY_DIMENSION || widthP > MAX_ROBOT_BODY_DIMENSION)
-                        //**TODO I think you need to update StartParameterInfo in the EnumMap with
-                        // a value of 0.0 and validity of false.
-                        return false;
-
                     StartParameterInfo widthInfo = startParameters.get(StartParameter.ROBOT_WIDTH);
-                    widthInfo.setParameterValue(widthP);
-                    widthInfo.setValidity(true);
+                    if (widthP < MIN_ROBOT_BODY_DIMENSION || widthP > MAX_ROBOT_BODY_DIMENSION) {
+                        widthInfo.setInvalid();
+                        return false;
+                    }
+
+                    widthInfo.setValid(widthP);
                     return true;
                 },
                 "The width of the robot must be between " + MIN_ROBOT_BODY_DIMENSION + " and " + MAX_ROBOT_BODY_DIMENSION));
@@ -88,19 +86,20 @@ public class StartParameterValidation2 {
                     if (heightP == null)
                         return true;
 
-                    if (heightP < MIN_ROBOT_BODY_DIMENSION || heightP > MAX_ROBOT_BODY_DIMENSION)
-                        return false;
-
                     StartParameterInfo heightInfo = startParameters.get(StartParameter.ROBOT_HEIGHT);
-                    heightInfo.setParameterValue(heightP);
-                    heightInfo.setValidity(true);
+                    if (heightP < MIN_ROBOT_BODY_DIMENSION || heightP > MAX_ROBOT_BODY_DIMENSION) {
+                        heightInfo.setInvalid();
+                        return false;
+                    }
+
+                    heightInfo.setValid(heightP);
                     return true;
                 },
                 "The height of the robot must be between " + MIN_ROBOT_BODY_DIMENSION + " and " + MAX_ROBOT_BODY_DIMENSION));
 
         validateStartParameter(heightListener);
 
-        // CAMERA_CENTER_FROM_ROBOT_CENTER_ID
+        // CAMERA_CENTER_FROM_ROBOT_CENTER
         // constraint - camera top or bottom edge may be no more than half the height of the robot from the center
         // the edge depends on the sign of the parameter.
         startParameters.put(StartParameter.CAMERA_CENTER_FROM_ROBOT_CENTER,
@@ -117,12 +116,12 @@ public class StartParameterValidation2 {
                     // Make sure that the robot's height has already been set.
                     StartParameterInfo heightInfo = startParameters.get(StartParameter.ROBOT_HEIGHT);
                     StartParameterInfo cameraCenterInfo = startParameters.get(StartParameter.CAMERA_CENTER_FROM_ROBOT_CENTER);
-                    if (heightInfo == null || !heightInfo.getValidity() ||
-                            Math.abs(cameraCenterInfo.getParameterValue()) > (heightInfo.getParameterValue() / 2))
+                    if (heightInfo == null || !heightInfo.getValidity() || cameraCenterP > (heightInfo.getParameterValue() / 2)) {
+                        cameraCenterInfo.setInvalid();
                         return false;
+                    }
 
-                    cameraCenterInfo.setParameterValue(cameraCenterP);
-                    cameraCenterInfo.setValidity(true);
+                    cameraCenterInfo.setValid(cameraCenterP);
                     return true;
                 },
                 "The fore/aft distance from camera center to robot center must be less than 1/2 the height of the robot"));
@@ -130,7 +129,7 @@ public class StartParameterValidation2 {
         validateStartParameter(cameraCenterListener);
 
 
-        // CAMERA_OFFSET_FROM_ROBOT_CENTER_ID
+        // CAMERA_OFFSET_FROM_ROBOT_CENTER
         // constraint - camera left or right edge may be no more than half the width of the robot from the center
         // the edge depends on the sign of the parameter.
         startParameters.put(StartParameter.CAMERA_OFFSET_FROM_ROBOT_CENTER,
@@ -147,19 +146,19 @@ public class StartParameterValidation2 {
                     // Make sure that the robot's width has already been set.
                     StartParameterInfo widthInfo = startParameters.get(StartParameter.ROBOT_WIDTH);
                     StartParameterInfo cameraOffsetInfo = startParameters.get(StartParameter.CAMERA_OFFSET_FROM_ROBOT_CENTER);
-                    if (widthInfo == null || !widthInfo.getValidity() ||
-                            Math.abs(cameraOffsetInfo.getParameterValue()) > (widthInfo.getParameterValue() / 2))
+                    if (widthInfo == null || !widthInfo.getValidity() || cameraOffsetP > (widthInfo.getParameterValue() / 2)) {
+                        cameraOffsetInfo.setInvalid();
                         return false;
+                    }
 
-                    cameraOffsetInfo.setParameterValue(cameraOffsetP);
-                    cameraOffsetInfo.setValidity(true);
+                    cameraOffsetInfo.setValid(cameraOffsetP);
                     return true;
                 },
                 "The left/right distance from camera center to robot center must be less than 1/2 the width of the robot"));
 
         validateStartParameter(cameraOffsetListener);
 
-        // DEVICE_CENTER_FROM_ROBOT_CENTER_ID
+        // DEVICE_CENTER_FROM_ROBOT_CENTER
         // constraint - device top or bottom edge may be no more than half the height of the robot from the center
         // the edge depends on the sign of the parameter.
         startParameters.put(StartParameter.DEVICE_CENTER_FROM_ROBOT_CENTER,
@@ -176,19 +175,19 @@ public class StartParameterValidation2 {
                     // Make sure that the robot's height has already been set.
                     StartParameterInfo heightInfo = startParameters.get(StartParameter.ROBOT_HEIGHT);
                     StartParameterInfo deviceCenterInfo = startParameters.get(StartParameter.DEVICE_CENTER_FROM_ROBOT_CENTER);
-                    if (heightInfo == null || !heightInfo.getValidity() ||
-                            Math.abs(deviceCenterInfo.getParameterValue()) > (heightInfo.getParameterValue() / 2))
+                    if (heightInfo == null || !heightInfo.getValidity() || deviceCenterP > (heightInfo.getParameterValue() / 2)) {
+                        deviceCenterInfo.setInvalid();
                         return false;
+                    }
 
-                    deviceCenterInfo.setParameterValue(deviceCenterP);
-                    deviceCenterInfo.setValidity(true);
+                    deviceCenterInfo.setValid(deviceCenterP);
                     return true;
                 },
                 "The fore/aft distance from device center to robot center must be less than 1/2 the height of the robot"));
 
         validateStartParameter(deviceCenterListener);
 
-        // DEVICE_OFFSET_FROM_ROBOT_CENTER_ID
+        // DEVICE_OFFSET_FROM_ROBOT_CENTER
         // constraint - device left or right edge may be no more than half the width of the robot from the center
         // the edge depends on the sign of the parameter.
         startParameters.put(StartParameter.DEVICE_OFFSET_FROM_ROBOT_CENTER,
@@ -205,12 +204,12 @@ public class StartParameterValidation2 {
                     // Make sure that the robot's width has already been set.
                     StartParameterInfo widthInfo = startParameters.get(StartParameter.ROBOT_WIDTH);
                     StartParameterInfo deviceOffsetInfo = startParameters.get(StartParameter.DEVICE_OFFSET_FROM_ROBOT_CENTER);
-                    if (widthInfo == null || !widthInfo.getValidity() ||
-                            Math.abs(deviceOffsetInfo.getParameterValue()) > (widthInfo.getParameterValue() / 2))
+                    if (widthInfo == null || !widthInfo.getValidity() || deviceOffsetP > (widthInfo.getParameterValue() / 2)) {
+                        deviceOffsetInfo.setInvalid();
                         return false;
+                    }
 
-                    deviceOffsetInfo.setParameterValue(deviceOffsetP);
-                    deviceOffsetInfo.setValidity(true);
+                    deviceOffsetInfo.setValid(deviceOffsetP);
                     return true;
                 },
                 "The left/right distance from device center to robot center must be less than 1/2 the width of the robot"));
@@ -232,12 +231,12 @@ public class StartParameterValidation2 {
 
                     // Make sure that the robot's x position at the backdrop is in range.
                     StartParameterInfo backdropXInfo = startParameters.get(StartParameter.ROBOT_POSITION_AT_BACKDROP_X);
-                    if (backdropXInfo.getParameterValue() < ROBOT_POSITION_AT_BACKDROP_X_MIN ||
-                            backdropXInfo.getParameterValue() > ROBOT_POSITION_AT_BACKDROP_X_MAX)
+                    if (backdropXP < ROBOT_POSITION_AT_BACKDROP_X_MIN || backdropXP > ROBOT_POSITION_AT_BACKDROP_X_MAX) {
+                        backdropXInfo.setInvalid();
                         return false;
+                    }
 
-                    backdropXInfo.setParameterValue(backdropXP);
-                    backdropXInfo.setValidity(true);
+                    backdropXInfo.setValid(backdropXP);
                     return true;
                 },
                 "The x position of the robot at the backstop is out of range"));
@@ -259,12 +258,12 @@ public class StartParameterValidation2 {
 
                     // Make sure that the robot's y position at the backdrop is in range.
                     StartParameterInfo backdropYInfo = startParameters.get(StartParameter.ROBOT_POSITION_AT_BACKDROP_Y);
-                    if (backdropYInfo.getParameterValue() < ROBOT_POSITION_AT_BACKDROP_Y_MIN &&
-                            backdropYInfo.getParameterValue() > ROBOT_POSITION_AT_BACKDROP_Y_MAX)
+                    if (backdropYP < ROBOT_POSITION_AT_BACKDROP_Y_MIN || backdropYP > ROBOT_POSITION_AT_BACKDROP_Y_MAX) {
+                        backdropYInfo.setInvalid();
                         return false;
+                    }
 
-                    backdropYInfo.setParameterValue(backdropYP);
-                    backdropYInfo.setValidity(true);
+                    backdropYInfo.setValid(backdropYP);
                     return true;
                 },
                 "The y position of the robot at the backstop is out of range"));
@@ -311,12 +310,14 @@ public class StartParameterValidation2 {
             }
         }
 
-        public void setParameterValue(double pValue) {
-            parameterValue = pValue;
+        public void setInvalid() {
+            parameterValue = 0.0;
+            valid = false;
         }
 
-        public void setValidity(boolean pValid) {
-            valid = pValid;
+        public void setValid(double pValue) {
+            parameterValue = pValue;
+            valid = true;
         }
 
         public double getParameterValue() {
@@ -345,7 +346,14 @@ public class StartParameterValidation2 {
         // See https://code.makery.ch/blog/javafx-dialogs-official/
         @Override
         public void changed(ObservableValue<? extends Double> observable, Double oldValue, Double newValue) {
-            if (!changePredicate.test(newValue)) {
+            if (changePredicate.test(newValue))
+                return; // valid input - nothing to do
+
+            // Invalid input: pester the user until he enters valid input or cancels out,
+            // which we'll catch later.
+            boolean doneWithPestering = false;
+            while (!doneWithPestering) {
+
                 // TextInputDialog from https://code.makery.ch/blog/javafx-dialogs-official/
                 TextInputDialog dialog = new TextInputDialog("0.0");
                 dialog.setTitle("Error Correction Dialog");
@@ -353,26 +361,21 @@ public class StartParameterValidation2 {
                 dialog.setContentText("Please enter a new value:");
                 Optional<String> result = dialog.showAndWait();
                 if (result.isEmpty()) {
-                    System.out.println("You cancelled the dialog");
+                    System.out.println("You cancelled the dialog; the last input remains invalid");
+                    doneWithPestering = true;
                 } else {
                     double correctedValue;
                     try {
                         correctedValue = Double.parseDouble(result.get());
                     } catch (NumberFormatException nex) {
                         System.out.println("You did not enter a valid double");
-                        return;
+                        continue;
                     }
 
                     textField.setText(result.get());
                     System.out.println("You entered a corrected value of " + textField.getText());
 
-                    //**TODO Let's see if this works - it does but now you need a loop;
-                    // the only exits are if the user enters a valid value or cancels,
-                    // in which case the entry remains invalid.
-                    if (changePredicate.test(correctedValue))
-                        System.out.println("Parameter updated with corrected value");
-                    else
-                        System.out.println("Corrected value failed validity test");
+                    doneWithPestering = changePredicate.test(correctedValue);
                 }
             }
         }
