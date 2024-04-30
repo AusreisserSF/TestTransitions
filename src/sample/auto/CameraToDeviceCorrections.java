@@ -149,12 +149,8 @@ public class CameraToDeviceCorrections {
         double finalTurnFromRobotCenter;
 
         // The angle rdcPreRotationAngle is always zero or positive.
-        // The next if statement works for "BLUE - device left", which is the only
-        // example of this condition.
-        //**TODO TEST degreesFromRobotCenter == 0; should work. Test other cases
-        // where there is no triangle.
-
-        // If the device is to the right of robot center then invert the sign of the angle.
+        // If the device is to the right of robot center then invert
+        // the sign of the angle.
         if (pOffsetRobotCenterToDeliveryDevice < 0.0)
             rdcPreRotationAngle *= -1;
 
