@@ -14,6 +14,7 @@ public class Main {
             case "Transitions" -> Application.launch(Transitions.class, args);
             case "Backdrop" -> Application.launch(CenterStageBackdrop.class, args);
             case "Text" -> Application.launch(TextInput.class, args);
+            case "DragAndDrop" -> Application.launch(DragAndDrop.class, args);
             default -> System.out.println("Unrecognized application class name");
         }
     }
