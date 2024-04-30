@@ -32,7 +32,6 @@ import java.util.concurrent.atomic.AtomicReference;
 public class CenterStageBackdrop extends Application {
 
     private CenterStageControllerLG controller;
-    //**TODO TEMP private StartParameterValidation startParameterValidation;
     private StartParameterValidation startParameterValidation;
     private RobotFXCenterStageLG centerStageRobot;
 
@@ -65,7 +64,7 @@ public class CenterStageBackdrop extends Application {
         controller.alliance.setTextFill(allianceColor); // or jewelsea setStyle("-fx-text-inner-color: red;");
 
         // Set up the start parameters with the value specified in the fxml.
-        startParameterValidation = new StartParameterValidation(controller); //**TODO TEMP
+        startParameterValidation = new StartParameterValidation(controller);
 
         // Read start parameters from an XML file and for each value that is different
         // from the current fxml default trigger the change listener already set up in
@@ -173,11 +172,10 @@ public class CenterStageBackdrop extends Application {
 
     //**TODO What I really want is a RadioButtonDialog, which doesn't exist.
     // But it looks like you may be able make a custom Dialog with
-    // RadioButton(s)/Toggle group inside it. But this will take some work.
-    // See https://stackoverflow.com/questions/31556373/javafx-dialog-with-2-input-fields
-    //**TODO I think you can put the dialog in its own stage and block all others by
-    // setting its modality. See https://jenkov.com/tutorials/javafx/stage.html#stage-modality
-    // OR even better try this: https://code.makery.ch/blog/javafx-dialogs-official/
+    // RadioButton(s)/Toggle group inside it. See the Custom Login Dialog
+    // section in https://code.makery.ch/blog/javafx-dialogs-official/
+    //**TODO For the time being try the example of a ChoiceDialog on the
+    // same website.
     private String allianceSelection(Stage pStage, Scene pRootScene) {
         /*
         FXMLLoader fxmlLoader = new FXMLLoader();
