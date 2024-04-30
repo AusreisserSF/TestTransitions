@@ -16,8 +16,11 @@ import sample.auto.fx.CenterStageControllerLG;
 import sample.auto.fx.FieldFXCenterStageBackdropLG;
 
 import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class StartParameterValidation {
 
@@ -277,6 +280,13 @@ public class StartParameterValidation {
                 .filter(e -> !e.getValidity())
                 .findAny();
         return invalidEntry.isEmpty(); // returns true if there are no invalid entries
+    }
+
+    public List<StartParameter> getInvalidStartParameters() {
+        return startParameters.entrySet().stream()
+                .filter(e -> !e.getValue().valid)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
     }
 
     // Based on https://www.pragmaticcoding.ca/javafx/textformatter1

@@ -25,6 +25,7 @@ import sample.auto.xml.StartParametersXML;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 //**TODO Migrate all classes and fxml (some copy, some move) from this
@@ -98,10 +99,13 @@ public class CenterStageBackdrop extends Application {
         AtomicReference<EventHandler<ActionEvent>> event = new AtomicReference<>();
         event.set((e) -> {
             if (!startParameterValidation.allStartParametersValid()) {
-                //**TODO Need to show the user *which* parameters are still invalid ...
+                // At least one parameter is still invalid; show the user all invalid parameters.
+                List<StartParameterValidation.StartParameter> invalidParameters = startParameterValidation.getInvalidStartParameters();
                 Alert errorAlert = new Alert(Alert.AlertType.ERROR);
                 errorAlert.setHeaderText("Invalid request to Play the animation");
-                errorAlert.setContentText("Not all start parameters have been set correctly");
+                StringBuilder collectedErrors = new StringBuilder("One or more start parameters has been set correctly:\n");
+                invalidParameters.forEach(p -> { collectedErrors.append(p); collectedErrors.append('\n');});
+                errorAlert.setContentText(collectedErrors.toString());
                 errorAlert.showAndWait();
                 return;
             }
