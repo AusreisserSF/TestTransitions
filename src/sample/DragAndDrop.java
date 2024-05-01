@@ -6,13 +6,17 @@ import javafx.scene.Scene;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 // Based on https://docs.oracle.com/javafx/2/drag_drop/HelloDragAndDrop.java.html
 public class DragAndDrop extends Application {
 
+    //**TODO Change Text source and target to rectangles. How
+    // are their boundaries determined?
     @Override public void start(Stage stage) {
         stage.setTitle("Hello Drag And Drop");
 
@@ -20,36 +24,39 @@ public class DragAndDrop extends Application {
         Scene scene = new Scene(root, 400, 200);
         scene.setFill(Color.LIGHTGREEN);
 
-        final Text source = new Text(50, 100, "DRAG ME");
-        source.setScaleX(2.0);
-        source.setScaleY(2.0);
+        Rectangle sourceRect = new Rectangle(50, 50, 50, 50);
+        sourceRect.setFill(Color.FUCHSIA);
+        //Text sourceText = new Text("DRAG ME");
+        //StackPane sourceStack = new StackPane();
+        //sourceStack.getChildren().addAll(sourceRect, sourceText);
 
-        final Text target = new Text(250, 100, "DROP HERE");
-        target.setScaleX(2.0);
-        target.setScaleY(2.0);
+        Rectangle targetRect = new Rectangle(250, 50, 100, 100);
+        targetRect.setFill(Color.TURQUOISE);
+       // Text targetText = new Text("DROP HERE");
+        //StackPane targetStack = new StackPane();
+        //targetStack.getChildren().addAll(targetRect, targetText);
 
-        source.setOnDragDetected(event -> {
+        sourceRect.setOnDragDetected(event -> {
             /* drag was detected, start drag-and-drop gesture*/
             System.out.println("onDragDetected");
 
             /* allow any transfer mode */
-            Dragboard db = source.startDragAndDrop(TransferMode.ANY);
+            Dragboard db = sourceRect.startDragAndDrop(TransferMode.ANY);
 
             /* put a string on dragboard */
             ClipboardContent content = new ClipboardContent();
-            content.putString(source.getText());
+            content.putString("Robot");
             db.setContent(content);
-
             event.consume();
         });
 
-        target.setOnDragOver(event -> {
+        targetRect.setOnDragOver(event -> {
             /* data is dragged over the target */
             System.out.println("onDragOver");
 
             /* accept it only if it is  not dragged from the same node
              * and if it has a string data */
-            if (event.getGestureSource() != target &&
+            if (event.getGestureSource() != targetRect &&
                     event.getDragboard().hasString()) {
                 /* allow for both copying and moving, whatever user chooses */
                 event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
@@ -58,33 +65,33 @@ public class DragAndDrop extends Application {
             event.consume();
         });
 
-        target.setOnDragEntered(event -> {
+        targetRect.setOnDragEntered(event -> {
             /* the drag-and-drop gesture entered the target */
             System.out.println("onDragEntered");
             /* show to the user that it is an actual gesture target */
-            if (event.getGestureSource() != target &&
+            if (event.getGestureSource() != targetRect &&
                     event.getDragboard().hasString()) {
-                target.setFill(Color.GREEN);
+               // targetRect.setFill(Color.GREEN);
             }
 
             event.consume();
         });
 
-        target.setOnDragExited(event -> {
+        targetRect.setOnDragExited(event -> {
             /* mouse moved away, remove the graphical cues */
-            target.setFill(Color.BLACK);
+            //targetRect.setFill(Color.BLACK);
 
             event.consume();
         });
 
-        target.setOnDragDropped(event -> {
+        targetRect.setOnDragDropped(event -> {
             /* data dropped */
             System.out.println("onDragDropped");
             /* if there is a string data on dragboard, read it and use it */
             Dragboard db = event.getDragboard();
             boolean success = false;
             if (db.hasString()) {
-                target.setText(db.getString());
+                //targetText.setText(db.getString());
                 success = true;
             }
             /* let the source know whether the string was successfully
@@ -94,19 +101,19 @@ public class DragAndDrop extends Application {
             event.consume();
         });
 
-        source.setOnDragDone(event -> {
+        targetRect.setOnDragDone(event -> {
             /* the drag-and-drop gesture ended */
             System.out.println("onDragDone");
             /* if the data was successfully moved, clear it */
             if (event.getTransferMode() == TransferMode.MOVE) {
-                source.setText("");
+                //sourceText.setText("");
             }
 
             event.consume();
         });
 
-        root.getChildren().add(source);
-        root.getChildren().add(target);
+        root.getChildren().add(sourceRect);
+        root.getChildren().add(targetRect);
         stage.setScene(scene);
         stage.show();
     }

@@ -40,12 +40,13 @@ public class CenterStageBackdrop extends Application {
     private StartParameterValidation startParameterValidation;
     private RobotFXCenterStageLG centerStageRobot;
 
-    //**TODO Improvement: use drag-and-drop to place the camera and device on a
-    // pre-Play representation of a fixed-size robot.
-    //**TODO Use the mouse to move the pre-Play representation of the robot to
-    // a legal position on the field for the "approach position". The Play button
-    // erases the image and starts the animation with the actual robot dimensions
-    // and scaled camera and device placement.
+    //**TODO Improvement: keep the fill-in start parameters but change the
+    // animation button to include "Position" as its required first choice.
+    // This button freezes the fill-in parameters but allows the user to
+    // use drag-and-drop to move the camera and device on a pre-Play
+    // representation of the robot and to move the robot and thereby
+    // select its approach position. The Play button erases the image
+    // and starts the animation from the game's starting position.
     @Override
     public void start(final Stage pStage) throws IOException, ParserConfigurationException, SAXException {
         FXMLLoader fxmlLoader = new FXMLLoader();

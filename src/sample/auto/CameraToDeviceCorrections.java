@@ -13,6 +13,8 @@ public class CameraToDeviceCorrections {
     // device to target post-rotation. Note that the adjacent sides of the robot
     // center to target triangle and the robot center to device triangle
     // pre-rotation are the same.
+    //**TODO For a turret device we need the pre-rotation device to target angle
+    // and distance.
     //**TODO Need drawings in Dia.
 
     public static CorrectionData getCameraToDeviceCorrections(double pAngleCameraFaceToTarget, double pDistanceCameraFaceToTarget,
@@ -148,7 +150,7 @@ public class CameraToDeviceCorrections {
         // the FTC convention: positive angle for a CCW turn, negative for CW.
         double finalTurnFromRobotCenter;
 
-        // The angle rdcPreRotationAngle is always zero or positive.
+        // The angle rcdPreRotationAngle is always zero or positive.
         // If the device is to the right of robot center then invert
         // the sign of the angle.
         if (pOffsetRobotCenterToDeliveryDevice < 0.0)
