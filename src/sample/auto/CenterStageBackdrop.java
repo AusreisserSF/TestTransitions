@@ -43,10 +43,14 @@ public class CenterStageBackdrop extends Application {
     //**TODO Improvement: keep the fill-in start parameters but change the
     // animation button to include "Position" as its required first choice.
     // This button freezes the fill-in parameters but allows the user to
-    // use drag-and-drop to move the camera and device on a pre-Play
-    // representation of the robot and to move the robot and thereby
-    // select its approach position. The Play button erases the image
-    // and starts the animation from the game's starting position.
+    // drag the camera and device on a pre-Play representation of the robot
+    // and to drag the robot and thereby select its approach position. The
+    // Play button erases the pre-Play representation and starts the animation
+    // from the game's starting position.
+
+    //## NOTE: I mistakenly investigated "drag-and-drop" but in JavaFX this
+    // has to do with dragging and dropping content. All I need to do is drag
+    // Nodes. See the sample in the Drag class.
     @Override
     public void start(final Stage pStage) throws IOException, ParserConfigurationException, SAXException {
         FXMLLoader fxmlLoader = new FXMLLoader();

@@ -15,7 +15,7 @@ public class Main {
             case "Backdrop" -> Application.launch(CenterStageBackdrop.class, args);
             case "Text" -> Application.launch(TextInput.class, args);
             case "DragAndDrop" -> Application.launch(DragAndDrop.class, args);
-            case "Circles" -> Application.launch(DragAndDropCircle.class, args);
+            case "Drag" -> Application.launch(Drag.class, args);
             default -> System.out.println("Unrecognized application class name");
         }
     }
