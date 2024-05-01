@@ -25,12 +25,17 @@ import java.util.stream.Collectors;
 public class StartParameterValidation {
 
     private final String TAG = StartParameterValidation.class.getSimpleName();
+
+    //**TODO Move these constants to RobotFXLG?
     public static final double MIN_ROBOT_BODY_DIMENSION = 12.0;
     public static final double MAX_ROBOT_BODY_DIMENSION = 18.0;
-    public static final double ROBOT_POSITION_AT_BACKDROP_X_MIN = 175.0 / FieldFXCenterStageBackdropLG.PX_PER_INCH;
-    public static final double ROBOT_POSITION_AT_BACKDROP_X_MAX = 425.0 / FieldFXCenterStageBackdropLG.PX_PER_INCH;
-    public static final double ROBOT_POSITION_AT_BACKDROP_Y_MIN = 225.0 / FieldFXCenterStageBackdropLG.PX_PER_INCH;
-    public static final double ROBOT_POSITION_AT_BACKDROP_Y_MAX = 325.0 / FieldFXCenterStageBackdropLG.PX_PER_INCH;
+
+    //**TODO Use these boundaries (robot center) to draw an outline on
+    // the field for dragging. Move the constants?
+    public static final double ROBOT_POSITION_AT_BACKDROP_X_MIN = 24.0;
+    public static final double ROBOT_POSITION_AT_BACKDROP_X_MAX = 48.0;
+    public static final double ROBOT_POSITION_AT_BACKDROP_Y_MIN = 26.0;
+    public static final double ROBOT_POSITION_AT_BACKDROP_Y_MAX = 38.0;
 
     public enum StartParameter {
         ROBOT_WIDTH, ROBOT_HEIGHT,
