@@ -12,6 +12,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
@@ -98,6 +99,18 @@ public class CenterStageBackdrop extends Application {
 
         controller.april_tag_spinner.setValueFactory(spinnerValueFactory);
 
+        //**TODO Mark the area of the field as the approach zone.
+        Rectangle approachZone = new Rectangle(StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_X_MIN * FieldFXCenterStageBackdropLG.PX_PER_INCH,
+                StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_Y_MIN * FieldFXCenterStageBackdropLG.PX_PER_INCH,
+                StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_X_MAX * FieldFXCenterStageBackdropLG.PX_PER_INCH - StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_X_MIN * FieldFXCenterStageBackdropLG.PX_PER_INCH,
+                StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_Y_MAX * FieldFXCenterStageBackdropLG.PX_PER_INCH - StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_Y_MIN * FieldFXCenterStageBackdropLG.PX_PER_INCH);
+        approachZone.setId("ApproachZone");
+        approachZone.setFill(Color.TRANSPARENT);
+        approachZone.setStroke(Color.BLACK);
+        approachZone.getStrokeDashArray().addAll(5.0);
+        approachZone.setStrokeWidth(2.0);
+        field.getChildren().add(approachZone);
+
         // Show the play button now but when it is pressed then validate all of
         // the start parameters before allowing the animation to proceed.
         Button playPauseButton = new Button("Play");
@@ -120,7 +133,10 @@ public class CenterStageBackdrop extends Application {
                 Alert errorAlert = new Alert(Alert.AlertType.ERROR);
                 errorAlert.setHeaderText("Invalid request to Play the animation");
                 StringBuilder collectedErrors = new StringBuilder("One or more start parameters has been set correctly:\n");
-                invalidParameters.forEach(p -> { collectedErrors.append(p); collectedErrors.append('\n');});
+                invalidParameters.forEach(p -> {
+                    collectedErrors.append(p);
+                    collectedErrors.append('\n');
+                });
                 errorAlert.setContentText(collectedErrors.toString());
                 errorAlert.showAndWait();
                 return;

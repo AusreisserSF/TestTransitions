@@ -26,14 +26,10 @@ public class StartParameterValidation {
 
     private final String TAG = StartParameterValidation.class.getSimpleName();
 
-    //**TODO Move these constants to RobotFXLG?
     public static final double MIN_ROBOT_BODY_DIMENSION = 12.0;
     public static final double MAX_ROBOT_BODY_DIMENSION = 18.0;
-
-    //**TODO Use these boundaries (robot center) to draw an outline on
-    // the field for dragging. Move the constants?
-    public static final double ROBOT_POSITION_AT_BACKDROP_X_MIN = 24.0;
-    public static final double ROBOT_POSITION_AT_BACKDROP_X_MAX = 48.0;
+    public static final double ROBOT_POSITION_AT_BACKDROP_X_MIN = 23.6;
+    public static final double ROBOT_POSITION_AT_BACKDROP_X_MAX = 47.2;
     public static final double ROBOT_POSITION_AT_BACKDROP_Y_MIN = 26.0;
     public static final double ROBOT_POSITION_AT_BACKDROP_Y_MAX = 38.0;
 

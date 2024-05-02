@@ -14,9 +14,6 @@ import javafx.stage.Stage;
 
 // Based on https://docs.oracle.com/javafx/2/drag_drop/HelloDragAndDrop.java.html
 public class DragAndDrop extends Application {
-
-    //**TODO Change Text source and target to rectangles. How
-    // are their boundaries determined?
     @Override public void start(Stage stage) {
         stage.setTitle("Hello Drag And Drop");
 
