@@ -10,23 +10,27 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.TilePane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import org.firstinspires.ftc.ftcdevcommon.platform.intellij.WorkingDirectory;
 import org.xml.sax.SAXException;
+import sample.auto.fx.CenterStageControllerLG;
 import sample.auto.fx.FieldFXCenterStageBackdropLG;
 import sample.auto.fx.RobotFXCenterStageLG;
-import sample.auto.fx.CenterStageControllerLG;
 import sample.auto.xml.StartParameters;
 import sample.auto.xml.StartParametersXML;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
+
+//**TODO This is really about positioning the robot with respect to
+// and AprilTag; the backdrop is just an example.
 
 //**TODO Migrate all classes and fxml (some copy, some move) from this
 // test project, TestTransitions, into its own project.
@@ -64,7 +68,7 @@ public class CenterStageBackdrop extends Application {
         pStage.setScene(rootScene);
         pStage.show(); // show the empty field
 
-        String allianceString = allianceSelection(pStage, rootScene);
+        String allianceString = allianceSelection();
         RobotConstants.Alliance alliance = RobotConstants.Alliance.valueOf(allianceString);
 
         // Draw the alliance-specific view of the field.
@@ -186,13 +190,8 @@ public class CenterStageBackdrop extends Application {
         playPauseButton.setOnAction(event.get());
     }
 
-    //**TODO What I really want is a RadioButtonDialog, which doesn't exist.
-    // But it looks like you may be able make a custom Dialog with
-    // RadioButton(s)/Toggle group inside it. See the Custom Login Dialog
-    // section in https://code.makery.ch/blog/javafx-dialogs-official/
-    //**TODO For the time being try the example of a ChoiceDialog on the
-    // same website.
-    private String allianceSelection(Stage pStage, Scene pRootScene) {
+    //**TODO Fix spacing - either here or in fxml.
+    private String allianceSelection() {
         /*
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(getClass().getResource("allianceToggle.fxml"));
@@ -200,37 +199,39 @@ public class CenterStageBackdrop extends Application {
         AllianceToggleController controller = fxmlLoader.getController();
         */
 
-        Button okButton = new Button("OK");
+        // Create the custom dialog.
+        VBox allianceButtons = new VBox();
+        Dialog<String> dialog = new Dialog<>();
+        dialog.setTitle("Alliance selection");
+        dialog.setHeaderText("Select alliance and confirm, fill in start parameters, hit Play");
 
-        // Items for the dialog.
-        String[] alliances = {"BLUE", "RED"};
-        ChoiceDialog<String> allianceDialog = new ChoiceDialog<>(alliances[0], alliances);
+        // Set the button types.
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-        allianceDialog.setHeaderText("Select alliance and confirm, fill in start parameters, hit Play");
-        allianceDialog.setContentText("Please select your alliance");
-        allianceDialog.showAndWait();
+        // Create radiobuttons.
+        RadioButton blueButton = new RadioButton("BLUE");
+        blueButton.setSelected(true);
+        RadioButton redButton = new RadioButton("RED");
 
-        // get the selected item
-        String allianceSelection = allianceDialog.getSelectedItem();
+        // Create a toggle group for the buttons.
+        ToggleGroup allianceToggleGroup = new ToggleGroup();
 
-        // action event
-        EventHandler<ActionEvent> event = e -> allianceDialog.show();
+        // Add radiobuttons to toggle group
+        blueButton.setToggleGroup(allianceToggleGroup);
+        redButton.setToggleGroup(allianceToggleGroup);
 
-        // When the OK button is pressed.
-        okButton.setOnAction(event);
+        allianceButtons.getChildren().addAll(blueButton, redButton);
+        dialog.getDialogPane().setContent(allianceButtons);
 
-        // Create a pane for the button.
-        TilePane dialogTilePane = new TilePane();
-        dialogTilePane.getChildren().add(okButton);
+        // Convert the result to a String when the OK button is clicked.
+        dialog.setResultConverter(dialogButton -> {
+            // Return the selected button or, on cancel, the default button.
+            return ((RadioButton) allianceToggleGroup.getSelectedToggle()).getText();
+        });
 
-        // Create a scene for the dialog and show it.
-        Scene dialogScene = new Scene(dialogTilePane, 200, 200);
-        pStage.setScene(dialogScene);
+        Optional<String> result = dialog.showAndWait();
+        return result.orElse("BLUE");
 
-        // Restore the main scene.
-        pStage.setScene(pRootScene);
-
-        return allianceSelection;
     }
 
     private void overrideStartParameters(StartParameters pStartParameters) {

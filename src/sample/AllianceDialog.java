@@ -22,46 +22,40 @@ public class AllianceDialog extends Application {
     // launch the application 
     public void start(Stage stage) {
 
+        // Create the custom dialog.
         VBox allianceButtons = new VBox();
-        //Scene sc = new Scene(allianceButtons, 200, 200);
-        //stage.setScene(sc);
-        //stage.show();
-
-// Create the custom dialog.
         Dialog<String> dialog = new Dialog<>();
         dialog.setTitle("Alliance selection");
-        dialog.setHeaderText("Choose the alliance for the simulation");
+        dialog.setHeaderText("Select alliance and confirm, fill in start parameters, hit Play");
 
-// Set the button types.
+        // Set the button types.
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-// create radiobuttons 
+        // Create radiobuttons.
         RadioButton blueButton = new RadioButton("BLUE");
+        blueButton.setSelected(true);
         RadioButton redButton = new RadioButton("RED");
 
-// create a toggle group for the buttons.
+        // Create a toggle group for the buttons.
         ToggleGroup allianceToggleGroup = new ToggleGroup();
 
-// add radiobuttons to toggle group 
+        // Add radiobuttons to toggle group
         blueButton.setToggleGroup(allianceToggleGroup);
         redButton.setToggleGroup(allianceToggleGroup);
 
         allianceButtons.getChildren().addAll(blueButton, redButton);
         dialog.getDialogPane().setContent(allianceButtons);
 
-// Convert the result to a String when the OK button is clicked.
+        // Convert the result to a String when the OK button is clicked.
         dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == ButtonType.OK) {
-                return ((RadioButton) allianceToggleGroup.getSelectedToggle()).getText();
-            }
-            return null;
+            // Return the selected button or, on cancel, the default button.
+            return ((RadioButton) allianceToggleGroup.getSelectedToggle()).getText();
         });
 
         Optional<String> result = dialog.showAndWait();
-
         result.ifPresent(alliance -> {
             System.out.println("Alliance = " + result.get());
         });
-
     }
+
 }
