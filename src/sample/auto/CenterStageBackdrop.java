@@ -99,7 +99,11 @@ public class CenterStageBackdrop extends Application {
 
         controller.april_tag_spinner.setValueFactory(spinnerValueFactory);
 
-        //**TODO Mark the area of the field as the approach zone.
+        // Mark a portion of the field as the approach zone, i.e. the point at which the robot
+        // stops in front of the backdrop. The xone defines the limits of the center of the
+        // robot.
+        //**TODO It would be much better visually if the approach zone included the whole robot,
+        // e.g. min x - 1/2 robot width ...
         Rectangle approachZone = new Rectangle(StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_X_MIN * FieldFXCenterStageBackdropLG.PX_PER_INCH,
                 StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_Y_MIN * FieldFXCenterStageBackdropLG.PX_PER_INCH,
                 StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_X_MAX * FieldFXCenterStageBackdropLG.PX_PER_INCH - StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_X_MIN * FieldFXCenterStageBackdropLG.PX_PER_INCH,
