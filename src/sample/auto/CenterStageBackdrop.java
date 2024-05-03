@@ -12,6 +12,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -199,6 +200,40 @@ public class CenterStageBackdrop extends Application {
             Integer targetAprilTag = controller.april_tag_spinner.getValue();
             String radioButtonText = ((RadioButton) controller.approach_toggle.getSelectedToggle()).getText();
 
+            //**TODO Show the robot in its approach position opposite the backdrop.
+            // Starting position is the default of 36.0, 36.0
+            /*
+                        centerStageRobot = new RobotFXCenterStageLG(robotWidthIn, robotHeightIn, Color.GREEN,
+                    cameraCenterFromRobotCenter, cameraOffsetFromRobotCenter, deviceCenterFromRobotCenter, deviceOffsetFromRobotCenter,
+                    startingPosition, 0.0);
+
+            Group robot = centerStageRobot.getRobot();
+            field.getChildren().add(robot);
+             */
+
+            //**TODO As an experiment draw a 78 degree camera field of view.
+            /*
+            // tan 39 degrees  = opposite / adjacent
+            double halfFOVTan = Math.tan(Math.toRadians(39.0));
+            double fovAdjacent = cameraAdjacent; // same
+            double halfFOVOpposite = halfFOVTan * fovAdjacent;
+            Line lineHalfFOVRight = new Line(cameraFaceX, cameraFaceY, cameraFaceX + halfFOVOpposite, aprilTagCenterY);
+            lineHalfFOVRight.setId("lineHalfFOVRight");
+            lineHalfFOVRight.setStroke(Color.AQUA);
+            lineHalfFOVRight.getStrokeDashArray().addAll(10.0);
+            lineHalfFOVRight.setStrokeWidth(3.0);
+            field.getChildren().add(lineHalfFOVRight);
+
+            Line lineHalfFOVLeft = new Line(cameraFaceX, cameraFaceY, cameraFaceX - halfFOVOpposite, aprilTagCenterY);
+            lineHalfFOVLeft.setId("lineHalfFOVLeft");
+            lineHalfFOVLeft.setStroke(Color.AQUA);
+            lineHalfFOVLeft.getStrokeDashArray().addAll(10.0);
+            lineHalfFOVLeft.setStrokeWidth(3.0);
+            field.getChildren().add(lineHalfFOVLeft);
+            */
+
+            //**TODO Then, when the Play button is first hit, erase the positioning robot and the FOV lines.
+
             centerStageRobot = new RobotFXCenterStageLG(robotWidthIn, robotHeightIn, Color.GREEN,
                     cameraCenterFromRobotCenter, cameraOffsetFromRobotCenter, deviceCenterFromRobotCenter, deviceOffsetFromRobotCenter,
                     startingPosition, startingRotation);
@@ -206,6 +241,8 @@ public class CenterStageBackdrop extends Application {
             Group robot = centerStageRobot.getRobot();
             field.getChildren().add(robot);
 
+
+            //**TODO Move to DeviceToTargetAnimation ...
             System.out.println("Alliance " + alliance);
             System.out.println("Camera center from robot center " + cameraCenterFromRobotCenter);
             System.out.println("Camera offset from robot center " + cameraOffsetFromRobotCenter);

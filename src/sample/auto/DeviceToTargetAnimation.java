@@ -215,25 +215,6 @@ public class DeviceToTargetAnimation {
             lineCA.setStrokeWidth(3.0);
             field.getChildren().add(lineCA);
 
-            //**TODO As an experiment draw a 78 degree camera field of view.
-            // tan 39 degrees  = opposite / adjacent
-            double halfFOVTan = Math.tan(Math.toRadians(39.0));
-            double fovAdjacent = cameraAdjacent; // same
-            double halfFOVOpposite = halfFOVTan * fovAdjacent;
-            Line lineHalfFOVRight = new Line(cameraFaceX, cameraFaceY, cameraFaceX + halfFOVOpposite, aprilTagCenterY);
-            lineHalfFOVRight.setId("lineHalfFOVRight");
-            lineHalfFOVRight.setStroke(Color.AQUA);
-            lineHalfFOVRight.getStrokeDashArray().addAll(10.0);
-            lineHalfFOVRight.setStrokeWidth(3.0);
-            field.getChildren().add(lineHalfFOVRight);
-
-            Line lineHalfFOVLeft = new Line(cameraFaceX, cameraFaceY, cameraFaceX - halfFOVOpposite, aprilTagCenterY);
-            lineHalfFOVLeft.setId("lineHalfFOVRight");
-            lineHalfFOVLeft.setStroke(Color.AQUA);
-            lineHalfFOVLeft.getStrokeDashArray().addAll(10.0);
-            lineHalfFOVLeft.setStrokeWidth(3.0);
-            field.getChildren().add(lineHalfFOVLeft);
-
             // Get data about the strafe (strafe distance to position the device opposite
             // the target and distance from the device to the target) as well as the angle
             // by which the robot must be rotated so that the delivery device points at the
