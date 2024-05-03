@@ -99,22 +99,6 @@ public class CenterStageBackdrop extends Application {
 
         controller.april_tag_spinner.setValueFactory(spinnerValueFactory);
 
-        // Mark a portion of the field as the approach zone, i.e. the point at which the robot
-        // stops in front of the backdrop. The xone defines the limits of the center of the
-        // robot.
-        //**TODO It would be much better visually if the approach zone included the whole robot,
-        // e.g. min x - 1/2 robot width ...
-        Rectangle approachZone = new Rectangle(StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_X_MIN * FieldFXCenterStageBackdropLG.PX_PER_INCH,
-                StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_Y_MIN * FieldFXCenterStageBackdropLG.PX_PER_INCH,
-                StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_X_MAX * FieldFXCenterStageBackdropLG.PX_PER_INCH - StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_X_MIN * FieldFXCenterStageBackdropLG.PX_PER_INCH,
-                StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_Y_MAX * FieldFXCenterStageBackdropLG.PX_PER_INCH - StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_Y_MIN * FieldFXCenterStageBackdropLG.PX_PER_INCH);
-        approachZone.setId("ApproachZone");
-        approachZone.setFill(Color.TRANSPARENT);
-        approachZone.setStroke(Color.BLACK);
-        approachZone.getStrokeDashArray().addAll(5.0);
-        approachZone.setStrokeWidth(2.0);
-        field.getChildren().add(approachZone);
-
         // Show the play button now but when it is pressed then validate all of
         // the start parameters before allowing the animation to proceed.
         Button playPauseButton = new Button("Play");
@@ -174,6 +158,32 @@ public class CenterStageBackdrop extends Application {
                 startingRotation = -90.0;
             }
 
+            //**TODO At this point the "Position" button should show the robot in its approach
+            // position, the approach zone, and the camera's field of view. Later allow drag
+            // adjustments to the position of the robot and, possibly, to the positions of
+            // the camera and device on the robot.
+
+            // Mark a portion of the field as the approach zone, i.e. the point at which the robot
+            // stops in front of the backdrop. The zone defines the outer limits of the robot.
+            //**TODO In the future you'll have to freeze the width and height of the robot (and
+            // maybe not all of the other parameters) because changes to the width and height
+            // don't make much sense and would have too many ramifications.
+            double approachZoneX = StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_X_MIN * FieldFXCenterStageBackdropLG.PX_PER_INCH -
+                    (robotWidthIn * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2;
+            double approachZoneY = StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_Y_MIN * FieldFXCenterStageBackdropLG.PX_PER_INCH -
+                    (robotHeightIn * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2;
+            double approachZoneWidth = ((StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_X_MAX * FieldFXCenterStageBackdropLG.PX_PER_INCH +
+                    (robotWidthIn * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2)) - approachZoneX;
+            double approachZoneHeight = ((StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_Y_MAX * FieldFXCenterStageBackdropLG.PX_PER_INCH +
+                    (robotHeightIn * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2)) - approachZoneY;
+            Rectangle approachZone = new Rectangle(approachZoneX, approachZoneY, approachZoneWidth, approachZoneHeight);
+            approachZone.setId("ApproachZone");
+            approachZone.setFill(Color.TRANSPARENT);
+            approachZone.setStroke(Color.BLACK);
+            approachZone.getStrokeDashArray().addAll(5.0);
+            approachZone.setStrokeWidth(2.0);
+            field.getChildren().add(approachZone);
+
             // Collect start parameters.
             double cameraCenterFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_CENTER_FROM_ROBOT_CENTER);
             double cameraOffsetFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_OFFSET_FROM_ROBOT_CENTER);
@@ -226,7 +236,7 @@ public class CenterStageBackdrop extends Application {
         dialog.setHeaderText("Select alliance and confirm, fill in start parameters, hit Play");
 
         // Set the button types.
-        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK);
 
         // Create radiobuttons.
         RadioButton blueButton = new RadioButton("BLUE");
