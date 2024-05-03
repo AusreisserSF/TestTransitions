@@ -45,14 +45,6 @@ public class CenterStageBackdrop extends Application {
     private StartParameterValidation startParameterValidation;
     private RobotFXCenterStageLG centerStageRobot;
 
-    //**TODO Improvement: keep the fill-in start parameters but change the
-    // animation button to include "Position" as its required first choice.
-    // This button freezes the fill-in parameters but allows the user to
-    // drag the camera and device on a pre-Play representation of the robot
-    // and to drag the robot and thereby select its approach position. The
-    // Play button erases the pre-Play representation and starts the animation
-    // from the game's starting position.
-
     //## NOTE: I mistakenly investigated "drag-and-drop" but in JavaFX this
     // has to do with dragging and dropping content. All I need to do is drag
     // Nodes. See the sample in the Drag class.
@@ -99,27 +91,27 @@ public class CenterStageBackdrop extends Application {
 
         controller.april_tag_spinner.setValueFactory(spinnerValueFactory);
 
-        // Show the play button now but when it is pressed then validate all of
-        // the start parameters before allowing the animation to proceed.
-        Button playPauseButton = new Button("Play");
-        playPauseButton.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
+        // Show the animation (Position/Play/Pause) button now but when Position
+        // is pressed validate all of the start parameters before showing Play.
+        Button animationButton = new Button("Position");
+        animationButton.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
 
-        // Position the button on the opposite side of the field from
-        // the selected alliance.
-        playPauseButton.setLayoutY(FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 3 - 50);
+        // Position the button on the opposite side of the field from the selected
+        // alliance.
+        animationButton.setLayoutY(FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 3 - 50);
         if (alliance == RobotConstants.Alliance.BLUE)
-            playPauseButton.setLayoutX((FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 3) - FieldFXCenterStageBackdropLG.FIELD_OUTSIDE_BORDER_SIZE - 60);
+            animationButton.setLayoutX((FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 3) - FieldFXCenterStageBackdropLG.FIELD_OUTSIDE_BORDER_SIZE - 75);
         else
-            playPauseButton.setLayoutX(FieldFXCenterStageBackdropLG.FIELD_OUTSIDE_BORDER_SIZE + 10);
+            animationButton.setLayoutX(FieldFXCenterStageBackdropLG.FIELD_OUTSIDE_BORDER_SIZE + 10);
 
-        field.getChildren().add(playPauseButton);
+        field.getChildren().add(animationButton);
         AtomicReference<EventHandler<ActionEvent>> event = new AtomicReference<>();
         event.set((e) -> {
             if (!startParameterValidation.allStartParametersValid()) {
                 // At least one parameter is still invalid; show the user all invalid parameters.
                 List<StartParameterValidation.StartParameter> invalidParameters = startParameterValidation.getInvalidStartParameters();
                 Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-                errorAlert.setHeaderText("Invalid request to Play the animation");
+                errorAlert.setHeaderText("Invalid request to position the robot for animation");
                 StringBuilder collectedErrors = new StringBuilder("One or more start parameters has been set correctly:\n");
                 invalidParameters.forEach(p -> {
                     collectedErrors.append(p);
@@ -135,13 +127,17 @@ public class CenterStageBackdrop extends Application {
             // a parameter for it. Or just hardcode 78 degrees and put up an alert
             // after you get the camera to target angle in DeviceToTargetAnimation.
 
-            playPauseButton.removeEventHandler(ActionEvent.ACTION, event.get());
+            animationButton.removeEventHandler(ActionEvent.ACTION, event.get());
 
             // Freeze the start parameters after the Play button has been hit.
             controller.start_parameters.setDisable(true);
 
             //## Here it looks like the position of the robot is that of the
             // upper left corner; Paths use the center point.
+
+            //**TODO For the Position screen you need the robot's dimensions but the
+            // position is in front of the backdrop and the rotation is 0.
+            //**TODO How to hand off control to the Play button?
 
             // Place the robot on the field with the dimensions entered by the user.
             double robotWidthIn = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_WIDTH);
@@ -157,6 +153,15 @@ public class CenterStageBackdrop extends Application {
                         FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5);
                 startingRotation = -90.0;
             }
+
+            //**TODO Improvement: keep the fill-in start parameters but change the
+            // animation button to include "Position" as its required first choice.
+            // This button freezes the fill-in parameters (except for the two approach
+            // position parameters, which should be made read-only) but allows the user
+            // to [drag the camera and device on a pre-Play representation of the robot
+            // and to] drag the robot and thereby change its approach position. The
+            // Play button erases the pre-Play representation and starts the animation
+            // from the game's starting position.
 
             //**TODO At this point the "Position" button should show the robot in its approach
             // position, the approach zone, and the camera's field of view. Later allow drag
@@ -210,14 +215,14 @@ public class CenterStageBackdrop extends Application {
             System.out.println("AprilTag Id " + targetAprilTag);
             System.out.println("Approach " + radioButtonText);
 
-            // Animate the movements of the robot from its starting position
-            // to its final position in which the delivery device is aligned with
+            // Animate the movements of the robot from its starting position to
+            // its final position in which the delivery device is aligned with
             // the target.
             DeviceToTargetAnimation animation = new DeviceToTargetAnimation(controller, field, centerStageRobot, startParameterValidation);
-            animation.runDeviceToTargetAnimation(alliance, playPauseButton);
+            animation.runDeviceToTargetAnimation(alliance, animationButton);
         });
 
-        playPauseButton.setOnAction(event.get());
+        animationButton.setOnAction(event.get());
     }
 
     //**TODO Fix spacing - either here or in fxml.

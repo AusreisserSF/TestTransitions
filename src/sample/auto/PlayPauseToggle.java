@@ -19,6 +19,7 @@ public class PlayPauseToggle {
     // pressed.
     public PlayPauseToggle(Button pPlayPauseButton, SequentialTransition pSequentialTransaction) {
         playPauseButton = pPlayPauseButton;
+        playPauseButton.setText("Play");
         sequentialTransition = pSequentialTransaction;
         buttonStateOnPress = ButtonStateOnPress.PAUSE; // state for the next button press
 
