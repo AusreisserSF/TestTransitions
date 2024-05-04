@@ -72,4 +72,5 @@ public class PlayPauseToggle {
         playPauseButton.setText("Play");
         playPauseButtonStateOnPress = PlayPauseButtonStateOnPress.FIRST_PLAY;
     }
+
 }

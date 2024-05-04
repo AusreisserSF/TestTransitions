@@ -1,5 +1,7 @@
 package sample.auto;
 
+import javafx.animation.Animation;
+import javafx.animation.SequentialTransition;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -92,12 +94,14 @@ public class CenterStageBackdrop extends Application {
 
         controller.april_tag_spinner.setValueFactory(spinnerValueFactory);
 
+        //**TODO ?? Keep the Position button separate from the Play/Pause button ??
+
         // Show the animation (Position/Play/Pause) button now but when Position
         // is pressed validate all of the start parameters before showing Play.
         Button animationButton = new Button("Position");
         animationButton.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
 
-        // Position the button on the opposite side of the field from the selected
+        // Place the button on the opposite side of the field from the selected
         // alliance.
         animationButton.setLayoutY(FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 3 - 50);
         if (alliance == RobotConstants.Alliance.BLUE)
@@ -131,6 +135,7 @@ public class CenterStageBackdrop extends Application {
             animationButton.removeEventHandler(ActionEvent.ACTION, event.get());
 
             // Freeze the start parameters after the Play button has been hit.
+            //**TODO Do not disable approach positions - for drag/drop?
             controller.start_parameters.setDisable(true);
 
             //## Here it looks like the position of the robot is that of the
@@ -143,6 +148,9 @@ public class CenterStageBackdrop extends Application {
             // Place the robot on the field with the dimensions entered by the user.
             double robotWidthIn = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_WIDTH);
             double robotHeightIn = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_HEIGHT);
+
+
+            //**TODO This only applies to the animated robot - not to the approach robot.
             Point2D startingPosition;
             double startingRotation;
             if (alliance == RobotConstants.Alliance.BLUE) {
@@ -232,6 +240,7 @@ public class CenterStageBackdrop extends Application {
             field.getChildren().add(lineHalfFOVLeft);
             */
 
+            //**TODO Need separate id for the approach robot?
             //**TODO Then, when the Play button is first hit, erase the positioning robot and the FOV lines.
 
             centerStageRobot = new RobotFXCenterStageLG(robotWidthIn, robotHeightIn, Color.GREEN,
@@ -248,6 +257,7 @@ public class CenterStageBackdrop extends Application {
             System.out.println("Camera offset from robot center " + cameraOffsetFromRobotCenter);
             System.out.println("Device center from robot center " + deviceCenterFromRobotCenter);
             System.out.println("Device offset from robot center " + deviceOffsetFromRobotCenter);
+            //**TODO Can only be shown/logged after approach robot drag/drop is complete.
             System.out.println("Position at backdrop " + robotPositionAtBackdropX + ", y " + robotPositionAtBackdropY);
             System.out.println("AprilTag Id " + targetAprilTag);
             System.out.println("Approach " + radioButtonText);
@@ -255,6 +265,8 @@ public class CenterStageBackdrop extends Application {
             // Animate the movements of the robot from its starting position to
             // its final position in which the delivery device is aligned with
             // the target.
+            //**TODO This is correct; the approach robot and FOV display are on the
+            // screen and the Play button will show.
             DeviceToTargetAnimation animation = new DeviceToTargetAnimation(controller, field, centerStageRobot, startParameterValidation);
             animation.runDeviceToTargetAnimation(alliance, animationButton);
         });
