@@ -9,7 +9,6 @@ public abstract class RobotFXLG {
     public static final double WHEEL_WIDTH = FieldFXCenterStageBackdropLG.PX_PER_INCH * 2;
     public static final double WHEEL_HEIGHT = FieldFXCenterStageBackdropLG.PX_PER_INCH * 4;
     public static final double WHEEL_OFFSET = FieldFXCenterStageBackdropLG.PX_PER_INCH * 1;
-    public static final String ROBOT_ID = "robotGroup";
 
     protected final Group robot;
     public final double robotWidthPX;
@@ -17,10 +16,10 @@ public abstract class RobotFXLG {
 
     // Place the wheels "under" the robot by drawing their black
     // rectangles over the body.
-    public RobotFXLG(double pRobotWidthPX, double pRobotHeightPX, Color pRobotBodyColor,
+    public RobotFXLG(String pRobotId, double pRobotWidthPX, double pRobotHeightPX, Color pRobotBodyColor,
                      Point2D pRobotScreenCoordinates, double pInitialHeading) {
         robot = new Group();
-        robot.setId(ROBOT_ID);
+        robot.setId(pRobotId);
         robotWidthPX = pRobotWidthPX;
         robotHeightPX = pRobotHeightPX;
 

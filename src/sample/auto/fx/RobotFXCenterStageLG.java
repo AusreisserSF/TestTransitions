@@ -6,6 +6,8 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
 public class RobotFXCenterStageLG extends RobotFXLG {
+    public static final String POSITIONING_ROBOT_ID = "positioningRobot";
+    public static final String ANIMATION_ROBOT_ID = "animationRobot";
 
     public static final double CAMERA_WIDTH = FieldFXCenterStageBackdropLG.PX_PER_INCH * 2;
     public static final double CAMERA_HEIGHT = FieldFXCenterStageBackdropLG.PX_PER_INCH * 2;
@@ -19,11 +21,11 @@ public class RobotFXCenterStageLG extends RobotFXLG {
     public final double deviceOffsetFromRobotCenterPX;
 
     // Convert all measurements from inches to pixels here.
-    public RobotFXCenterStageLG(double pRobotWidth, double pRobotHeight, Color pRobotBodyColor,
+    public RobotFXCenterStageLG(String pRobotId, double pRobotWidth, double pRobotHeight, Color pRobotBodyColor,
                                 double pCameraCenterFromRobotCenter, double pCameraOffsetFromRobotCenter,
                                 double pDeviceCenterFromRobotCenter, double pDeviceOffsetFromRobotCenter,
                                 Point2D pRobotScreenCoordinates, double pInitialHeading) {
-        super(pRobotWidth * FieldFXCenterStageBackdropLG.PX_PER_INCH,
+        super(pRobotId, pRobotWidth * FieldFXCenterStageBackdropLG.PX_PER_INCH,
                 pRobotHeight * FieldFXCenterStageBackdropLG.PX_PER_INCH,
                 pRobotBodyColor, pRobotScreenCoordinates, pInitialHeading);
 

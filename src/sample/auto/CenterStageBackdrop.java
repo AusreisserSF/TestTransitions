@@ -1,7 +1,5 @@
 package sample.auto;
 
-import javafx.animation.Animation;
-import javafx.animation.SequentialTransition;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -14,7 +12,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -46,7 +43,6 @@ public class CenterStageBackdrop extends Application {
 
     private CenterStageControllerLG controller;
     private StartParameterValidation startParameterValidation;
-    private RobotFXCenterStageLG centerStageRobot;
 
     //## NOTE: I mistakenly investigated "drag-and-drop" but in JavaFX this
     // has to do with dragging and dropping content. All I need to do is drag
@@ -94,22 +90,23 @@ public class CenterStageBackdrop extends Application {
 
         controller.april_tag_spinner.setValueFactory(spinnerValueFactory);
 
-        //**TODO ?? Keep the Position button separate from the Play/Pause button ??
+        //*TODO "Position" is more like a "Preview" of the robot's position in front
+        // of the backdrop.
 
-        // Show the animation (Position/Play/Pause) button now but when Position
-        // is pressed validate all of the start parameters before showing Play.
-        Button animationButton = new Button("Position");
-        animationButton.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
+        // Show the Position button now; when it is pressed validate all of the start
+        // parameters before switching to the Play/Pause button.
+        Button positionButton = new Button("Position");
+        positionButton.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
 
         // Place the button on the opposite side of the field from the selected
         // alliance.
-        animationButton.setLayoutY(FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 3 - 50);
+        positionButton.setLayoutY(FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 3 - 50);
         if (alliance == RobotConstants.Alliance.BLUE)
-            animationButton.setLayoutX((FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 3) - FieldFXCenterStageBackdropLG.FIELD_OUTSIDE_BORDER_SIZE - 75);
+            positionButton.setLayoutX((FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 3) - FieldFXCenterStageBackdropLG.FIELD_OUTSIDE_BORDER_SIZE - 75);
         else
-            animationButton.setLayoutX(FieldFXCenterStageBackdropLG.FIELD_OUTSIDE_BORDER_SIZE + 10);
+            positionButton.setLayoutX(FieldFXCenterStageBackdropLG.FIELD_OUTSIDE_BORDER_SIZE + 10);
 
-        field.getChildren().add(animationButton);
+        field.getChildren().add(positionButton);
         AtomicReference<EventHandler<ActionEvent>> event = new AtomicReference<>();
         event.set((e) -> {
             if (!startParameterValidation.allStartParametersValid()) {
@@ -127,41 +124,33 @@ public class CenterStageBackdrop extends Application {
                 return;
             }
 
-            //**TODO Is there a way to use the camera's FOV to validate the approach
-            // position. Yes, if you make room on the start parameters screen and set
-            // a parameter for it. Or just hardcode 78 degrees and put up an alert
-            // after you get the camera to target angle in DeviceToTargetAnimation.
-
-            animationButton.removeEventHandler(ActionEvent.ACTION, event.get());
-
-            // Freeze the start parameters after the Play button has been hit.
-            //**TODO Do not disable approach positions - for drag/drop?
+            // Freeze the start parameters after the Position button has been hit
+            // and remove the Position button.
             controller.start_parameters.setDisable(true);
+            field.getChildren().remove(positionButton);
+            
+            // Show a Play/Pause button for the actual animation.
+            Button animationButton = new Button("Play");
+            animationButton.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
+            
+            // Place the button on the opposite side of the field from the selected
+            // alliance.
+            animationButton.setLayoutY(FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 3 - 50);
+            if (alliance == RobotConstants.Alliance.BLUE)
+                animationButton.setLayoutX((FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 3) - FieldFXCenterStageBackdropLG.FIELD_OUTSIDE_BORDER_SIZE - 60);
+            else
+                animationButton.setLayoutX(FieldFXCenterStageBackdropLG.FIELD_OUTSIDE_BORDER_SIZE + 10);
 
-            //## Here it looks like the position of the robot is that of the
-            // upper left corner; Paths use the center point.
+            field.getChildren().add(animationButton);
 
-            //**TODO For the Position screen you need the robot's dimensions but the
-            // position is in front of the backdrop and the rotation is 0.
-            //**TODO How to hand off control to the Play button?
+            //**TODO When and how to hand off control to the animation button?
+            //  animationButton.setOnAction(event.get());
 
             // Place the robot on the field with the dimensions entered by the user.
             double robotWidthIn = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_WIDTH);
             double robotHeightIn = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_HEIGHT);
 
 
-            //**TODO This only applies to the animated robot - not to the approach robot.
-            Point2D startingPosition;
-            double startingRotation;
-            if (alliance == RobotConstants.Alliance.BLUE) {
-                startingPosition = new Point2D(FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5,
-                        FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5);
-                startingRotation = 90.0;
-            } else { // RED
-                startingPosition = new Point2D(FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 3 - ((robotWidthIn * FieldFXCenterStageBackdropLG.PX_PER_INCH) + FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5),
-                        FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5);
-                startingRotation = -90.0;
-            }
 
             //**TODO Improvement: keep the fill-in start parameters but change the
             // animation button to include "Position" as its required first choice.
@@ -177,26 +166,24 @@ public class CenterStageBackdrop extends Application {
             // adjustments to the position of the robot and, possibly, to the positions of
             // the camera and device on the robot.
 
-            // Mark a portion of the field as the approach zone, i.e. the point at which the robot
-            // stops in front of the backdrop. The zone defines the outer limits of the robot.
-            //**TODO In the future you'll have to freeze the width and height of the robot (and
-            // maybe not all of the other parameters) because changes to the width and height
-            // don't make much sense and would have too many ramifications.
-            double approachZoneX = StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_X_MIN * FieldFXCenterStageBackdropLG.PX_PER_INCH -
+            // Mark a portion of the field as the positioning zone, i.e. the point at which
+            // the robot stops in front of the backdrop. The zone defines the outer limits
+            // of the robot.
+            double positioningZoneX = StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_X_MIN * FieldFXCenterStageBackdropLG.PX_PER_INCH -
                     (robotWidthIn * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2;
-            double approachZoneY = StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_Y_MIN * FieldFXCenterStageBackdropLG.PX_PER_INCH -
+            double positioningZoneY = StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_Y_MIN * FieldFXCenterStageBackdropLG.PX_PER_INCH -
                     (robotHeightIn * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2;
-            double approachZoneWidth = ((StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_X_MAX * FieldFXCenterStageBackdropLG.PX_PER_INCH +
-                    (robotWidthIn * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2)) - approachZoneX;
-            double approachZoneHeight = ((StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_Y_MAX * FieldFXCenterStageBackdropLG.PX_PER_INCH +
-                    (robotHeightIn * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2)) - approachZoneY;
-            Rectangle approachZone = new Rectangle(approachZoneX, approachZoneY, approachZoneWidth, approachZoneHeight);
-            approachZone.setId("ApproachZone");
-            approachZone.setFill(Color.TRANSPARENT);
-            approachZone.setStroke(Color.BLACK);
-            approachZone.getStrokeDashArray().addAll(5.0);
-            approachZone.setStrokeWidth(2.0);
-            field.getChildren().add(approachZone);
+            double positioningZoneWidth = ((StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_X_MAX * FieldFXCenterStageBackdropLG.PX_PER_INCH +
+                    (robotWidthIn * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2)) - positioningZoneX;
+            double positioningZoneHeight = ((StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_Y_MAX * FieldFXCenterStageBackdropLG.PX_PER_INCH +
+                    (robotHeightIn * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2)) - positioningZoneY;
+            Rectangle positioningZone = new Rectangle(positioningZoneX, positioningZoneY, positioningZoneWidth, positioningZoneHeight);
+            positioningZone.setId("positioningZone");
+            positioningZone.setFill(Color.TRANSPARENT);
+            positioningZone.setStroke(Color.BLACK);
+            positioningZone.getStrokeDashArray().addAll(5.0);
+            positioningZone.setStrokeWidth(2.0);
+            field.getChildren().add(positioningZone);
 
             // Collect start parameters.
             double cameraCenterFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_CENTER_FROM_ROBOT_CENTER);
@@ -208,16 +195,21 @@ public class CenterStageBackdrop extends Application {
             Integer targetAprilTag = controller.april_tag_spinner.getValue();
             String radioButtonText = ((RadioButton) controller.approach_toggle.getSelectedToggle()).getText();
 
-            //**TODO Show the robot in its approach position opposite the backdrop.
-            // Starting position is the default of 36.0, 36.0
-            /*
-                        centerStageRobot = new RobotFXCenterStageLG(robotWidthIn, robotHeightIn, Color.GREEN,
+            // Show the robot in its position opposite the backdrop.
+            RobotFXCenterStageLG positioningRobot = new RobotFXCenterStageLG(RobotFXCenterStageLG.POSITIONING_ROBOT_ID,
+                    robotWidthIn, robotHeightIn, Color.GREEN,
                     cameraCenterFromRobotCenter, cameraOffsetFromRobotCenter, deviceCenterFromRobotCenter, deviceOffsetFromRobotCenter,
-                    startingPosition, 0.0);
+                    new Point2D(robotPositionAtBackdropX, robotPositionAtBackdropY), 0.0);
 
-            Group robot = centerStageRobot.getRobot();
-            field.getChildren().add(robot);
-             */
+            Group robotP = positioningRobot.getRobot();
+            field.getChildren().add(robotP);
+
+            //**TODO Is there a way to use the camera's FOV to validate the approach
+            // position. Yes, if you make room on the start parameters screen and set
+            // a parameter for it. Or just hardcode 78 degrees and put up an alert
+            // after you get the camera to target angle in DeviceToTargetAnimation.
+            //**TODO Put in the XML and validate but do not include in grid of start parameters
+            // or as read-only.
 
             //**TODO As an experiment draw a 78 degree camera field of view.
             /*
@@ -240,15 +232,31 @@ public class CenterStageBackdrop extends Application {
             field.getChildren().add(lineHalfFOVLeft);
             */
 
-            //**TODO Need separate id for the approach robot?
+            //**TODO Need separate id for the approach robot? RobotFXCenterStageLG(RobotFXCenterStageLG.POSITIONING_ROBOT
             //**TODO Then, when the Play button is first hit, erase the positioning robot and the FOV lines.
 
-            centerStageRobot = new RobotFXCenterStageLG(robotWidthIn, robotHeightIn, Color.GREEN,
+            //**TODO This is the starting position for the animation. Move.
+            //**TODO ?? Automatically set the starting position based on the target.
+            // Only allow changes for testing via drag/drop.
+            Point2D startingPosition;
+            double startingRotation;
+            if (alliance == RobotConstants.Alliance.BLUE) {
+                startingPosition = new Point2D(FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5,
+                        FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5);
+                startingRotation = 90.0;
+            } else { // RED
+                startingPosition = new Point2D(FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 3 - ((robotWidthIn * FieldFXCenterStageBackdropLG.PX_PER_INCH) + FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5),
+                        FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 2 + FieldFXCenterStageBackdropLG.PX_PER_INCH * 1.5);
+                startingRotation = -90.0;
+            }
+            
+            RobotFXCenterStageLG animationRobot = new RobotFXCenterStageLG(RobotFXCenterStageLG.ANIMATION_ROBOT_ID,
+                    robotWidthIn, robotHeightIn, Color.GREEN,
                     cameraCenterFromRobotCenter, cameraOffsetFromRobotCenter, deviceCenterFromRobotCenter, deviceOffsetFromRobotCenter,
                     startingPosition, startingRotation);
 
-            Group robot = centerStageRobot.getRobot();
-            field.getChildren().add(robot);
+            Group robot = animationRobot.getRobot();
+            field.getChildren().add(robot); //**TODO Don't do this here - see DeviceToTarget
 
 
             //**TODO Move to DeviceToTargetAnimation ...
@@ -267,14 +275,14 @@ public class CenterStageBackdrop extends Application {
             // the target.
             //**TODO This is correct; the approach robot and FOV display are on the
             // screen and the Play button will show.
-            DeviceToTargetAnimation animation = new DeviceToTargetAnimation(controller, field, centerStageRobot, startParameterValidation);
+            DeviceToTargetAnimation animation = new DeviceToTargetAnimation(controller, field, animationRobot, startParameterValidation);
             animation.runDeviceToTargetAnimation(alliance, animationButton);
         });
 
-        animationButton.setOnAction(event.get());
+        positionButton.setOnAction(event.get());
     }
 
-    //**TODO Fix spacing - either here or in fxml.
+    //**TODO Fix spacing.
     private String allianceSelection() {
         /*
         FXMLLoader fxmlLoader = new FXMLLoader();

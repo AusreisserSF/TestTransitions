@@ -347,7 +347,7 @@ public class DeviceToTargetAnimation {
 
         // Assume when this class is constructed that the Play button has already been
         // pressed.
-        public PlayPauseToggle(Button pPlayPauseButton, SequentialTransition pSequentialTransaction) {
+        private PlayPauseToggle(Button pPlayPauseButton, SequentialTransition pSequentialTransaction) {
             playPauseButton = pPlayPauseButton;
             sequentialTransition = pSequentialTransaction;
             playPauseButtonStateOnPress = PlayPauseButtonStateOnPress.PAUSE; // state for the next button press
@@ -363,16 +363,11 @@ public class DeviceToTargetAnimation {
             EventHandler<ActionEvent> event = e -> {
                 switch (playPauseButtonStateOnPress) {
                     case FIRST_PLAY -> {
-                        //**TODO Clear positioning robot, FOV lines
+                        //**TODO Clear positioning robot, FOV lines - ?? by lookup from field ??
 
-                    /*
-                                centerStageRobot = new RobotFXCenterStageLG(robotWidthIn, robotHeightIn, Color.GREEN,
-                    cameraCenterFromRobotCenter, cameraOffsetFromRobotCenter, deviceCenterFromRobotCenter, deviceOffsetFromRobotCenter,
-                    startingPosition, startingRotation);
-                               Group robot = centerStageRobot.getRobot();
-            field.getChildren().add(robot);
+            //**TODO but do show it here -- field.getChildren().add(robotGroup);
 
-                     */
+
 
                         playPauseButton.setText("Pause");
                         playPauseButtonStateOnPress = PlayPauseButtonStateOnPress.PAUSE;
