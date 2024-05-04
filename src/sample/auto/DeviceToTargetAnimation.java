@@ -20,8 +20,8 @@ public class DeviceToTargetAnimation {
 
     private final CenterStageControllerLG controller;
     private final Pane field;
-    private final RobotFXCenterStageLG centerStageRobot;
-    private final Group robotGroup;
+    private final RobotFXCenterStageLG animationRobot;
+    private final Group animationRobotGroup;
     private final StartParameterValidation startParameters;
 
     private double robotCoordX;
@@ -35,8 +35,8 @@ public class DeviceToTargetAnimation {
                                    StartParameterValidation pStartParameters) {
         controller = pController;
         field = pField;
-        centerStageRobot = pCenterStageRobot;
-        robotGroup = centerStageRobot.getRobot();
+        animationRobot = pCenterStageRobot;
+        animationRobotGroup = animationRobot.getRobot();
         startParameters = pStartParameters;
     }
 
@@ -48,7 +48,10 @@ public class DeviceToTargetAnimation {
 
         //!! I noticed the use of localToScene(() in some code from the FTCSimulator -
         // this is more like it. By the way, this is the *center* of the robot.
-        Point2D loc = robotGroup.localToScene(robotGroup.getBoundsInParent().getCenterX(), robotGroup.getBoundsInParent().getCenterY());
+        Point2D loc = animationRobotGroup.localToScene(animationRobotGroup.getBoundsInParent().getCenterX(), animationRobotGroup.getBoundsInParent().getCenterY());
+
+        // A slight pause after the preview and before the animation starts.
+        PauseTransition postPreviewPauseT = new PauseTransition(Duration.millis(750));
 
         Path path = new Path();
         path.getElements().add(new MoveTo(loc.getX(), loc.getY()));
@@ -73,28 +76,28 @@ public class DeviceToTargetAnimation {
         PathTransition pathTransition = new PathTransition();
         pathTransition.setDuration(Duration.millis(3000));
         pathTransition.setPath(path);
-        pathTransition.setNode(robotGroup);
+        pathTransition.setNode(animationRobotGroup);
 
         RotateTransition rotateTransition =
-                new RotateTransition(Duration.millis(3000), robotGroup);
+                new RotateTransition(Duration.millis(3000), animationRobotGroup);
         rotateTransition.setByAngle(rotation);
-        rotateTransition.setOnFinished(event -> System.out.println("Angle after initial rotation " + robotGroup.getRotate()));
+        rotateTransition.setOnFinished(event -> System.out.println("Angle after initial rotation " + animationRobotGroup.getRotate()));
 
         //## The TranslateTransition for the final strafe must be declared before the
         // ParallelTransition, i.e. out of the time sequence, because the distance to
         // strafe is only known after the ParallelTransition is complete.
         TranslateTransition strafeTT = new TranslateTransition(Duration.millis(2000));
-        strafeTT.setNode(robotGroup);
+        strafeTT.setNode(animationRobotGroup);
         strafeTT.setOnFinished(event -> {
-            System.out.println("After strafe layoutX " + robotGroup.getLayoutX() + ", translateX " + robotGroup.getTranslateX());
+            System.out.println("After strafe layoutX " + animationRobotGroup.getLayoutX() + ", translateX " + animationRobotGroup.getTranslateX());
             // See answer from jewelsea in https://stackoverflow.com/questions/30338598/translatetransition-does-not-change-x-y-co-ordinates
-            robotGroup.setLayoutX(robotGroup.getLayoutX() + robotGroup.getTranslateX());
-            robotGroup.setLayoutY(robotGroup.getLayoutY() + robotGroup.getTranslateY());
-            robotGroup.setTranslateX(0);
-            robotGroup.setTranslateY(0);
+            animationRobotGroup.setLayoutX(animationRobotGroup.getLayoutX() + animationRobotGroup.getTranslateX());
+            animationRobotGroup.setLayoutY(animationRobotGroup.getLayoutY() + animationRobotGroup.getTranslateY());
+            animationRobotGroup.setTranslateX(0);
+            animationRobotGroup.setTranslateY(0);
 
             // Draw a line from the device to the AprilTag.
-            Circle deviceOnRobot = (Circle) robotGroup.lookup("#" + robotGroup.getId() + "_" + RobotFXCenterStageLG.DEVICE_ON_ROBOT_ID);
+            Circle deviceOnRobot = (Circle) animationRobotGroup.lookup("#" + animationRobotGroup.getId() + "_" + RobotFXCenterStageLG.DEVICE_ON_ROBOT_ID);
             Point2D deviceCoord = deviceOnRobot.localToScene(deviceOnRobot.getCenterX(), deviceOnRobot.getCenterY());
             Line lineDAT = new Line(deviceCoord.getX(), deviceCoord.getY(), aprilTagCenterX, aprilTagCenterY);
             lineDAT.setId("lineDAT");
@@ -104,7 +107,7 @@ public class DeviceToTargetAnimation {
             field.getChildren().add(lineDAT);
             System.out.println("Distance from device to AprilTag " + (aprilTagCenterY - deviceCoord.getY()));
 
-            Bounds robotBP = robotGroup.getBoundsInParent();
+            Bounds robotBP = animationRobotGroup.getBoundsInParent();
             System.out.println("Robot position after strafe x " + robotBP.getCenterX() + ", y " + robotBP.getCenterY());
             //**TODO Show or at least log post-strafe position in FTC field coordinates.
         });
@@ -116,12 +119,12 @@ public class DeviceToTargetAnimation {
         // ParallelTransition, i.e. out of the time sequence, because the angle to
         // rotate is only known after the ParallelTransition is complete.
         RotateTransition rotateDeviceTowardsAprilTagT = new RotateTransition(Duration.seconds(2));
-        rotateDeviceTowardsAprilTagT.setNode(robotGroup);
+        rotateDeviceTowardsAprilTagT.setNode(animationRobotGroup);
         rotateDeviceTowardsAprilTagT.setOnFinished(event -> {
-            System.out.println("Angle after rotation " + robotGroup.getRotate());
+            System.out.println("Angle after rotation " + animationRobotGroup.getRotate());
 
             // Draw a line from the device to the AprilTag.
-            Circle deviceOnRobot = (Circle) robotGroup.lookup("#" + robotGroup.getId() + "_" + RobotFXCenterStageLG.DEVICE_ON_ROBOT_ID);
+            Circle deviceOnRobot = (Circle) animationRobotGroup.lookup("#" + animationRobotGroup.getId() + "_" + RobotFXCenterStageLG.DEVICE_ON_ROBOT_ID);
             Point2D deviceCoord = deviceOnRobot.localToScene(deviceOnRobot.getCenterX(), deviceOnRobot.getCenterY());
             Line lineDH = new Line(deviceCoord.getX(), deviceCoord.getY(), aprilTagCenterX, aprilTagCenterY);
             lineDH.setId("lineDCH");
@@ -135,22 +138,22 @@ public class DeviceToTargetAnimation {
         ParallelTransition parallelT = new ParallelTransition(pathTransition, rotateTransition);
         parallelT.setOnFinished(event -> {
             // See answer from jewelsea in https://stackoverflow.com/questions/30338598/translatetransition-does-not-change-x-y-co-ordinates
-            robotGroup.setLayoutX(robotGroup.getLayoutX() + robotGroup.getTranslateX());
-            robotGroup.setLayoutY(robotGroup.getLayoutY() + robotGroup.getTranslateY());
-            robotGroup.setTranslateX(0);
-            robotGroup.setTranslateY(0);
+            animationRobotGroup.setLayoutX(animationRobotGroup.getLayoutX() + animationRobotGroup.getTranslateX());
+            animationRobotGroup.setLayoutY(animationRobotGroup.getLayoutY() + animationRobotGroup.getTranslateY());
+            animationRobotGroup.setTranslateX(0);
+            animationRobotGroup.setTranslateY(0);
 
-            Bounds robotBP = robotGroup.getBoundsInParent();
+            Bounds robotBP = animationRobotGroup.getBoundsInParent();
             robotCoordX = robotBP.getCenterX();
             robotCoordY = robotBP.getCenterY();
 
             System.out.println("Robot center in front of backdrop x " + robotCoordX + ", y " + robotCoordY);
             //**TODO Show or at least log position in FTC field coordinates?
-            System.out.println("Robot rotation after positioning in front of backdrop x " + robotGroup.getRotate());
+            System.out.println("Robot rotation after positioning in front of backdrop x " + animationRobotGroup.getRotate());
 
             //## All of these coordinates and calculations can only be made after
             // the ParallelTranstion is complete, i.e. now.
-            Rectangle cameraOnRobot = (Rectangle) robotGroup.lookup("#" + robotGroup.getId() + "_" + RobotFXCenterStageLG.CAMERA_ON_ROBOT_ID);
+            Rectangle cameraOnRobot = (Rectangle) animationRobotGroup.lookup("#" + animationRobotGroup.getId() + "_" + RobotFXCenterStageLG.CAMERA_ON_ROBOT_ID);
             Point2D cameraCoord = cameraOnRobot.localToScene(cameraOnRobot.getX(), cameraOnRobot.getY());
 
             // The returned coordinates of the objects are those of the upper left-hand
@@ -160,7 +163,7 @@ public class DeviceToTargetAnimation {
             double cameraFaceY = cameraCoord.getY();
             System.out.println("Camera face center x " + cameraFaceX + ", y " + cameraFaceY);
 
-            Circle deviceOnRobot = (Circle) robotGroup.lookup("#" + robotGroup.getId() + "_" + RobotFXCenterStageLG.DEVICE_ON_ROBOT_ID);
+            Circle deviceOnRobot = (Circle) animationRobotGroup.lookup("#" + animationRobotGroup.getId() + "_" + RobotFXCenterStageLG.DEVICE_ON_ROBOT_ID);
             Point2D deviceCoord = deviceOnRobot.localToScene(deviceOnRobot.getCenterX(), deviceOnRobot.getCenterY());
             deviceCenterX = deviceCoord.getX();
             deviceCenterY = deviceCoord.getY();
@@ -232,9 +235,9 @@ public class DeviceToTargetAnimation {
             // so add 1/2 of the height of the camera here.
             CameraToDeviceCorrections.CorrectionData corrections = CameraToDeviceCorrections.getCameraToDeviceCorrections(degreesFromCameraToAprilTag,
                     distanceFromCameraToAprilTag,
-                    centerStageRobot.cameraCenterFromRobotCenterPX + RobotFXCenterStageLG.CAMERA_HEIGHT / 2,
-                    centerStageRobot.cameraOffsetFromRobotCenterPX,
-                    centerStageRobot.deviceCenterFromRobotCenterPX, centerStageRobot.deviceOffsetFromRobotCenterPX);
+                    animationRobot.cameraCenterFromRobotCenterPX + RobotFXCenterStageLG.CAMERA_HEIGHT / 2,
+                    animationRobot.cameraOffsetFromRobotCenterPX,
+                    animationRobot.deviceCenterFromRobotCenterPX, animationRobot.deviceOffsetFromRobotCenterPX);
 
             // In case a strafe was selected from the start parameters.
             // Support a strafe that positions the delivery device opposite the AT.
@@ -260,7 +263,7 @@ public class DeviceToTargetAnimation {
             removeCameraToTargetLines();
 
             // Draw the triangle formed between the center of the robot and the delivery device.
-            Line lineRCDH = new Line(robotCoordX, robotCoordY, Math.abs(robotCoordX - centerStageRobot.deviceOffsetFromRobotCenterPX), aprilTagCenterY);
+            Line lineRCDH = new Line(robotCoordX, robotCoordY, Math.abs(robotCoordX - animationRobot.deviceOffsetFromRobotCenterPX), aprilTagCenterY);
             lineRCDH.setId("lineRCDH");
             lineRCDH.setStroke(Color.FUCHSIA);
             lineRCDH.getStrokeDashArray().addAll(10.0);
@@ -270,14 +273,14 @@ public class DeviceToTargetAnimation {
             // Draw a line from the end point of the hypotenuse down through the center of the
             // device to the bottom of the robot. In general the device can be anywhere along
             // this line.
-            Line lineDC = new Line(Math.abs(robotCoordX - centerStageRobot.deviceOffsetFromRobotCenterPX), aprilTagCenterY, Math.abs(robotCoordX - centerStageRobot.deviceOffsetFromRobotCenterPX), robotCoordX + centerStageRobot.robotHeightPX / 2);
+            Line lineDC = new Line(Math.abs(robotCoordX - animationRobot.deviceOffsetFromRobotCenterPX), aprilTagCenterY, Math.abs(robotCoordX - animationRobot.deviceOffsetFromRobotCenterPX), robotCoordX + animationRobot.robotHeightPX / 2);
             lineDC.setId("lineDC");
             lineDC.setStroke(Color.FUCHSIA);
             lineDC.getStrokeDashArray().addAll(10.0);
             lineDC.setStrokeWidth(3.0);
             field.getChildren().add(lineDC);
 
-            Line lineRCDO = new Line(robotCoordX, aprilTagCenterY, Math.abs(robotCoordX - centerStageRobot.deviceOffsetFromRobotCenterPX), aprilTagCenterY);
+            Line lineRCDO = new Line(robotCoordX, aprilTagCenterY, Math.abs(robotCoordX - animationRobot.deviceOffsetFromRobotCenterPX), aprilTagCenterY);
             lineRCDO.setId("lineRCDO");
             lineRCDO.setStroke(Color.FUCHSIA);
             lineRCDO.getStrokeDashArray().addAll(10.0);
@@ -319,7 +322,7 @@ public class DeviceToTargetAnimation {
         });
 
         // Look at the startup parameter that indicates whether to strafe or rotate.
-        SequentialTransition seqTransition = new SequentialTransition(parallelT); // common
+        SequentialTransition seqTransition = new SequentialTransition(postPreviewPauseT, parallelT); // common
         if (radioButtonText.equals("Strafe to"))
             seqTransition.getChildren().addAll(cameraToTargetPauseT, strafeTT);
         else
@@ -330,11 +333,9 @@ public class DeviceToTargetAnimation {
 
     private void removeCameraToTargetLines() {
         Line lineCHRef = (Line) field.lookup("#lineCH");
-        field.getChildren().remove(lineCHRef);
         Line lineCORef = (Line) field.lookup("#lineCO");
-        field.getChildren().remove(lineCORef);
         Line lineCARef = (Line) field.lookup("#lineCA");
-        field.getChildren().remove(lineCARef);
+        field.getChildren().removeAll(lineCHRef, lineCORef, lineCARef);
     }
 
     private class PlayPauseToggle {
@@ -364,9 +365,14 @@ public class DeviceToTargetAnimation {
             EventHandler<ActionEvent> event = e -> {
                 switch (playPauseButtonStateOnPress) {
                     case FIRST_PLAY -> {
-                        //**TODO Clear positioning robot, FOV lines - ?? by lookup from field ??
+                        // Clear the preview robot and the camera field-of-view lines.
+                        Group previewRobot = (Group) field.lookup("#" + RobotFXCenterStageLG.PREVIEW_ROBOT_ID);
+                        Line fovLeft = (Line) field.lookup("#" + CenterStageBackdrop.LINE_HALF_CAMERA_FOV_LEFT);
+                        Line fovRight = (Line) field.lookup("#" + CenterStageBackdrop.LINE_HALF_CAMERA_FOV_RIGHT);
+                        field.getChildren().removeAll(previewRobot, fovLeft, fovRight);
 
-                        field.getChildren().add(robotGroup);
+                        // Now show the animation robot.
+                        field.getChildren().add(animationRobotGroup);
 
                         playPauseButton.setText("Pause");
                         playPauseButtonStateOnPress = PlayPauseButtonStateOnPress.PAUSE;

@@ -42,6 +42,9 @@ import java.util.concurrent.atomic.AtomicReference;
 // device itself turns towards the target, not the robot itself.
 public class CenterStageBackdrop extends Application {
 
+    public static final String LINE_HALF_CAMERA_FOV_LEFT = "lineHalfFOVLeft";
+    public static final String LINE_HALF_CAMERA_FOV_RIGHT = "lineHalfFOVRight";
+
     private CenterStageControllerLG controller;
     private StartParameterValidation startParameterValidation;
 
@@ -145,8 +148,8 @@ public class CenterStageBackdrop extends Application {
             double robotWidthIn = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_WIDTH);
             double robotHeightIn = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_HEIGHT);
 
-            //**TODO Improvement: When the Preview screen is showing and the start
-            // parameters are frozen, allow the user to
+            //**TODO When the Preview screen is showing and the start parameters are frozen,
+            // allow the user to
             // [drag the camera and device on the preview representation of the robot
             // and to] drag the robot and thereby change its delivery position. The
             // Play button erases the preview representation and starts the animation
@@ -192,12 +195,12 @@ public class CenterStageBackdrop extends Application {
             Group robotP = previewRobot.getRobot();
             field.getChildren().add(robotP);
 
-            //**TODO Is there a way to use the camera's FOV to validate the approach
+            //**TODO Is there a way to use the camera's FOV to validate the preview
             // position. Yes, if you make room on the start parameters screen and set
             // a parameter for it. Or just hardcode 78 degrees and put up an alert
             // after you get the camera to target angle in DeviceToTargetAnimation.
-            //**TODO Put in the XML and validate but do not include in grid of start parameters
-            // or as read-only.
+            //**TODO Put in the XML and validate ??but do not include in grid of start parameters
+            // or as read-only??
 
             //**TODO As an experiment draw a 78 degree camera field of view.
             drawCameraFieldOfView(field, robotP);
@@ -219,9 +222,6 @@ public class CenterStageBackdrop extends Application {
                     cameraCenterFromRobotCenter, cameraOffsetFromRobotCenter, deviceCenterFromRobotCenter, deviceOffsetFromRobotCenter,
                     startingPosition, startingRotation);
 
-            Group robot = animationRobot.getRobot();
-
-            //**TODO Move to DeviceToTargetAnimation ...
             System.out.println("Alliance " + alliance);
             System.out.println("Camera center from robot center " + cameraCenterFromRobotCenter);
             System.out.println("Camera offset from robot center " + cameraOffsetFromRobotCenter);
@@ -344,19 +344,20 @@ public class CenterStageBackdrop extends Application {
         // tan 39 degrees  = opposite / adjacent
         double halfFOVTan = Math.tan(Math.toRadians(39.0));
         double halfFOVOpposite = halfFOVTan * fovAdjacent;
-        Line lineHalfFOVRight = new Line(cameraFaceX, cameraFaceY, cameraFaceX + halfFOVOpposite, aprilTagCenterY);
-        lineHalfFOVRight.setId("lineHalfFOVRight");
-        lineHalfFOVRight.setStroke(Color.AQUA);
-        lineHalfFOVRight.getStrokeDashArray().addAll(10.0);
-        lineHalfFOVRight.setStrokeWidth(3.0);
-        pField.getChildren().add(lineHalfFOVRight);
 
         Line lineHalfFOVLeft = new Line(cameraFaceX, cameraFaceY, cameraFaceX - halfFOVOpposite, aprilTagCenterY);
-        lineHalfFOVLeft.setId("lineHalfFOVLeft");
+        lineHalfFOVLeft.setId(LINE_HALF_CAMERA_FOV_LEFT);
         lineHalfFOVLeft.setStroke(Color.AQUA);
         lineHalfFOVLeft.getStrokeDashArray().addAll(10.0);
         lineHalfFOVLeft.setStrokeWidth(3.0);
         pField.getChildren().add(lineHalfFOVLeft);
+
+        Line lineHalfFOVRight = new Line(cameraFaceX, cameraFaceY, cameraFaceX + halfFOVOpposite, aprilTagCenterY);
+        lineHalfFOVRight.setId(LINE_HALF_CAMERA_FOV_RIGHT);
+        lineHalfFOVRight.setStroke(Color.AQUA);
+        lineHalfFOVRight.getStrokeDashArray().addAll(10.0);
+        lineHalfFOVRight.setStrokeWidth(3.0);
+        pField.getChildren().add(lineHalfFOVRight);
     }
 
 }
