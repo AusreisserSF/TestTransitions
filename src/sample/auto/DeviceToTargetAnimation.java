@@ -340,6 +340,7 @@ public class DeviceToTargetAnimation {
     private class PlayPauseToggle {
 
         private enum PlayPauseButtonStateOnPress {FIRST_PLAY, RESUME_PLAY, PAUSE}
+
         private PlayPauseButtonStateOnPress playPauseButtonStateOnPress;
 
         private final Button playPauseButton;
@@ -365,9 +366,7 @@ public class DeviceToTargetAnimation {
                     case FIRST_PLAY -> {
                         //**TODO Clear positioning robot, FOV lines - ?? by lookup from field ??
 
-            //**TODO but do show it here -- field.getChildren().add(robotGroup);
-
-
+                        field.getChildren().add(robotGroup);
 
                         playPauseButton.setText("Pause");
                         playPauseButtonStateOnPress = PlayPauseButtonStateOnPress.PAUSE;

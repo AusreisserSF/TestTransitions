@@ -6,7 +6,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
 public class RobotFXCenterStageLG extends RobotFXLG {
-    public static final String POSITIONING_ROBOT_ID = "positioningRobot";
+    public static final String PREVIEW_ROBOT_ID = "previewRobot";
     public static final String ANIMATION_ROBOT_ID = "animationRobot";
 
     public static final double CAMERA_WIDTH = FieldFXCenterStageBackdropLG.PX_PER_INCH * 2;
