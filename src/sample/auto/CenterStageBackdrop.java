@@ -181,12 +181,13 @@ public class CenterStageBackdrop extends Application {
             Integer targetAprilTag = controller.april_tag_spinner.getValue();
             String radioButtonText = ((RadioButton) controller.approach_toggle.getSelectedToggle()).getText();
 
-            //**TODO positioning of the preview robot is not correct. See screenshot.
-            // Show the robot in its position opposite the backdrop.
+            // Positioning is determined byt he upper left corner of the robot.
             RobotFXCenterStageLG previewRobot = new RobotFXCenterStageLG(RobotFXCenterStageLG.PREVIEW_ROBOT_ID,
                     robotWidthIn, robotHeightIn, Color.GREEN,
                     cameraCenterFromRobotCenter, cameraOffsetFromRobotCenter, deviceCenterFromRobotCenter, deviceOffsetFromRobotCenter,
-                    new Point2D(robotPositionAtBackdropX, robotPositionAtBackdropY), 0.0);
+                    new Point2D(robotPositionAtBackdropX - ((robotWidthIn * FieldFXCenterStageBackdropLG.PX_PER_INCH)  / 2),
+                            robotPositionAtBackdropY - ((robotHeightIn * FieldFXCenterStageBackdropLG.PX_PER_INCH)  / 2)),
+                            0.0);
 
             Group robotP = previewRobot.getRobot();
             field.getChildren().add(robotP);
