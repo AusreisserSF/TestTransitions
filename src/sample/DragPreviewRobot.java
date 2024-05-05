@@ -14,6 +14,9 @@ import javafx.stage.Stage;
 import java.util.ArrayList;
 import java.util.List;
 
+// Start with the drag-and-release code from here:
+// http://java-buddy.blogspot.com/2013/07/javafx-drag-and-move-something.html#google_vignette
+// but use Node instead of Circle.
 public class DragPreviewRobot extends Application {
 
     // list of nodes that are dragged. Can be modified at any time (on the FX Application Thread):
@@ -22,6 +25,8 @@ public class DragPreviewRobot extends Application {
     private Rectangle previewRobot;
     private Line leftHalfFOV;
     private Line rightHalfFOV;
+    private double orgSceneX, orgSceneY;
+    private double orgTranslateX, orgTranslateY;
 
     @Override
     public void start( Stage primaryStage ) throws Exception {
@@ -31,8 +36,8 @@ public class DragPreviewRobot extends Application {
         rightHalfFOV = new Line(250, 200, 350, 100);
 
         makeDraggable(previewRobot);
-        makeDraggable(leftHalfFOV);    
-        makeDraggable(rightHalfFOV);
+        //makeDraggable(leftHalfFOV);
+        //makeDraggable(rightHalfFOV);
 
         Group root = new Group();
         root.getChildren().addAll( previewRobot, leftHalfFOV, rightHalfFOV );
@@ -42,34 +47,32 @@ public class DragPreviewRobot extends Application {
         primaryStage.show();
     }
 
-    private void makeDraggable( Node pNode ) {
-        MouseLocation lastMouseLocation = new MouseLocation();
+    private void makeDraggable( Node pNode ) { //**TODO Node -> Rectangle
 
         // --- remember initial coordinates of mouse cursor and node
         pNode.addEventFilter( MouseEvent.MOUSE_PRESSED, (MouseEvent mouseEvent ) -> {
-            lastMouseLocation.x = mouseEvent.getSceneX() ;
-            lastMouseLocation.y = mouseEvent.getSceneY() ;
-            nodesToDrag.add(pNode);            
+            orgSceneX = mouseEvent.getSceneX();
+            orgSceneY = mouseEvent.getSceneY();
+
+            //**TODO These are different for each Shape ... generalize by
+            // putting into an EnumMap??
+            orgTranslateX = ((Node)(mouseEvent.getSource())).getTranslateX();
+            orgTranslateY = ((Node)(mouseEvent.getSource())).getTranslateY();
+            //nodesToDrag.add(previewRobot);
         } );
 
         // --- Shift node calculated from mouse cursor movement
         pNode.addEventFilter( MouseEvent.MOUSE_DRAGGED, (MouseEvent mouseEvent ) -> {
-                    double deltaX = mouseEvent.getSceneX() - lastMouseLocation.x ;
-                    double deltaY = mouseEvent.getSceneY() - lastMouseLocation.y ;
+            double offsetX = mouseEvent.getSceneX() - orgSceneX;
+            double offsetY = mouseEvent.getSceneY() - orgSceneY;
+            double newTranslateX = orgTranslateX + offsetX;
+            double newTranslateY = orgTranslateY + offsetY;
 
-                    for (Node n : nodesToDrag) {
-                        n.setTranslateX( n.getTranslateX() + deltaX );
-                        n.setTranslateX( n.getTranslateY() + deltaY );
-                    }
-                    
-                    lastMouseLocation.x = mouseEvent.getSceneX();
-                    lastMouseLocation.y = mouseEvent.getSceneY();
+            ((Node)(mouseEvent.getSource())).setTranslateX(newTranslateX);
+            ((Node)(mouseEvent.getSource())).setTranslateY(newTranslateY);
         } );
 
-        pNode.addEventFilter(MouseEvent.MOUSE_RELEASED, mouseEvent -> nodesToDrag.clear());
+       // pNode.addEventFilter(MouseEvent.MOUSE_RELEASED, mouseEvent -> nodesToDrag.clear());
     }
 
-    private static final class MouseLocation {
-        public double x, y;
-    }
 }
