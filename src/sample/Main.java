@@ -17,6 +17,7 @@ public class Main {
             case "DragAndDrop" -> Application.launch(DragAndDrop.class, args);
             case "Drag" -> Application.launch(Drag.class, args);
             case "DragPreview" -> Application.launch(DragPreviewRobot.class, args);
+            case "DragCircles" -> Application.launch(DragGroupCircles.class, args);
             case "Radio" -> Application.launch(AllianceDialog.class, args);
             default -> System.out.println("Unrecognized application class name");
         }

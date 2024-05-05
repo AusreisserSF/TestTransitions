@@ -53,13 +53,12 @@ public class DragPreviewRobot extends Application {
         } );
 
         // --- Shift node calculated from mouse cursor movement
-        pNode.addEventFilter( MouseEvent.MOUSE_DRAGGED, (
-                final MouseEvent mouseEvent ) -> {
+        pNode.addEventFilter( MouseEvent.MOUSE_DRAGGED, (MouseEvent mouseEvent ) -> {
                     double deltaX = mouseEvent.getSceneX() - lastMouseLocation.x ;
                     double deltaY = mouseEvent.getSceneY() - lastMouseLocation.y ;
 
                     for (Node n : nodesToDrag) {
-                        n.setTranslateX( n.getTranslateX() + deltaX  );
+                        n.setTranslateX( n.getTranslateX() + deltaX );
                         n.setTranslateX( n.getTranslateY() + deltaY );
                     }
                     
