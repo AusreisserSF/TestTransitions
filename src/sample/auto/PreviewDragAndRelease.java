@@ -80,6 +80,8 @@ public class PreviewDragAndRelease {
 
         //**TODO Disallow movement if the preview robot crosses the approach
         // zone boundary.
+        // See use of "intersects" in
+        // https://stackoverflow.com/questions/15013913/checking-collision-of-shapes-with-javafx
         // --- Coordinated drag of nodes calculated from mouse cursor movement
         pPreviewRobot.addEventFilter(MouseEvent.MOUSE_DRAGGED, (MouseEvent mouseEvent) -> {
             double offsetX = mouseEvent.getSceneX() - orgSceneX;

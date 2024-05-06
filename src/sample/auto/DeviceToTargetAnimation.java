@@ -20,6 +20,7 @@ public class DeviceToTargetAnimation {
 
     private final CenterStageControllerLG controller;
     private final Pane field;
+    private final RobotFXCenterStageLG previewRobot;
     private final RobotFXCenterStageLG animationRobot;
     private final Group animationRobotGroup;
     private final StartParameterValidation startParameters;
@@ -32,11 +33,13 @@ public class DeviceToTargetAnimation {
     private double aprilTagCenterY;
 
     //**TODO You may want to include the Preview Robot as a parameter
-    public DeviceToTargetAnimation(CenterStageControllerLG pController, Pane pField, RobotFXCenterStageLG pAnimationRobot,
+    public DeviceToTargetAnimation(CenterStageControllerLG pController, Pane pField,
+                                   RobotFXCenterStageLG pPreviewRobot, RobotFXCenterStageLG pAnimationRobot,
                                    StartParameterValidation pStartParameters) {
         controller = pController;
         field = pField;
         animationRobot = pAnimationRobot;
+        previewRobot = pPreviewRobot;
         animationRobotGroup = animationRobot.getRobot();
         startParameters = pStartParameters;
     }
@@ -62,7 +65,8 @@ public class DeviceToTargetAnimation {
         // CubicCurveTo constructor parameters: controlX1, controlX2, controlY1, controlY2, endX, endY
         // The coordinates are those of the center of the robot.
         //**TODO Instead of getting the coordinates from the start parameters get them from the
-        // preview robot - because its position may have changed by drag-and-release.
+        // preview robot - because its position may have changed by drag-and-release. Update the
+        // start parameters??
         // Point2D previewRobotLocation = previewRobotGroup.localToScene(previewRobotGroup.getBoundsInParent().getCenterX(), previewRobotGroup.getBoundsInParent().getCenterY());
         double robotPositionAtBackdropX = startParameters.getStartParameter(StartParameterValidation.StartParameter.ROBOT_POSITION_AT_BACKDROP_X) * FieldFXCenterStageBackdropLG.PX_PER_INCH;
         double robotPositionAtBackdropY = startParameters.getStartParameter(StartParameterValidation.StartParameter.ROBOT_POSITION_AT_BACKDROP_Y) * FieldFXCenterStageBackdropLG.PX_PER_INCH;
@@ -369,7 +373,7 @@ public class DeviceToTargetAnimation {
             EventHandler<ActionEvent> event = e -> {
                 switch (playPauseButtonStateOnPress) {
                     case FIRST_PLAY -> {
-                        //**TODO You may want to access the outer class field for thre preview robot
+                        //**TODO You may want to access the outer class field for the preview robot
                         // Clear the preview robot and the camera field-of-view lines.
                         Group previewRobot = (Group) field.lookup("#" + RobotFXCenterStageLG.PREVIEW_ROBOT_ID);
                         Line fovLeft = (Line) field.lookup("#" + PreviewDragAndRelease.CAMERA_FOV_LINE_LEFT);
