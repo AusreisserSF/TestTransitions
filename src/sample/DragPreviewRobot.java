@@ -23,56 +23,67 @@ public class DragPreviewRobot extends Application {
     private final List<Node> nodesToDrag = new ArrayList<>();
 
     private Rectangle previewRobot;
-    private Line leftHalfFOV;
-    private Line rightHalfFOV;
+    private Line fovLineLeft;
+    private Line fovLineRight;
     private double orgSceneX, orgSceneY;
-    private double orgTranslateX, orgTranslateY;
+    private double orgRobotTranslateX, orgRobotTranslateY;
+    private double orgFOVLineLeftTranslateX, orgFOVLineLeftTranslateY;
+    private double orgFOVLineRightTranslateX, orgFOVLineRightTranslateY;
 
     @Override
     public void start( Stage primaryStage ) throws Exception {
 
         previewRobot = new Rectangle(200, 200, 100, 100);
-        leftHalfFOV = new Line(250, 200, 150, 100);
-        rightHalfFOV = new Line(250, 200, 350, 100);
+        fovLineLeft = new Line(250, 200, 150, 100);
+        fovLineRight = new Line(250, 200, 350, 100);
 
-        makeDraggable(previewRobot);
-        //makeDraggable(leftHalfFOV);
-        //makeDraggable(rightHalfFOV);
+        makeDraggable(previewRobot, fovLineLeft, fovLineRight);
 
         Group root = new Group();
-        root.getChildren().addAll( previewRobot, leftHalfFOV, rightHalfFOV );
+        root.getChildren().addAll( previewRobot, fovLineLeft, fovLineRight);
         primaryStage.setResizable( false );
         primaryStage.setScene( new Scene( root, 400, 400 ) );
         primaryStage.setTitle( DragPreviewRobot.class.getSimpleName() );
         primaryStage.show();
     }
 
-    private void makeDraggable( Node pNode ) { //**TODO Node -> Rectangle
+    private void makeDraggable( Rectangle pRobotRect, Line pFOVLineLeft, Line pFOVLineRight ) {
 
         // --- remember initial coordinates of mouse cursor and node
-        pNode.addEventFilter( MouseEvent.MOUSE_PRESSED, (MouseEvent mouseEvent ) -> {
+        pRobotRect.addEventFilter( MouseEvent.MOUSE_PRESSED, (MouseEvent mouseEvent ) -> {
             orgSceneX = mouseEvent.getSceneX();
             orgSceneY = mouseEvent.getSceneY();
 
             //**TODO These are different for each Shape ... generalize by
             // putting into an EnumMap??
-            orgTranslateX = ((Node)(mouseEvent.getSource())).getTranslateX();
-            orgTranslateY = ((Node)(mouseEvent.getSource())).getTranslateY();
-            //nodesToDrag.add(previewRobot);
+            orgRobotTranslateX = pRobotRect.getTranslateX();
+            orgRobotTranslateY = pRobotRect.getTranslateY();
+            orgFOVLineLeftTranslateX = pFOVLineLeft.getTranslateX();
+            orgFOVLineLeftTranslateY = pFOVLineLeft.getTranslateY();
+            orgFOVLineRightTranslateX = pFOVLineRight.getTranslateX();
+            orgFOVLineRightTranslateY = pFOVLineRight.getTranslateY();
         } );
 
         // --- Shift node calculated from mouse cursor movement
-        pNode.addEventFilter( MouseEvent.MOUSE_DRAGGED, (MouseEvent mouseEvent ) -> {
+        pRobotRect.addEventFilter( MouseEvent.MOUSE_DRAGGED, (MouseEvent mouseEvent ) -> {
             double offsetX = mouseEvent.getSceneX() - orgSceneX;
             double offsetY = mouseEvent.getSceneY() - orgSceneY;
-            double newTranslateX = orgTranslateX + offsetX;
-            double newTranslateY = orgTranslateY + offsetY;
 
-            ((Node)(mouseEvent.getSource())).setTranslateX(newTranslateX);
-            ((Node)(mouseEvent.getSource())).setTranslateY(newTranslateY);
+            double newRobotTranslateX = orgRobotTranslateX + offsetX;
+            double newRobotTranslateY = orgRobotTranslateY + offsetY;
+            pRobotRect.setTranslateX(newRobotTranslateX);
+            pRobotRect.setTranslateY(newRobotTranslateY);
+
+            double newFOVLineLeftTranslateX = orgFOVLineLeftTranslateX + offsetX;
+            double newFOVLineLeftTranslateY = orgFOVLineLeftTranslateY + offsetY;
+            pFOVLineLeft.setTranslateX(newFOVLineLeftTranslateX);
+            pFOVLineLeft.setTranslateY(newFOVLineLeftTranslateY);
+
+            double newFOVLineRightTranslateX = orgFOVLineRightTranslateX + offsetX;
+            double newFOVLineRightTranslateY = orgFOVLineRightTranslateY + offsetY;
+            pFOVLineRight.setTranslateX(newFOVLineRightTranslateX);
+            pFOVLineRight.setTranslateY(newFOVLineRightTranslateY);
         } );
-
-       // pNode.addEventFilter(MouseEvent.MOUSE_RELEASED, mouseEvent -> nodesToDrag.clear());
     }
 
 }
