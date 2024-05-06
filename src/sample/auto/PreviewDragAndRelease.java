@@ -1,5 +1,6 @@
 package sample.auto;
 
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.input.MouseEvent;
@@ -28,7 +29,7 @@ public class PreviewDragAndRelease {
 
     //**TODO As an experiment draw a 78 degree camera field of view.
 
-    public PreviewDragAndRelease(Pane pField, Group pPreviewRobot) {
+    public PreviewDragAndRelease(Pane pField, Rectangle pApproachZone, Group pPreviewRobot) {
 
         // Show the preview robot on the field.
         pField.getChildren().add(pPreviewRobot);
@@ -78,10 +79,6 @@ public class PreviewDragAndRelease {
             orgFOVLineRightTranslateY = fovLineRight.getTranslateY();
         });
 
-        //**TODO Disallow movement if the preview robot crosses the approach
-        // zone boundary.
-        // See use of "intersects" in
-        // https://stackoverflow.com/questions/15013913/checking-collision-of-shapes-with-javafx
         // --- Coordinated drag of nodes calculated from mouse cursor movement
         pPreviewRobot.addEventFilter(MouseEvent.MOUSE_DRAGGED, (MouseEvent mouseEvent) -> {
             double offsetX = mouseEvent.getSceneX() - orgSceneX;
@@ -92,6 +89,37 @@ public class PreviewDragAndRelease {
             double newRobotTranslateY = orgRobotTranslateY + offsetY;
             pPreviewRobot.setTranslateX(newRobotTranslateX);
             pPreviewRobot.setTranslateY(newRobotTranslateY);
+
+            // Make sure the new position of the preview robot is withing the bounds
+            // of the approach zone.
+            Bounds previewRobotBounds = pPreviewRobot.getBoundsInParent();
+            Bounds approachZoneBounds = pApproachZone.getBoundsInParent();
+            if (previewRobotBounds.getMinX() < approachZoneBounds.getMinX() ||
+                    previewRobotBounds.getMaxX() > approachZoneBounds.getMaxX() ||
+                    previewRobotBounds.getMinY() < approachZoneBounds.getMinY() ||
+                    previewRobotBounds.getMaxY() > approachZoneBounds.getMaxY()) {
+
+                //**TODO When you drag any edge of the preview robot outside the
+                // bounds of the approach zone, JavaFX cancels the drag and places
+                // the robot in its position before the drag. So you have to revert
+                // the FOV lines also.
+
+                //**TODO Because of the reversion you may not need to back out the change.
+                pPreviewRobot.setTranslateX(newRobotTranslateX - offsetX);
+                pPreviewRobot.setTranslateY(newRobotTranslateY - offsetY);
+                return;
+            }
+
+            //**TODO Try updating the start parameter display with the new x and
+            // y positions of the center of the preview robot. **LATER** - disable
+            // all other TextFields but only disable editing of the position fields.
+            double previewRobotCenterInX = previewRobotBounds.getCenterX() / FieldFXCenterStageBackdropLG.PX_PER_INCH;
+            double previewRobotCenterInY = previewRobotBounds.getCenterY() / FieldFXCenterStageBackdropLG.PX_PER_INCH;
+
+            //**TODO Need a reference to the controller or to the fields in the controller
+            // // or to the GridPane (for lookup). ?? Use ToolTip during drag?
+            // pCenterStageControllerLG.robot_position_at_backdrop_x = previewRobotCenterInX;
+            // pCenterStageControllerLG.robot_position_at_backdrop_y = previewRobotCenterInY;
 
             // Drag the left boundary of the camera field of view.
             double newFOVLineLeftTranslateX = orgFOVLineLeftTranslateX + offsetX;

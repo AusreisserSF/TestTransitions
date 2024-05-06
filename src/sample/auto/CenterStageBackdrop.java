@@ -121,6 +121,7 @@ public class CenterStageBackdrop extends Application {
                 return;
             }
 
+            //**TODO **LATER** - disable all other TextFields but only disable editing of the position fields.
             // Freeze the start parameters after the Preview button has been hit
             // and remove the Preview button.
             controller.start_parameters.setDisable(true);
@@ -151,24 +152,24 @@ public class CenterStageBackdrop extends Application {
             // drag and release the preview robot and the associated camera field of view
             // lines to set the final position of the robot in front of the backdrop.
 
-            // Mark a portion of the field as the positioning zone, i.e. the area in which
+            // Mark a portion of the field as the approach zone, i.e. the area in which
             // the robot can stop in front of the backdrop. The outside boundaries of the
-            // robot must be inside the positioning zone.
-            double positioningZoneX = StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_X_MIN * FieldFXCenterStageBackdropLG.PX_PER_INCH -
+            // robot must be inside the approach zone.
+            double approachZoneX = StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_X_MIN * FieldFXCenterStageBackdropLG.PX_PER_INCH -
                     (robotWidthIn * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2;
-            double positioningZoneY = StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_Y_MIN * FieldFXCenterStageBackdropLG.PX_PER_INCH -
+            double approachZoneY = StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_Y_MIN * FieldFXCenterStageBackdropLG.PX_PER_INCH -
                     (robotHeightIn * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2;
-            double positioningZoneWidth = ((StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_X_MAX * FieldFXCenterStageBackdropLG.PX_PER_INCH +
-                    (robotWidthIn * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2)) - positioningZoneX;
-            double positioningZoneHeight = ((StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_Y_MAX * FieldFXCenterStageBackdropLG.PX_PER_INCH +
-                    (robotHeightIn * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2)) - positioningZoneY;
-            Rectangle positioningZone = new Rectangle(positioningZoneX, positioningZoneY, positioningZoneWidth, positioningZoneHeight);
-            positioningZone.setId("positioningZone");
-            positioningZone.setFill(Color.TRANSPARENT);
-            positioningZone.setStroke(Color.BLACK);
-            positioningZone.getStrokeDashArray().addAll(5.0);
-            positioningZone.setStrokeWidth(2.0);
-            field.getChildren().add(positioningZone);
+            double approachZoneWidth = ((StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_X_MAX * FieldFXCenterStageBackdropLG.PX_PER_INCH +
+                    (robotWidthIn * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2)) - approachZoneX;
+            double approachZoneHeight = ((StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_Y_MAX * FieldFXCenterStageBackdropLG.PX_PER_INCH +
+                    (robotHeightIn * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2)) - approachZoneY;
+            Rectangle approachZone = new Rectangle(approachZoneX, approachZoneY, approachZoneWidth, approachZoneHeight);
+            approachZone.setId("approachZone");
+            approachZone.setFill(Color.TRANSPARENT);
+            approachZone.setStroke(Color.BLACK);
+            approachZone.getStrokeDashArray().addAll(5.0);
+            approachZone.setStrokeWidth(2.0);
+            field.getChildren().add(approachZone);
 
             // Collect the start parameters.
             double cameraCenterFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_CENTER_FROM_ROBOT_CENTER);
@@ -190,7 +191,7 @@ public class CenterStageBackdrop extends Application {
 
             // Show the draggable preview robot and camera field of view.
             Group robotP = previewRobot.getRobot();
-            new PreviewDragAndRelease(field, robotP);
+            new PreviewDragAndRelease(field, approachZone, robotP);
 
             // Set the starting position for the animation robot.
             Point2D startingPosition;

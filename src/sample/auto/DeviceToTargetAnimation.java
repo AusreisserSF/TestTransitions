@@ -67,9 +67,14 @@ public class DeviceToTargetAnimation {
         //**TODO Instead of getting the coordinates from the start parameters get them from the
         // preview robot - because its position may have changed by drag-and-release. Update the
         // start parameters??
-        // Point2D previewRobotLocation = previewRobotGroup.localToScene(previewRobotGroup.getBoundsInParent().getCenterX(), previewRobotGroup.getBoundsInParent().getCenterY());
-        double robotPositionAtBackdropX = startParameters.getStartParameter(StartParameterValidation.StartParameter.ROBOT_POSITION_AT_BACKDROP_X) * FieldFXCenterStageBackdropLG.PX_PER_INCH;
-        double robotPositionAtBackdropY = startParameters.getStartParameter(StartParameterValidation.StartParameter.ROBOT_POSITION_AT_BACKDROP_Y) * FieldFXCenterStageBackdropLG.PX_PER_INCH;
+        Group previewRobotGroup = previewRobot.getRobot();
+
+        //**TODO Has no effect - not picking up the position of the preview robot correctly.
+        Point2D previewRobotLocation = previewRobotGroup.localToScene(previewRobotGroup.getBoundsInParent().getCenterX(), previewRobotGroup.getBoundsInParent().getCenterY());
+        double robotPositionAtBackdropX = previewRobotLocation.getX();
+        double robotPositionAtBackdropY = previewRobotLocation.getY();
+        //double robotPositionAtBackdropX = startParameters.getStartParameter(StartParameterValidation.StartParameter.ROBOT_POSITION_AT_BACKDROP_X) * FieldFXCenterStageBackdropLG.PX_PER_INCH;
+        //double robotPositionAtBackdropY = startParameters.getStartParameter(StartParameterValidation.StartParameter.ROBOT_POSITION_AT_BACKDROP_Y) * FieldFXCenterStageBackdropLG.PX_PER_INCH;
         float rotation;
         if (pAlliance == RobotConstants.Alliance.BLUE) {
             //path.getElements().add(new CubicCurveTo(400, 300, 300, 300, 200, 275));
