@@ -31,11 +31,12 @@ public class DeviceToTargetAnimation {
     private double aprilTagCenterX;
     private double aprilTagCenterY;
 
-    public DeviceToTargetAnimation(CenterStageControllerLG pController, Pane pField, RobotFXCenterStageLG pCenterStageRobot,
+    //**TODO You may want to include the Preview Robot as a parameter
+    public DeviceToTargetAnimation(CenterStageControllerLG pController, Pane pField, RobotFXCenterStageLG pAnimationRobot,
                                    StartParameterValidation pStartParameters) {
         controller = pController;
         field = pField;
-        animationRobot = pCenterStageRobot;
+        animationRobot = pAnimationRobot;
         animationRobotGroup = animationRobot.getRobot();
         startParameters = pStartParameters;
     }
@@ -48,18 +49,21 @@ public class DeviceToTargetAnimation {
 
         //!! I noticed the use of localToScene(() in some code from the FTCSimulator -
         // this is more like it. By the way, this is the *center* of the robot.
-        Point2D loc = animationRobotGroup.localToScene(animationRobotGroup.getBoundsInParent().getCenterX(), animationRobotGroup.getBoundsInParent().getCenterY());
+        Point2D animationRobotLocation = animationRobotGroup.localToScene(animationRobotGroup.getBoundsInParent().getCenterX(), animationRobotGroup.getBoundsInParent().getCenterY());
 
         // A slight pause after the preview and before the animation starts.
         PauseTransition postPreviewPauseT = new PauseTransition(Duration.millis(750));
 
         Path path = new Path();
-        path.getElements().add(new MoveTo(loc.getX(), loc.getY()));
+        path.getElements().add(new MoveTo(animationRobotLocation.getX(), animationRobotLocation.getY()));
 
         //**TODO The curves are a proof-of-concept. They will be different depending
         // on the user's selection for the final position in front of the backdrop.
         // CubicCurveTo constructor parameters: controlX1, controlX2, controlY1, controlY2, endX, endY
-        // The coordinates is those of the center of the robot.
+        // The coordinates are those of the center of the robot.
+        //**TODO Instead of getting the coordinates from the start parameters get them from the
+        // preview robot - because its position may have changed by drag-and-release.
+        // Point2D previewRobotLocation = previewRobotGroup.localToScene(previewRobotGroup.getBoundsInParent().getCenterX(), previewRobotGroup.getBoundsInParent().getCenterY());
         double robotPositionAtBackdropX = startParameters.getStartParameter(StartParameterValidation.StartParameter.ROBOT_POSITION_AT_BACKDROP_X) * FieldFXCenterStageBackdropLG.PX_PER_INCH;
         double robotPositionAtBackdropY = startParameters.getStartParameter(StartParameterValidation.StartParameter.ROBOT_POSITION_AT_BACKDROP_Y) * FieldFXCenterStageBackdropLG.PX_PER_INCH;
         float rotation;
@@ -365,6 +369,7 @@ public class DeviceToTargetAnimation {
             EventHandler<ActionEvent> event = e -> {
                 switch (playPauseButtonStateOnPress) {
                     case FIRST_PLAY -> {
+                        //**TODO You may want to access the outer class field for thre preview robot
                         // Clear the preview robot and the camera field-of-view lines.
                         Group previewRobot = (Group) field.lookup("#" + RobotFXCenterStageLG.PREVIEW_ROBOT_ID);
                         Line fovLeft = (Line) field.lookup("#" + CenterStageBackdrop.LINE_HALF_CAMERA_FOV_LEFT);

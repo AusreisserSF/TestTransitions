@@ -8,6 +8,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -324,9 +325,7 @@ public class CenterStageBackdrop extends Application {
         }
     }
 
-    // Return the adjacent side of the camera to target triangle, i.e. the length
-    // of a line from the center of the camera face to a line that intersects all
-    // three AprilTags. These two lines meet at a right angle.
+    //**TODO Combine drawCameraFieldOfView and PreviewRobotDragAndRelease
     private void drawCameraFieldOfView(Pane pField, Group pRobotGroup) {
         Rectangle cameraOnRobot = (Rectangle) pRobotGroup.lookup("#" + pRobotGroup.getId() + "_" + RobotFXCenterStageLG.CAMERA_ON_ROBOT_ID);
         Point2D cameraCoord = cameraOnRobot.localToScene(cameraOnRobot.getX(), cameraOnRobot.getY());
@@ -358,6 +357,56 @@ public class CenterStageBackdrop extends Application {
         lineHalfFOVRight.getStrokeDashArray().addAll(10.0);
         lineHalfFOVRight.setStrokeWidth(3.0);
         pField.getChildren().add(lineHalfFOVRight);
+    }
+
+    private static class PreviewRobotDragAndRelease {
+        private double orgSceneX, orgSceneY;
+        private double orgRobotTranslateX, orgRobotTranslateY;
+        private double orgFOVLineLeftTranslateX, orgFOVLineLeftTranslateY;
+        private double orgFOVLineRightTranslateX, orgFOVLineRightTranslateY;
+
+        private PreviewRobotDragAndRelease(Rectangle pRobotRect, Line pFOVLineLeft, Line pFOVLineRight) {
+
+            // --- remember initial coordinates of mouse cursor and nodes
+            pRobotRect.addEventFilter(MouseEvent.MOUSE_PRESSED, (MouseEvent mouseEvent) -> {
+                orgSceneX = mouseEvent.getSceneX();
+                orgSceneY = mouseEvent.getSceneY();
+
+                //**TODO These are different for each Shape ... generalize by
+                // putting into an EnumMap??
+                orgRobotTranslateX = pRobotRect.getTranslateX();
+                orgRobotTranslateY = pRobotRect.getTranslateY();
+                orgFOVLineLeftTranslateX = pFOVLineLeft.getTranslateX();
+                orgFOVLineLeftTranslateY = pFOVLineLeft.getTranslateY();
+                orgFOVLineRightTranslateX = pFOVLineRight.getTranslateX();
+                orgFOVLineRightTranslateY = pFOVLineRight.getTranslateY();
+            });
+
+            // --- Coordinated drag of nodes calculated from mouse cursor movement
+            pRobotRect.addEventFilter(MouseEvent.MOUSE_DRAGGED, (MouseEvent mouseEvent) -> {
+                double offsetX = mouseEvent.getSceneX() - orgSceneX;
+                double offsetY = mouseEvent.getSceneY() - orgSceneY;
+
+                // Drag the robot.
+                double newRobotTranslateX = orgRobotTranslateX + offsetX;
+                double newRobotTranslateY = orgRobotTranslateY + offsetY;
+                pRobotRect.setTranslateX(newRobotTranslateX);
+                pRobotRect.setTranslateY(newRobotTranslateY);
+
+                // Drag the left boundary of the camera field of view.
+                double newFOVLineLeftTranslateX = orgFOVLineLeftTranslateX + offsetX;
+                double newFOVLineLeftTranslateY = orgFOVLineLeftTranslateY + offsetY;
+                pFOVLineLeft.setTranslateX(newFOVLineLeftTranslateX);
+                pFOVLineLeft.setTranslateY(newFOVLineLeftTranslateY);
+
+                // Drag the right boundary of the camera field of view.
+                double newFOVLineRightTranslateX = orgFOVLineRightTranslateX + offsetX;
+                double newFOVLineRightTranslateY = orgFOVLineRightTranslateY + offsetY;
+                pFOVLineRight.setTranslateX(newFOVLineRightTranslateX);
+                pFOVLineRight.setTranslateY(newFOVLineRightTranslateY);
+            });
+        }
+
     }
 
 }
