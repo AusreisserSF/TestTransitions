@@ -326,6 +326,7 @@ public class CenterStageBackdrop extends Application {
     }
 
     //**TODO Combine drawCameraFieldOfView and PreviewRobotDragAndRelease
+    //**TODO Draw preview robot here also?
     private void drawCameraFieldOfView(Pane pField, Group pRobotGroup) {
         Rectangle cameraOnRobot = (Rectangle) pRobotGroup.lookup("#" + pRobotGroup.getId() + "_" + RobotFXCenterStageLG.CAMERA_ON_ROBOT_ID);
         Point2D cameraCoord = cameraOnRobot.localToScene(cameraOnRobot.getX(), cameraOnRobot.getY());
