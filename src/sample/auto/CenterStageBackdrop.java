@@ -8,12 +8,10 @@ import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -42,9 +40,6 @@ import java.util.concurrent.atomic.AtomicReference;
 // the robot is parallel to the plane of the target but the delivery
 // device itself turns towards the target, not the robot itself.
 public class CenterStageBackdrop extends Application {
-
-    public static final String LINE_HALF_CAMERA_FOV_LEFT = "lineHalfFOVLeft";
-    public static final String LINE_HALF_CAMERA_FOV_RIGHT = "lineHalfFOVRight";
 
     private CenterStageControllerLG controller;
     private StartParameterValidation startParameterValidation;
@@ -149,12 +144,12 @@ public class CenterStageBackdrop extends Application {
             double robotWidthIn = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_WIDTH);
             double robotHeightIn = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_HEIGHT);
 
-            //**TODO When the Preview screen is showing and the start parameters are frozen,
+            //**TODO When the start parameters are frozen and the preview screen is showing,
             // allow the user to
             // [drag the camera and device on the preview representation of the robot
-            // and to] drag the robot and thereby change its delivery position. The
-            // Play button erases the preview representation and starts the animation
-            // from the game's starting position.
+            // and to]
+            // drag and release the preview robot and the associated camera field of view
+            // lines to set the final position of the robot in front of the backdrop.
 
             // Mark a portion of the field as the positioning zone, i.e. the area in which
             // the robot can stop in front of the backdrop. The outside boundaries of the
@@ -175,7 +170,7 @@ public class CenterStageBackdrop extends Application {
             positioningZone.setStrokeWidth(2.0);
             field.getChildren().add(positioningZone);
 
-            // Collect start parameters.
+            // Collect the start parameters.
             double cameraCenterFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_CENTER_FROM_ROBOT_CENTER);
             double cameraOffsetFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_OFFSET_FROM_ROBOT_CENTER);
             double deviceCenterFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.DEVICE_CENTER_FROM_ROBOT_CENTER);
@@ -189,23 +184,15 @@ public class CenterStageBackdrop extends Application {
             RobotFXCenterStageLG previewRobot = new RobotFXCenterStageLG(RobotFXCenterStageLG.PREVIEW_ROBOT_ID,
                     robotWidthIn, robotHeightIn, Color.GREEN,
                     cameraCenterFromRobotCenter, cameraOffsetFromRobotCenter, deviceCenterFromRobotCenter, deviceOffsetFromRobotCenter,
-                    new Point2D(robotPositionAtBackdropX - ((robotWidthIn * FieldFXCenterStageBackdropLG.PX_PER_INCH)  / 2),
-                            robotPositionAtBackdropY - ((robotHeightIn * FieldFXCenterStageBackdropLG.PX_PER_INCH)  / 2)),
-                            0.0);
+                    new Point2D(robotPositionAtBackdropX - ((robotWidthIn * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2),
+                            robotPositionAtBackdropY - ((robotHeightIn * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2)),
+                    0.0);
 
+            // Show the draggable preview robot and camera field of view.
             Group robotP = previewRobot.getRobot();
-            field.getChildren().add(robotP);
+            new PreviewDragAndRelease(field, robotP);
 
-            //**TODO Is there a way to use the camera's FOV to validate the preview
-            // position. Yes, if you make room on the start parameters screen and set
-            // a parameter for it. Or just hardcode 78 degrees and put up an alert
-            // after you get the camera to target angle in DeviceToTargetAnimation.
-            //**TODO Put in the XML and validate ??but do not include in grid of start parameters
-            // or as read-only??
-
-            //**TODO As an experiment draw a 78 degree camera field of view.
-            drawCameraFieldOfView(field, robotP);
-
+            // Set the starting position for the animation robot.
             Point2D startingPosition;
             double startingRotation;
             if (alliance == RobotConstants.Alliance.BLUE) {
@@ -218,6 +205,7 @@ public class CenterStageBackdrop extends Application {
                 startingRotation = -90.0;
             }
 
+            // Create the animation robot now but do not show yet.
             RobotFXCenterStageLG animationRobot = new RobotFXCenterStageLG(RobotFXCenterStageLG.ANIMATION_ROBOT_ID,
                     robotWidthIn, robotHeightIn, Color.GREEN,
                     cameraCenterFromRobotCenter, cameraOffsetFromRobotCenter, deviceCenterFromRobotCenter, deviceOffsetFromRobotCenter,
@@ -323,91 +311,6 @@ public class CenterStageBackdrop extends Application {
         if (!pStartParameters.robotPositionAtBackdropY.equals(controller.robot_position_at_backdrop_y.getText())) {
             controller.robot_position_at_backdrop_x.setText(pStartParameters.robotPositionAtBackdropY);
         }
-    }
-
-    //**TODO Combine drawCameraFieldOfView and PreviewRobotDragAndRelease
-    //**TODO Draw preview robot here also?
-    private void drawCameraFieldOfView(Pane pField, Group pRobotGroup) {
-        Rectangle cameraOnRobot = (Rectangle) pRobotGroup.lookup("#" + pRobotGroup.getId() + "_" + RobotFXCenterStageLG.CAMERA_ON_ROBOT_ID);
-        Point2D cameraCoord = cameraOnRobot.localToScene(cameraOnRobot.getX(), cameraOnRobot.getY());
-        double cameraFaceX = cameraCoord.getX() + cameraOnRobot.getWidth() / 2;
-        double cameraFaceY = cameraCoord.getY();
-
-        // Get the y coordinates of any AprilTag - they're all the same.
-        Rectangle aprilTag = (Rectangle) pField.lookup("#" + FieldFXCenterStageBackdropLG.APRIL_TAG_1_ID);
-        Point2D aprilTagCoord = aprilTag.localToScene(aprilTag.getX(), aprilTag.getY());
-        double aprilTagCenterY = aprilTagCoord.getY() + aprilTag.getHeight() / 2;
-
-        // Get the adjacent side of the triangle from the camera to the AprilTag.
-        double fovAdjacent = Math.abs(cameraFaceY - aprilTagCenterY);
-
-        // tan 39 degrees  = opposite / adjacent
-        double halfFOVTan = Math.tan(Math.toRadians(39.0));
-        double halfFOVOpposite = halfFOVTan * fovAdjacent;
-
-        Line lineHalfFOVLeft = new Line(cameraFaceX, cameraFaceY, cameraFaceX - halfFOVOpposite, aprilTagCenterY);
-        lineHalfFOVLeft.setId(LINE_HALF_CAMERA_FOV_LEFT);
-        lineHalfFOVLeft.setStroke(Color.AQUA);
-        lineHalfFOVLeft.getStrokeDashArray().addAll(10.0);
-        lineHalfFOVLeft.setStrokeWidth(3.0);
-        pField.getChildren().add(lineHalfFOVLeft);
-
-        Line lineHalfFOVRight = new Line(cameraFaceX, cameraFaceY, cameraFaceX + halfFOVOpposite, aprilTagCenterY);
-        lineHalfFOVRight.setId(LINE_HALF_CAMERA_FOV_RIGHT);
-        lineHalfFOVRight.setStroke(Color.AQUA);
-        lineHalfFOVRight.getStrokeDashArray().addAll(10.0);
-        lineHalfFOVRight.setStrokeWidth(3.0);
-        pField.getChildren().add(lineHalfFOVRight);
-    }
-
-    private static class PreviewRobotDragAndRelease {
-        private double orgSceneX, orgSceneY;
-        private double orgRobotTranslateX, orgRobotTranslateY;
-        private double orgFOVLineLeftTranslateX, orgFOVLineLeftTranslateY;
-        private double orgFOVLineRightTranslateX, orgFOVLineRightTranslateY;
-
-        private PreviewRobotDragAndRelease(Rectangle pRobotRect, Line pFOVLineLeft, Line pFOVLineRight) {
-
-            // --- remember initial coordinates of mouse cursor and nodes
-            pRobotRect.addEventFilter(MouseEvent.MOUSE_PRESSED, (MouseEvent mouseEvent) -> {
-                orgSceneX = mouseEvent.getSceneX();
-                orgSceneY = mouseEvent.getSceneY();
-
-                //**TODO These are different for each Shape ... generalize by
-                // putting into an EnumMap??
-                orgRobotTranslateX = pRobotRect.getTranslateX();
-                orgRobotTranslateY = pRobotRect.getTranslateY();
-                orgFOVLineLeftTranslateX = pFOVLineLeft.getTranslateX();
-                orgFOVLineLeftTranslateY = pFOVLineLeft.getTranslateY();
-                orgFOVLineRightTranslateX = pFOVLineRight.getTranslateX();
-                orgFOVLineRightTranslateY = pFOVLineRight.getTranslateY();
-            });
-
-            // --- Coordinated drag of nodes calculated from mouse cursor movement
-            pRobotRect.addEventFilter(MouseEvent.MOUSE_DRAGGED, (MouseEvent mouseEvent) -> {
-                double offsetX = mouseEvent.getSceneX() - orgSceneX;
-                double offsetY = mouseEvent.getSceneY() - orgSceneY;
-
-                // Drag the robot.
-                double newRobotTranslateX = orgRobotTranslateX + offsetX;
-                double newRobotTranslateY = orgRobotTranslateY + offsetY;
-                pRobotRect.setTranslateX(newRobotTranslateX);
-                pRobotRect.setTranslateY(newRobotTranslateY);
-
-                // Drag the left boundary of the camera field of view.
-                double newFOVLineLeftTranslateX = orgFOVLineLeftTranslateX + offsetX;
-                double newFOVLineLeftTranslateY = orgFOVLineLeftTranslateY + offsetY;
-                pFOVLineLeft.setTranslateX(newFOVLineLeftTranslateX);
-                pFOVLineLeft.setTranslateY(newFOVLineLeftTranslateY);
-
-                // Drag the right boundary of the camera field of view.
-                double newFOVLineRightTranslateX = orgFOVLineRightTranslateX + offsetX;
-                double newFOVLineRightTranslateY = orgFOVLineRightTranslateY + offsetY;
-                pFOVLineRight.setTranslateX(newFOVLineRightTranslateX);
-                pFOVLineRight.setTranslateY(newFOVLineRightTranslateY);
-            });
-        }
-
     }
 
 }

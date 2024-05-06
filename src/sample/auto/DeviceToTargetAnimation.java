@@ -372,8 +372,8 @@ public class DeviceToTargetAnimation {
                         //**TODO You may want to access the outer class field for thre preview robot
                         // Clear the preview robot and the camera field-of-view lines.
                         Group previewRobot = (Group) field.lookup("#" + RobotFXCenterStageLG.PREVIEW_ROBOT_ID);
-                        Line fovLeft = (Line) field.lookup("#" + CenterStageBackdrop.LINE_HALF_CAMERA_FOV_LEFT);
-                        Line fovRight = (Line) field.lookup("#" + CenterStageBackdrop.LINE_HALF_CAMERA_FOV_RIGHT);
+                        Line fovLeft = (Line) field.lookup("#" + PreviewDragAndRelease.CAMERA_FOV_LINE_LEFT);
+                        Line fovRight = (Line) field.lookup("#" + PreviewDragAndRelease.CAMERA_FOV_LINE_RIGHT);
                         field.getChildren().removeAll(previewRobot, fovLeft, fovRight);
 
                         // Now show the animation robot.
