@@ -375,20 +375,19 @@ public class DeviceToTargetAnimation {
                         // We're done with the Preview so we can use the final position of the
                         // preview robot as the target position for the animation robot.
 
-                        //**TODO The curves are a proof-of-concept. They will be different depending
+                        //## The curves are a proof-of-concept. They will be different depending
                         // on the user's selection for the final position in front of the backdrop.
                         // CubicCurveTo constructor parameters: controlX1, controlX2, controlY1, controlY2, endX, endY
-                        // The coordinates are those of the center of the robot.
-                        //**TODO Instead of getting the coordinates from the start parameters get them from the
-                        // preview robot - because its position may have changed by drag-and-release. Update the
-                        // start parameters??
-                        //**TODO Coordinates are off
+
+                        // Instead of getting the coordinates, which are those of the center
+                        // of the robot, from the start parameters get them from the preview
+                        // robot - because its position may have changed by drag-and-release.
                         Group previewRobotGroup = previewRobot.getRobot();
-                        Point2D previewRobotLocation = previewRobotGroup.localToScene(previewRobotGroup.getBoundsInParent().getCenterX(), previewRobotGroup.getBoundsInParent().getCenterY());
-                        double robotPositionAtBackdropX = previewRobotLocation.getX();
-                        double robotPositionAtBackdropY = previewRobotLocation.getY();
-                        pCubicCurveTo.setX(robotPositionAtBackdropX + previewRobot.robotWidthPX / 2);
-                        pCubicCurveTo.setY(robotPositionAtBackdropY + previewRobot.robotHeightPX / 2);
+                        Bounds previewRobotBounds = previewRobotGroup.getBoundsInParent();
+                        double robotPositionAtBackdropX = previewRobotBounds.getCenterX();
+                        double robotPositionAtBackdropY = previewRobotBounds.getCenterY();
+                        pCubicCurveTo.setX(robotPositionAtBackdropX);
+                        pCubicCurveTo.setY(robotPositionAtBackdropY);
 
                         // Clear the preview robot and the camera field-of-view lines.
                         Line fovLeft = (Line) field.lookup("#" + PreviewDragAndRelease.CAMERA_FOV_LINE_LEFT);
