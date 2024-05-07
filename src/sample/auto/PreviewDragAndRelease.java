@@ -99,14 +99,18 @@ public class PreviewDragAndRelease {
                     previewRobotBounds.getMinY() < approachZoneBounds.getMinY() ||
                     previewRobotBounds.getMaxY() > approachZoneBounds.getMaxY()) {
 
-                //**TODO When you drag any edge of the preview robot outside the
-                // bounds of the approach zone, JavaFX cancels the drag and places
-                // the robot in its position before the drag. So you have to revert
-                // the FOV lines also.
-
-                //**TODO Because of the reversion you may not need to back out the change.
-                pPreviewRobot.setTranslateX(newRobotTranslateX - offsetX);
-                pPreviewRobot.setTranslateY(newRobotTranslateY - offsetY);
+                // When the user drags any edge of the preview robot outside the
+                // bounds of the approach zone, cancel the drag and place the
+                // robot in its position before the drag. You have to revert the
+                // FOV lines also.
+                //**TODO Better would be to only revert the amount of the move
+                // that put the robot out of bounds.
+                pPreviewRobot.setTranslateX(orgRobotTranslateX);
+                pPreviewRobot.setTranslateY(orgRobotTranslateY);
+                fovLineLeft.setTranslateX(orgFOVLineLeftTranslateX);
+                fovLineLeft.setTranslateY(orgFOVLineLeftTranslateY);
+                fovLineRight.setTranslateX(orgFOVLineRightTranslateX);
+                fovLineRight.setTranslateY(orgFOVLineRightTranslateY);
                 return;
             }
 
@@ -117,7 +121,7 @@ public class PreviewDragAndRelease {
             double previewRobotCenterInY = previewRobotBounds.getCenterY() / FieldFXCenterStageBackdropLG.PX_PER_INCH;
 
             //**TODO Need a reference to the controller or to the fields in the controller
-            // // or to the GridPane (for lookup). ?? Use ToolTip during drag?
+            // or to the GridPane (for lookup). ?? Use ToolTip during drag?
             // pCenterStageControllerLG.robot_position_at_backdrop_x = previewRobotCenterInX;
             // pCenterStageControllerLG.robot_position_at_backdrop_y = previewRobotCenterInY;
 
