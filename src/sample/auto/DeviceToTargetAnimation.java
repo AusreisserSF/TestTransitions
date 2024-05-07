@@ -67,6 +67,17 @@ public class DeviceToTargetAnimation {
         // we can use that position for the animation robot.
         Path pathToBackdrop = new Path();
         pathToBackdrop.getElements().add(new MoveTo(animationRobotLocation.getX(), animationRobotLocation.getY()));
+        CubicCurveTo cubicCurveTo;
+        float rotation;
+        if (alliance == RobotConstants.Alliance.BLUE) {
+            cubicCurveTo = new CubicCurveTo(400.0, 300.0, 300.0, 300.0, 0, 0);
+            rotation = -90.0f;
+        } else { // RED
+            cubicCurveTo = new CubicCurveTo(200.0, 300.0, 300.0, 300.0, 0, 0);
+            rotation = 90.0f;
+        }
+
+        pathToBackdrop.getElements().add(cubicCurveTo);
 
         PathTransition pathTransition = new PathTransition();
         pathTransition.setDuration(Duration.millis(3000));
@@ -323,7 +334,7 @@ public class DeviceToTargetAnimation {
         else
             seqTransition.getChildren().addAll(robotCenterToDevicePauseT, preRotationPauseT, rotateDeviceTowardsAprilTagT);
 
-        new PlayPauseToggle(pPlayPauseButton, seqTransition, pathToBackdrop);
+        new PlayPauseToggle(pPlayPauseButton, seqTransition, cubicCurveTo);
     }
 
     private void removeCameraToTargetLines() {
@@ -345,7 +356,7 @@ public class DeviceToTargetAnimation {
         // Assume when this class is constructed that the Play button has already been
         // pressed.
         private PlayPauseToggle(Button pPlayPauseButton, SequentialTransition pSequentialTransaction,
-                                Path pPathToBackdrop) {
+                                CubicCurveTo pCubicCurveTo) {
             playPauseButton = pPlayPauseButton;
             sequentialTransition = pSequentialTransaction;
             playPauseButtonStateOnPress = PlayPauseButtonStateOnPress.PAUSE; // state for the next button press
@@ -371,26 +382,14 @@ public class DeviceToTargetAnimation {
                         //**TODO Instead of getting the coordinates from the start parameters get them from the
                         // preview robot - because its position may have changed by drag-and-release. Update the
                         // start parameters??
+                        //**TODO Coordinates are off
                         Group previewRobotGroup = previewRobot.getRobot();
-
-                        //**TODO Has no effect - not picking up the position of the preview robot correctly.
                         Point2D previewRobotLocation = previewRobotGroup.localToScene(previewRobotGroup.getBoundsInParent().getCenterX(), previewRobotGroup.getBoundsInParent().getCenterY());
                         double robotPositionAtBackdropX = previewRobotLocation.getX();
                         double robotPositionAtBackdropY = previewRobotLocation.getY();
-                        //double robotPositionAtBackdropX = startParameters.getStartParameter(StartParameterValidation.StartParameter.ROBOT_POSITION_AT_BACKDROP_X) * FieldFXCenterStageBackdropLG.PX_PER_INCH;
-                        //double robotPositionAtBackdropY = startParameters.getStartParameter(StartParameterValidation.StartParameter.ROBOT_POSITION_AT_BACKDROP_Y) * FieldFXCenterStageBackdropLG.PX_PER_INCH;
-                        float rotation;
-                        if (alliance == RobotConstants.Alliance.BLUE) {
-                            //pathToBackdrop.getElements().add(new CubicCurveTo(400, 300, 300, 300, 200, 275));
-                            pPathToBackdrop.getElements().add(new CubicCurveTo(400, 300, 300, 300, robotPositionAtBackdropX, robotPositionAtBackdropY));
-                            rotation = -90.0f;
-                        } else { // RED
-                            //pathToBackdrop.getElements().add(new CubicCurveTo(200, 300, 300, 300, 400, 275));
-                            pPathToBackdrop.getElements().add(new CubicCurveTo(200, 300, 300, 300, robotPositionAtBackdropX, robotPositionAtBackdropY));
-                            rotation = 90.0f;
-                        }
+                        pCubicCurveTo.setX(robotPositionAtBackdropX + previewRobot.robotWidthPX / 2);
+                        pCubicCurveTo.setY(robotPositionAtBackdropY + previewRobot.robotHeightPX / 2);
 
-                        //**TODO You may want to access the outer class field for the preview robot
                         // Clear the preview robot and the camera field-of-view lines.
                         Line fovLeft = (Line) field.lookup("#" + PreviewDragAndRelease.CAMERA_FOV_LINE_LEFT);
                         Line fovRight = (Line) field.lookup("#" + PreviewDragAndRelease.CAMERA_FOV_LINE_RIGHT);
