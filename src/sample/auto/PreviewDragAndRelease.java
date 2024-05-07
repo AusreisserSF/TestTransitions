@@ -8,8 +8,11 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import sample.auto.fx.CenterStageControllerLG;
 import sample.auto.fx.FieldFXCenterStageBackdropLG;
 import sample.auto.fx.RobotFXCenterStageLG;
+
+import java.util.Locale;
 
 public class PreviewDragAndRelease {
     public static final String CAMERA_FOV_LINE_LEFT = "lineHalfFOVLeft";
@@ -22,14 +25,14 @@ public class PreviewDragAndRelease {
 
     //**TODO Is there a way to use the camera's FOV to validate the preview
     // position. Yes, if you make room on the start parameters screen and set
-    // a parameter for it. Or just hardcode 78 degrees and put up an alert
-    // after you get the camera to target angle in DeviceToTargetAnimation.
-    //**TODO Put in the XML and validate ??but do not include in grid of start parameters
-    // or as read-only??
+    // a parameter for it. During Preview turn the uneditable FOV red in the
+    // start parameters if the user drags the preview robot to the point where
+    // the AprilTag target is outside the FOV.
+    //**TODO Put the camera's FOV in the XML and validate.
 
     //**TODO As an experiment draw a 78 degree camera field of view.
 
-    public PreviewDragAndRelease(Pane pField, Rectangle pApproachZone, Group pPreviewRobot) {
+    public PreviewDragAndRelease(CenterStageControllerLG pController, Pane pField, Rectangle pApproachZone, Group pPreviewRobot) {
 
         // Show the preview robot on the field.
         pField.getChildren().add(pPreviewRobot);
@@ -114,16 +117,14 @@ public class PreviewDragAndRelease {
                 return;
             }
 
-            //**TODO Try updating the start parameter display with the new x and
-            // y positions of the center of the preview robot. **LATER** - disable
-            // all other TextFields but only disable editing of the position fields.
+            // Updating the start parameter display with the new x and y
+            // positions of the center of the preview robot.
+            //**TODO disable all other TextFields but only disable editing of the position fields.
             double previewRobotCenterInX = previewRobotBounds.getCenterX() / FieldFXCenterStageBackdropLG.PX_PER_INCH;
             double previewRobotCenterInY = previewRobotBounds.getCenterY() / FieldFXCenterStageBackdropLG.PX_PER_INCH;
 
-            //**TODO Need a reference to the controller or to the fields in the controller
-            // or to the GridPane (for lookup). ?? Use ToolTip during drag?
-            // pCenterStageControllerLG.robot_position_at_backdrop_x = previewRobotCenterInX;
-            // pCenterStageControllerLG.robot_position_at_backdrop_y = previewRobotCenterInY;
+            pController.robot_position_at_backdrop_x.setText(String.format(Locale.US, "%.2f", previewRobotCenterInX));
+            pController.robot_position_at_backdrop_y.setText(String.format(Locale.US, "%.2f", previewRobotCenterInY));
 
             // Drag the left boundary of the camera field of view.
             double newFOVLineLeftTranslateX = orgFOVLineLeftTranslateX + offsetX;

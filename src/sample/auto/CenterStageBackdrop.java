@@ -124,7 +124,7 @@ public class CenterStageBackdrop extends Application {
             //**TODO **LATER** - disable all other TextFields but only disable editing of the position fields.
             // Freeze the start parameters after the Preview button has been hit
             // and remove the Preview button.
-            controller.start_parameters.setDisable(true);
+            //**TODO TEMP controller.start_parameters.setDisable(true);
             field.getChildren().remove(previewButton);
 
             // Show a Play/Pause button for the actual animation.
@@ -191,7 +191,7 @@ public class CenterStageBackdrop extends Application {
 
             // Show the draggable preview robot and camera field of view.
             Group robotP = previewRobot.getRobot();
-            new PreviewDragAndRelease(field, approachZone, robotP);
+            new PreviewDragAndRelease(controller, field, approachZone, robotP);
 
             // Set the starting position for the animation robot.
             Point2D startingPosition;
