@@ -18,6 +18,7 @@ import sample.auto.fx.CenterStageControllerLG;
 
 public class DeviceToTargetAnimation {
 
+    private final RobotConstants.Alliance alliance;
     private final CenterStageControllerLG controller;
     private final Pane field;
     private final RobotFXCenterStageLG previewRobot;
@@ -32,10 +33,11 @@ public class DeviceToTargetAnimation {
     private double aprilTagCenterX;
     private double aprilTagCenterY;
 
-    //**TODO You may want to include the Preview Robot as a parameter
-    public DeviceToTargetAnimation(CenterStageControllerLG pController, Pane pField,
+    public DeviceToTargetAnimation(RobotConstants.Alliance pAlliance,
+                                   CenterStageControllerLG pController, Pane pField,
                                    RobotFXCenterStageLG pPreviewRobot, RobotFXCenterStageLG pAnimationRobot,
                                    StartParameterValidation pStartParameters) {
+        alliance = pAlliance;
         controller = pController;
         field = pField;
         animationRobot = pAnimationRobot;
@@ -44,10 +46,10 @@ public class DeviceToTargetAnimation {
         startParameters = pStartParameters;
     }
 
-    public void runDeviceToTargetAnimation(RobotConstants.Alliance pAlliance, Button pPlayPauseButton) {
+    public void runDeviceToTargetAnimation(Button pPlayPauseButton) {
 
         //## As a demonstration start the robot facing inward from the BLUE
-        // alliance wall and make the robot follow a CubicCurve path while
+        // alliance wall and make the robot follow a CubicCurve pathToBackdrop while
         // simultaneously rotating -90 degrees to face the backdrop.
 
         //!! I noticed the use of localToScene(() in some code from the FTCSimulator -
@@ -55,40 +57,20 @@ public class DeviceToTargetAnimation {
         Point2D animationRobotLocation = animationRobotGroup.localToScene(animationRobotGroup.getBoundsInParent().getCenterX(), animationRobotGroup.getBoundsInParent().getCenterY());
 
         // A slight pause after the preview and before the animation starts.
-        PauseTransition postPreviewPauseT = new PauseTransition(Duration.millis(750));
+        PauseTransition postPreviewPauseT = new PauseTransition(Duration.millis(500));
 
-        Path path = new Path();
-        path.getElements().add(new MoveTo(animationRobotLocation.getX(), animationRobotLocation.getY()));
-
-        //**TODO The curves are a proof-of-concept. They will be different depending
-        // on the user's selection for the final position in front of the backdrop.
-        // CubicCurveTo constructor parameters: controlX1, controlX2, controlY1, controlY2, endX, endY
-        // The coordinates are those of the center of the robot.
-        //**TODO Instead of getting the coordinates from the start parameters get them from the
-        // preview robot - because its position may have changed by drag-and-release. Update the
-        // start parameters??
-        Group previewRobotGroup = previewRobot.getRobot();
-
-        //**TODO Has no effect - not picking up the position of the preview robot correctly.
-        Point2D previewRobotLocation = previewRobotGroup.localToScene(previewRobotGroup.getBoundsInParent().getCenterX(), previewRobotGroup.getBoundsInParent().getCenterY());
-        double robotPositionAtBackdropX = previewRobotLocation.getX();
-        double robotPositionAtBackdropY = previewRobotLocation.getY();
-        //double robotPositionAtBackdropX = startParameters.getStartParameter(StartParameterValidation.StartParameter.ROBOT_POSITION_AT_BACKDROP_X) * FieldFXCenterStageBackdropLG.PX_PER_INCH;
-        //double robotPositionAtBackdropY = startParameters.getStartParameter(StartParameterValidation.StartParameter.ROBOT_POSITION_AT_BACKDROP_Y) * FieldFXCenterStageBackdropLG.PX_PER_INCH;
-        float rotation;
-        if (pAlliance == RobotConstants.Alliance.BLUE) {
-            //path.getElements().add(new CubicCurveTo(400, 300, 300, 300, 200, 275));
-            path.getElements().add(new CubicCurveTo(400, 300, 300, 300, robotPositionAtBackdropX, robotPositionAtBackdropY));
-            rotation = -90.0f;
-        } else { // RED
-            //path.getElements().add(new CubicCurveTo(200, 300, 300, 300, 400, 275));
-            path.getElements().add(new CubicCurveTo(200, 300, 300, 300, robotPositionAtBackdropX, robotPositionAtBackdropY));
-            rotation = 90.0f;
-        }
+        // It would be clearer if we could define the paths from the animation robot's
+        // blue or red start position to the robot's position in fron t of the backdrop.
+        // But the Preview is still in effect and the user may drag and release the
+        // preview robot. So we have to wait until the user hits the Play button to
+        // capture the preview robot's final position in front of the backdrop so that
+        // we can use that position for the animation robot.
+        Path pathToBackdrop = new Path();
+        pathToBackdrop.getElements().add(new MoveTo(animationRobotLocation.getX(), animationRobotLocation.getY()));
 
         PathTransition pathTransition = new PathTransition();
         pathTransition.setDuration(Duration.millis(3000));
-        pathTransition.setPath(path);
+        pathTransition.setPath(pathToBackdrop);
         pathTransition.setNode(animationRobotGroup);
 
         RotateTransition rotateTransition =
@@ -341,7 +323,7 @@ public class DeviceToTargetAnimation {
         else
             seqTransition.getChildren().addAll(robotCenterToDevicePauseT, preRotationPauseT, rotateDeviceTowardsAprilTagT);
 
-        new PlayPauseToggle(pPlayPauseButton, seqTransition);
+        new PlayPauseToggle(pPlayPauseButton, seqTransition, pathToBackdrop);
     }
 
     private void removeCameraToTargetLines() {
@@ -362,7 +344,8 @@ public class DeviceToTargetAnimation {
 
         // Assume when this class is constructed that the Play button has already been
         // pressed.
-        private PlayPauseToggle(Button pPlayPauseButton, SequentialTransition pSequentialTransaction) {
+        private PlayPauseToggle(Button pPlayPauseButton, SequentialTransition pSequentialTransaction,
+                                Path pPathToBackdrop) {
             playPauseButton = pPlayPauseButton;
             sequentialTransition = pSequentialTransaction;
             playPauseButtonStateOnPress = PlayPauseButtonStateOnPress.PAUSE; // state for the next button press
@@ -378,12 +361,40 @@ public class DeviceToTargetAnimation {
             EventHandler<ActionEvent> event = e -> {
                 switch (playPauseButtonStateOnPress) {
                     case FIRST_PLAY -> {
+                        // We're done with the Preview so we can use the final position of the
+                        // preview robot as the target position for the animation robot.
+
+                        //**TODO The curves are a proof-of-concept. They will be different depending
+                        // on the user's selection for the final position in front of the backdrop.
+                        // CubicCurveTo constructor parameters: controlX1, controlX2, controlY1, controlY2, endX, endY
+                        // The coordinates are those of the center of the robot.
+                        //**TODO Instead of getting the coordinates from the start parameters get them from the
+                        // preview robot - because its position may have changed by drag-and-release. Update the
+                        // start parameters??
+                        Group previewRobotGroup = previewRobot.getRobot();
+
+                        //**TODO Has no effect - not picking up the position of the preview robot correctly.
+                        Point2D previewRobotLocation = previewRobotGroup.localToScene(previewRobotGroup.getBoundsInParent().getCenterX(), previewRobotGroup.getBoundsInParent().getCenterY());
+                        double robotPositionAtBackdropX = previewRobotLocation.getX();
+                        double robotPositionAtBackdropY = previewRobotLocation.getY();
+                        //double robotPositionAtBackdropX = startParameters.getStartParameter(StartParameterValidation.StartParameter.ROBOT_POSITION_AT_BACKDROP_X) * FieldFXCenterStageBackdropLG.PX_PER_INCH;
+                        //double robotPositionAtBackdropY = startParameters.getStartParameter(StartParameterValidation.StartParameter.ROBOT_POSITION_AT_BACKDROP_Y) * FieldFXCenterStageBackdropLG.PX_PER_INCH;
+                        float rotation;
+                        if (alliance == RobotConstants.Alliance.BLUE) {
+                            //pathToBackdrop.getElements().add(new CubicCurveTo(400, 300, 300, 300, 200, 275));
+                            pPathToBackdrop.getElements().add(new CubicCurveTo(400, 300, 300, 300, robotPositionAtBackdropX, robotPositionAtBackdropY));
+                            rotation = -90.0f;
+                        } else { // RED
+                            //pathToBackdrop.getElements().add(new CubicCurveTo(200, 300, 300, 300, 400, 275));
+                            pPathToBackdrop.getElements().add(new CubicCurveTo(200, 300, 300, 300, robotPositionAtBackdropX, robotPositionAtBackdropY));
+                            rotation = 90.0f;
+                        }
+
                         //**TODO You may want to access the outer class field for the preview robot
                         // Clear the preview robot and the camera field-of-view lines.
-                        Group previewRobot = (Group) field.lookup("#" + RobotFXCenterStageLG.PREVIEW_ROBOT_ID);
                         Line fovLeft = (Line) field.lookup("#" + PreviewDragAndRelease.CAMERA_FOV_LINE_LEFT);
                         Line fovRight = (Line) field.lookup("#" + PreviewDragAndRelease.CAMERA_FOV_LINE_RIGHT);
-                        field.getChildren().removeAll(previewRobot, fovLeft, fovRight);
+                        field.getChildren().removeAll(previewRobotGroup, fovLeft, fovRight);
 
                         // Now show the animation robot.
                         field.getChildren().add(animationRobotGroup);
