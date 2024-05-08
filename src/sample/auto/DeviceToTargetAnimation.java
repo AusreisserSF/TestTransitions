@@ -24,7 +24,6 @@ public class DeviceToTargetAnimation {
     private final RobotFXCenterStageLG previewRobot;
     private final RobotFXCenterStageLG animationRobot;
     private final Group animationRobotGroup;
-    private final StartParameterValidation startParameters;
 
     private double robotCoordX;
     private double robotCoordY;
@@ -35,15 +34,13 @@ public class DeviceToTargetAnimation {
 
     public DeviceToTargetAnimation(RobotConstants.Alliance pAlliance,
                                    CenterStageControllerLG pController, Pane pField,
-                                   RobotFXCenterStageLG pPreviewRobot, RobotFXCenterStageLG pAnimationRobot,
-                                   StartParameterValidation pStartParameters) {
+                                   RobotFXCenterStageLG pPreviewRobot, RobotFXCenterStageLG pAnimationRobot) {
         alliance = pAlliance;
         controller = pController;
         field = pField;
         animationRobot = pAnimationRobot;
         previewRobot = pPreviewRobot;
         animationRobotGroup = animationRobot.getRobot();
-        startParameters = pStartParameters;
     }
 
     public void runDeviceToTargetAnimation(Button pPlayPauseButton) {
@@ -386,6 +383,11 @@ public class DeviceToTargetAnimation {
                         Bounds previewRobotBounds = previewRobotGroup.getBoundsInParent();
                         double robotPositionAtBackdropX = previewRobotBounds.getCenterX();
                         double robotPositionAtBackdropY = previewRobotBounds.getCenterY();
+
+                        // The position of the animation robot in front of the backdrop can
+                        // only be logged now that the preview robot drag-release is complete.
+                        System.out.println("Animation robot approach position at the backdrop " + robotPositionAtBackdropX + ", y " + robotPositionAtBackdropY);
+
                         pCubicCurveTo.setX(robotPositionAtBackdropX);
                         pCubicCurveTo.setY(robotPositionAtBackdropY);
 

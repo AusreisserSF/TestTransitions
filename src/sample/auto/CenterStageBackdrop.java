@@ -5,7 +5,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
@@ -148,12 +147,13 @@ public class CenterStageBackdrop extends Application {
             double robotWidthIn = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_WIDTH);
             double robotHeightIn = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_HEIGHT);
 
-            //**TODO When the start parameters are frozen and the preview screen is showing,
-            // allow the user to
-            // [drag the camera and device on the preview representation of the robot
-            // and to]
-            // drag and release the preview robot and the associated camera field of view
-            // lines to set the final position of the robot in front of the backdrop.
+            // When the start parameters are frozen and the preview screen is showing,
+            // allow the user to drag and release the preview robot and the associated
+            // camera field of view lines to set the final position of the robot in front
+            // of the backdrop.
+
+            //## Allowing the user to drag/release the camera and device on the preview
+            // robot is possible but is outside the scope of this project.
 
             // Mark a portion of the field as the approach zone, i.e. the area in which
             // the robot can stop in front of the backdrop. The outside boundaries of the
@@ -185,18 +185,20 @@ public class CenterStageBackdrop extends Application {
             Integer targetAprilTag = controller.april_tag_spinner.getValue();
             String radioButtonText = ((RadioButton) controller.approach_toggle.getSelectedToggle()).getText();
 
-            //**TODO Put camera FOV into RobotFXCenterStageLG
             // Positioning is determined by the upper left corner of the robot.
             RobotFXCenterStageLG previewRobot = new RobotFXCenterStageLG(RobotFXCenterStageLG.PREVIEW_ROBOT_ID,
                     robotWidthIn, robotHeightIn, Color.GREEN,
-                    cameraCenterFromRobotCenter, cameraOffsetFromRobotCenter, deviceCenterFromRobotCenter, deviceOffsetFromRobotCenter,
+                    cameraCenterFromRobotCenter, cameraOffsetFromRobotCenter, cameraFieldOfView,
+                    deviceCenterFromRobotCenter, deviceOffsetFromRobotCenter,
                     new Point2D(robotPositionAtBackdropX - ((robotWidthIn * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2),
                             robotPositionAtBackdropY - ((robotHeightIn * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2)),
                     0.0);
 
+            // Given the number of the target AprilTag, get its x-coordinate.
+            double aprilTagX = getAprilTagX(targetAprilTag);
+
             // Show the draggable preview robot and camera field of view.
-            Group robotP = previewRobot.getRobot();
-            new PreviewDragAndRelease(controller, field, approachZone, robotP);
+            new PreviewDragAndRelease(controller, field, approachZone, previewRobot, aprilTagX);
 
             // Set the starting position for the animation robot.
             Point2D startingPosition;
@@ -214,7 +216,8 @@ public class CenterStageBackdrop extends Application {
             // Create the animation robot now but do not show yet.
             RobotFXCenterStageLG animationRobot = new RobotFXCenterStageLG(RobotFXCenterStageLG.ANIMATION_ROBOT_ID,
                     robotWidthIn, robotHeightIn, Color.GREEN,
-                    cameraCenterFromRobotCenter, cameraOffsetFromRobotCenter, deviceCenterFromRobotCenter, deviceOffsetFromRobotCenter,
+                    cameraCenterFromRobotCenter, cameraOffsetFromRobotCenter, cameraFieldOfView,
+                    deviceCenterFromRobotCenter, deviceOffsetFromRobotCenter,
                     startingPosition, startingRotation);
 
             System.out.println("Alliance " + alliance);
@@ -223,8 +226,6 @@ public class CenterStageBackdrop extends Application {
             System.out.println("Camera field of view " + cameraFieldOfView);
             System.out.println("Device center from robot center " + deviceCenterFromRobotCenter);
             System.out.println("Device offset from robot center " + deviceOffsetFromRobotCenter);
-            //**TODO Can only be shown/logged after preview robot drag/drop is complete.
-            System.out.println("Position at backdrop " + robotPositionAtBackdropX + ", y " + robotPositionAtBackdropY);
             System.out.println("AprilTag Id " + targetAprilTag);
             System.out.println("Approach " + radioButtonText);
 
@@ -232,7 +233,7 @@ public class CenterStageBackdrop extends Application {
             // its final position in which the delivery device is aligned with
             // the target. At this point the preview robot and camera field-of-
             // view display are on the screen and the Play button is visible.
-            DeviceToTargetAnimation animation = new DeviceToTargetAnimation(alliance, controller, field, previewRobot, animationRobot, startParameterValidation);
+            DeviceToTargetAnimation animation = new DeviceToTargetAnimation(alliance, controller, field, previewRobot, animationRobot);
             animation.runDeviceToTargetAnimation(animationButton);
         });
 
@@ -322,6 +323,29 @@ public class CenterStageBackdrop extends Application {
         if (!pStartParameters.robotPositionAtBackdropY.equals(controller.robot_position_at_backdrop_y.getText())) {
             controller.robot_position_at_backdrop_x.setText(pStartParameters.robotPositionAtBackdropY);
         }
+    }
+
+    private double getAprilTagX(Integer pTargetAprilTag) {
+        double aprilTagX = 0.0;
+        switch (pTargetAprilTag) {
+            case 1:
+            case 4: {
+                aprilTagX = FieldFXCenterStageBackdropLG.APRIL_TAG_LEFT;
+                break;
+            }
+            case 2:
+            case 5: {
+                aprilTagX = FieldFXCenterStageBackdropLG.APRIL_TAG_CENTER;
+                break;
+            }
+            case 3:
+            case 6: {
+                aprilTagX = FieldFXCenterStageBackdropLG.APRIL_TAG_RIGHT;
+                break;
+            }
+        }
+
+        return aprilTagX;
     }
 
 }

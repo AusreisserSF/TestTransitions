@@ -17,12 +17,14 @@ public class RobotFXCenterStageLG extends RobotFXLG {
 
     public final double cameraCenterFromRobotCenterPX;
     public final double cameraOffsetFromRobotCenterPX;
+    public final double cameraFieldOfView;
     public final double deviceCenterFromRobotCenterPX;
     public final double deviceOffsetFromRobotCenterPX;
 
     // Convert all measurements from inches to pixels here.
     public RobotFXCenterStageLG(String pRobotId, double pRobotWidth, double pRobotHeight, Color pRobotBodyColor,
                                 double pCameraCenterFromRobotCenter, double pCameraOffsetFromRobotCenter,
+                                double pCameraFieldOfView,
                                 double pDeviceCenterFromRobotCenter, double pDeviceOffsetFromRobotCenter,
                                 Point2D pRobotScreenCoordinates, double pInitialHeading) {
         super(pRobotId, pRobotWidth * FieldFXCenterStageBackdropLG.PX_PER_INCH,
@@ -34,6 +36,7 @@ public class RobotFXCenterStageLG extends RobotFXLG {
         double robotHeightPX = pRobotHeight * FieldFXCenterStageBackdropLG.PX_PER_INCH;
         cameraCenterFromRobotCenterPX = pCameraCenterFromRobotCenter * FieldFXCenterStageBackdropLG.PX_PER_INCH;
         cameraOffsetFromRobotCenterPX = pCameraOffsetFromRobotCenter * FieldFXCenterStageBackdropLG.PX_PER_INCH;
+        cameraFieldOfView = pCameraFieldOfView;
         deviceCenterFromRobotCenterPX = pDeviceCenterFromRobotCenter * FieldFXCenterStageBackdropLG.PX_PER_INCH;
         deviceOffsetFromRobotCenterPX = pDeviceOffsetFromRobotCenter * FieldFXCenterStageBackdropLG.PX_PER_INCH;
 

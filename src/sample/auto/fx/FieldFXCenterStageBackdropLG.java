@@ -47,9 +47,9 @@ public class FieldFXCenterStageBackdropLG {
     public static final double APRIL_TAG_HEIGHT = PX_PER_INCH * 3.0;
     public static final double APRIL_TAG_OFFSET = APRIL_TAG_HEIGHT + (PX_PER_INCH * 1.0); // from the bottom of the backdrop
 
-    public final double APRIL_TAG_LEFT = PX_PER_INCH * 2.0;
-    public final double APRIL_TAG_CENTER = (TILE_DIMENSIONS / 2) - (APRIL_TAG_WIDTH / 2);
-    public final double APRIL_TAG_RIGHT = TILE_DIMENSIONS - (APRIL_TAG_WIDTH + (PX_PER_INCH * 2.0));
+    public static final double APRIL_TAG_LEFT = PX_PER_INCH * 2.0;
+    public static final double APRIL_TAG_CENTER = (TILE_DIMENSIONS / 2) - (APRIL_TAG_WIDTH / 2);
+    public static final double APRIL_TAG_RIGHT = TILE_DIMENSIONS - (APRIL_TAG_WIDTH + (PX_PER_INCH * 2.0));
     public static final double BACKSTAGE_BOUNDARY_TO_ANGLE = PX_PER_INCH + (PX_PER_INCH * 10.75);
 
     // Identifiers for field objects.
