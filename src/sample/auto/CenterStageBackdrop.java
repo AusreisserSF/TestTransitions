@@ -125,6 +125,8 @@ public class CenterStageBackdrop extends Application {
             // Freeze the start parameters after the Preview button has been hit
             // and remove the Preview button.
             //**TODO TEMP controller.start_parameters.setDisable(true);
+            controller.robot_position_at_backdrop_x.setEditable(false);
+            controller.robot_position_at_backdrop_y.setEditable(false);
             field.getChildren().remove(previewButton);
 
             // Show a Play/Pause button for the actual animation.

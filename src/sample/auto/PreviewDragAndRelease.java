@@ -20,6 +20,7 @@ public class PreviewDragAndRelease {
 
     private double orgSceneX, orgSceneY;
     private double orgRobotTranslateX, orgRobotTranslateY;
+    private double previousRobotTranslateX, previousRobotTranslateY;
     private double orgFOVLineLeftTranslateX, orgFOVLineLeftTranslateY;
     private double orgFOVLineRightTranslateX, orgFOVLineRightTranslateY;
 
@@ -76,6 +77,8 @@ public class PreviewDragAndRelease {
             // putting into an EnumMap??
             orgRobotTranslateX = pPreviewRobot.getTranslateX();
             orgRobotTranslateY = pPreviewRobot.getTranslateY();
+            previousRobotTranslateX = orgRobotTranslateX;
+            previousRobotTranslateY = orgRobotTranslateY;
             orgFOVLineLeftTranslateX = fovLineLeft.getTranslateX();
             orgFOVLineLeftTranslateY = fovLineLeft.getTranslateY();
             orgFOVLineRightTranslateX = fovLineRight.getTranslateX();
@@ -102,20 +105,15 @@ public class PreviewDragAndRelease {
                     previewRobotBounds.getMinY() < approachZoneBounds.getMinY() ||
                     previewRobotBounds.getMaxY() > approachZoneBounds.getMaxY()) {
 
-                // When the user drags any edge of the preview robot outside the
-                // bounds of the approach zone, cancel the drag and place the
-                // robot in its position before the drag. You have to revert the
-                // FOV lines also.
-                //**TODO Better would be to only revert the amount of the move
-                // that put the robot out of bounds.
-                pPreviewRobot.setTranslateX(orgRobotTranslateX);
-                pPreviewRobot.setTranslateY(orgRobotTranslateY);
-                fovLineLeft.setTranslateX(orgFOVLineLeftTranslateX);
-                fovLineLeft.setTranslateY(orgFOVLineLeftTranslateY);
-                fovLineRight.setTranslateX(orgFOVLineRightTranslateX);
-                fovLineRight.setTranslateY(orgFOVLineRightTranslateY);
+                // Revert to the last good position.
+                pPreviewRobot.setTranslateX(previousRobotTranslateX);
+                pPreviewRobot.setTranslateY(previousRobotTranslateY);
                 return;
             }
+
+            // Save known good position for next time around.
+            previousRobotTranslateX = newRobotTranslateX;
+            previousRobotTranslateY = newRobotTranslateY;
 
             // Updating the start parameter display with the new x and y
             // positions of the center of the preview robot.
