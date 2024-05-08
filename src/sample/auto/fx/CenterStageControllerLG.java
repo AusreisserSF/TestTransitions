@@ -24,6 +24,8 @@ public class CenterStageControllerLG {
     @FXML
     public TextField camera_offset_from_robot_center;
     @FXML
+    public TextField camera_field_of_view;
+    @FXML
     public TextField device_center_from_robot_center;
     @FXML
     public TextField device_offset_from_robot_center;

@@ -121,7 +121,8 @@ public class CenterStageBackdrop extends Application {
                 return;
             }
 
-            //**TODO **LATER** - disable all other TextFields but only disable editing of the position fields.
+            //**TODO Disable all other TextFields but only disable editing of
+            // the camera field of view and the position fields in order to update the display..
             // Freeze the start parameters after the Preview button has been hit
             // and remove the Preview button.
             //**TODO TEMP controller.start_parameters.setDisable(true);
@@ -176,6 +177,7 @@ public class CenterStageBackdrop extends Application {
             // Collect the start parameters.
             double cameraCenterFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_CENTER_FROM_ROBOT_CENTER);
             double cameraOffsetFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_OFFSET_FROM_ROBOT_CENTER);
+            double cameraFieldOfView = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_FIELD_OF_VIEW);
             double deviceCenterFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.DEVICE_CENTER_FROM_ROBOT_CENTER);
             double deviceOffsetFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.DEVICE_OFFSET_FROM_ROBOT_CENTER);
             double robotPositionAtBackdropX = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_POSITION_AT_BACKDROP_X) * FieldFXCenterStageBackdropLG.PX_PER_INCH;
@@ -183,7 +185,8 @@ public class CenterStageBackdrop extends Application {
             Integer targetAprilTag = controller.april_tag_spinner.getValue();
             String radioButtonText = ((RadioButton) controller.approach_toggle.getSelectedToggle()).getText();
 
-            // Positioning is determined byt he upper left corner of the robot.
+            //**TODO Put camera FOV into RobotFXCenterStageLG
+            // Positioning is determined by the upper left corner of the robot.
             RobotFXCenterStageLG previewRobot = new RobotFXCenterStageLG(RobotFXCenterStageLG.PREVIEW_ROBOT_ID,
                     robotWidthIn, robotHeightIn, Color.GREEN,
                     cameraCenterFromRobotCenter, cameraOffsetFromRobotCenter, deviceCenterFromRobotCenter, deviceOffsetFromRobotCenter,
@@ -217,6 +220,7 @@ public class CenterStageBackdrop extends Application {
             System.out.println("Alliance " + alliance);
             System.out.println("Camera center from robot center " + cameraCenterFromRobotCenter);
             System.out.println("Camera offset from robot center " + cameraOffsetFromRobotCenter);
+            System.out.println("Camera field of view " + cameraFieldOfView);
             System.out.println("Device center from robot center " + deviceCenterFromRobotCenter);
             System.out.println("Device offset from robot center " + deviceOffsetFromRobotCenter);
             //**TODO Can only be shown/logged after preview robot drag/drop is complete.
@@ -297,6 +301,10 @@ public class CenterStageBackdrop extends Application {
 
         if (!pStartParameters.cameraOffsetFromRobotCenter.equals(controller.camera_offset_from_robot_center.getText())) {
             controller.camera_offset_from_robot_center.setText(pStartParameters.cameraOffsetFromRobotCenter);
+        }
+
+        if (!pStartParameters.cameraFieldOfView.equals(controller.camera_field_of_view.getText())) {
+            controller.camera_field_of_view.setText(pStartParameters.cameraFieldOfView);
         }
 
         if (!pStartParameters.deviceCenterFromRobotCenter.equals(controller.device_center_from_robot_center.getText())) {

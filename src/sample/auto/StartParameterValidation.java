@@ -13,7 +13,6 @@ import javafx.scene.control.TextInputDialog;
 import javafx.util.converter.DoubleStringConverter;
 import org.firstinspires.ftc.ftcdevcommon.AutonomousRobotException;
 import sample.auto.fx.CenterStageControllerLG;
-import sample.auto.fx.FieldFXCenterStageBackdropLG;
 
 import java.util.EnumMap;
 import java.util.List;
@@ -26,8 +25,10 @@ public class StartParameterValidation {
 
     private final String TAG = StartParameterValidation.class.getSimpleName();
 
-    public static final double MIN_ROBOT_BODY_DIMENSION = 12.0;
-    public static final double MAX_ROBOT_BODY_DIMENSION = 18.0;
+    public static final double ROBOT_BODY_DIMENSION_MIN = 12.0;
+    public static final double ROBOT_BODY_DIMENSION_MAX = 18.0;
+    public static final double CAMERA_FIELD_OF_VIEW_MIN = 60.0;
+    public static final double CAMERA_FIELD_OF_VIEW_MAX = 90.0;
     public static final double ROBOT_POSITION_AT_BACKDROP_X_MIN = 23.6;
     public static final double ROBOT_POSITION_AT_BACKDROP_X_MAX = 47.2;
     public static final double ROBOT_POSITION_AT_BACKDROP_Y_MIN = 26.0;
@@ -35,7 +36,7 @@ public class StartParameterValidation {
 
     public enum StartParameter {
         ROBOT_WIDTH, ROBOT_HEIGHT,
-        CAMERA_CENTER_FROM_ROBOT_CENTER, CAMERA_OFFSET_FROM_ROBOT_CENTER,
+        CAMERA_CENTER_FROM_ROBOT_CENTER, CAMERA_OFFSET_FROM_ROBOT_CENTER, CAMERA_FIELD_OF_VIEW,
         DEVICE_CENTER_FROM_ROBOT_CENTER, DEVICE_OFFSET_FROM_ROBOT_CENTER,
         ROBOT_POSITION_AT_BACKDROP_X, ROBOT_POSITION_AT_BACKDROP_Y
     }
@@ -59,7 +60,7 @@ public class StartParameterValidation {
                         return true;
 
                     StartParameterInfo widthInfo = startParameters.get(StartParameter.ROBOT_WIDTH);
-                    if (widthP < MIN_ROBOT_BODY_DIMENSION || widthP > MAX_ROBOT_BODY_DIMENSION) {
+                    if (widthP < ROBOT_BODY_DIMENSION_MIN || widthP > ROBOT_BODY_DIMENSION_MAX) {
                         widthInfo.setInvalid();
                         return false;
                     }
@@ -67,7 +68,7 @@ public class StartParameterValidation {
                     widthInfo.setValid(widthP);
                     return true;
                 },
-                "The width of the robot must be between " + MIN_ROBOT_BODY_DIMENSION + " and " + MAX_ROBOT_BODY_DIMENSION));
+                "The width of the robot must be between " + ROBOT_BODY_DIMENSION_MIN + " and " + ROBOT_BODY_DIMENSION_MAX));
 
         validateStartParameter(widthListener);
 
@@ -84,7 +85,7 @@ public class StartParameterValidation {
                         return true;
 
                     StartParameterInfo heightInfo = startParameters.get(StartParameter.ROBOT_HEIGHT);
-                    if (heightP < MIN_ROBOT_BODY_DIMENSION || heightP > MAX_ROBOT_BODY_DIMENSION) {
+                    if (heightP < ROBOT_BODY_DIMENSION_MIN || heightP > ROBOT_BODY_DIMENSION_MAX) {
                         heightInfo.setInvalid();
                         return false;
                     }
@@ -92,7 +93,7 @@ public class StartParameterValidation {
                     heightInfo.setValid(heightP);
                     return true;
                 },
-                "The height of the robot must be between " + MIN_ROBOT_BODY_DIMENSION + " and " + MAX_ROBOT_BODY_DIMENSION));
+                "The height of the robot must be between " + ROBOT_BODY_DIMENSION_MIN + " and " + ROBOT_BODY_DIMENSION_MAX));
 
         validateStartParameter(heightListener);
 
@@ -125,7 +126,6 @@ public class StartParameterValidation {
 
         validateStartParameter(cameraCenterListener);
 
-
         // CAMERA_OFFSET_FROM_ROBOT_CENTER
         // constraint - camera left or right edge may be no more than half the width of the robot from the center
         // the edge depends on the sign of the parameter.
@@ -154,6 +154,28 @@ public class StartParameterValidation {
                 "The left/right distance from camera center to robot center must be less than 1/2 the width of the robot"));
 
         validateStartParameter(cameraOffsetListener);
+
+        // Camera field of view.
+        startParameters.put(StartParameter.CAMERA_FIELD_OF_VIEW,
+                new StartParameterInfo(pCenterStageControllerLG.camera_field_of_view.getText(), false)); // set default
+        PredicateChangeListener fovListener = (new PredicateChangeListener(
+                pCenterStageControllerLG.camera_field_of_view,
+                fovP -> {
+                    if (fovP == null)
+                        return true;
+
+                    StartParameterInfo fovInfo = startParameters.get(StartParameter.CAMERA_FIELD_OF_VIEW);
+                    if (fovP < CAMERA_FIELD_OF_VIEW_MIN || fovP > CAMERA_FIELD_OF_VIEW_MAX) {
+                        fovInfo.setInvalid();
+                        return false;
+                    }
+
+                    fovInfo.setValid(fovP);
+                    return true;
+                },
+                "The camera field of view must be between " + CAMERA_FIELD_OF_VIEW_MIN + " and " + CAMERA_FIELD_OF_VIEW_MAX));
+
+        validateStartParameter(fovListener);
 
         // DEVICE_CENTER_FROM_ROBOT_CENTER
         // constraint - device top or bottom edge may be no more than half the height of the robot from the center

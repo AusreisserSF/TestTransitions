@@ -24,14 +24,10 @@ public class PreviewDragAndRelease {
     private double orgFOVLineLeftTranslateX, orgFOVLineLeftTranslateY;
     private double orgFOVLineRightTranslateX, orgFOVLineRightTranslateY;
 
-    //**TODO Is there a way to use the camera's FOV to validate the preview
-    // position. Yes, if you make room on the start parameters screen and set
-    // a parameter for it. During Preview turn the uneditable FOV red in the
+    //**TODO During Preview turn the uneditable FOV red in the
     // start parameters if the user drags the preview robot to the point where
-    // the AprilTag target is outside the FOV.
-    //**TODO Put the camera's FOV in the XML and validate.
-
-    //**TODO As an experiment draw a 78 degree camera field of view.
+    // the AprilTag target is outside the FOV. FieldFXCenterStageBackdropLG
+    // contains constants for the center points of each AprilTag.
 
     public PreviewDragAndRelease(CenterStageControllerLG pController, Pane pField, Rectangle pApproachZone, Group pPreviewRobot) {
 
@@ -50,8 +46,9 @@ public class PreviewDragAndRelease {
 
         // Get the adjacent side of the triangle from the camera to the AprilTag.
         double fovAdjacent = Math.abs(cameraFaceY - aprilTagCenterY);
-        // tan 39 degrees  = opposite / adjacent
-        double halfFOVTan = Math.tan(Math.toRadians(39.0));
+        // tangent  = opposite / adjacent
+        //**TODO Don't get the FOV from the controller - put it into the robot Group.
+        double halfFOVTan = Math.tan(Math.toRadians(Double.parseDouble(pController.camera_field_of_view.getText()) / 2));
         double halfFOVOpposite = halfFOVTan * fovAdjacent;
 
         Line fovLineLeft = new Line(cameraFaceX, cameraFaceY, cameraFaceX - halfFOVOpposite, aprilTagCenterY);
@@ -73,8 +70,6 @@ public class PreviewDragAndRelease {
             orgSceneX = mouseEvent.getSceneX();
             orgSceneY = mouseEvent.getSceneY();
 
-            //**TODO These are different for each Shape ... generalize by
-            // putting into an EnumMap??
             orgRobotTranslateX = pPreviewRobot.getTranslateX();
             orgRobotTranslateY = pPreviewRobot.getTranslateY();
             previousRobotTranslateX = orgRobotTranslateX;
@@ -117,7 +112,6 @@ public class PreviewDragAndRelease {
 
             // Updating the start parameter display with the new x and y
             // positions of the center of the preview robot.
-            //**TODO disable all other TextFields but only disable editing of the position fields.
             double previewRobotCenterInX = previewRobotBounds.getCenterX() / FieldFXCenterStageBackdropLG.PX_PER_INCH;
             double previewRobotCenterInY = previewRobotBounds.getCenterY() / FieldFXCenterStageBackdropLG.PX_PER_INCH;
 

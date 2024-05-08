@@ -25,10 +25,10 @@ public class StartParametersXML {
     private final StartParameters startParameters;
 
     // IntelliJ only - if you want a validating parser.
-     private static final String JAXP_SCHEMA_LANGUAGE =
-     "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
-     private static final String W3C_XML_SCHEMA =
-     "http://www.w3.org/2001/XMLSchema";
+    // private static final String JAXP_SCHEMA_LANGUAGE =
+    // "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
+    // private static final String W3C_XML_SCHEMA =
+    // "http://www.w3.org/2001/XMLSchema";
     // End IntelliJ only
 
     // Read start parameters from from an XML file but do not include those that are more easily
@@ -94,8 +94,18 @@ public class StartParametersXML {
         String cameraOffset = camera_offset_node.getTextContent();
         validateDoubleContent(cameraOffset, "camera_offset_from_robot_center");
 
+        // <camera_field_of_view>
+        Node camera_fov_node = camera_offset_node.getNextSibling();
+        camera_fov_node = XMLUtils.getNextElement(camera_fov_node);
+        if (camera_fov_node == null || !camera_fov_node.getNodeName().equals("camera_field_of_view")
+                || camera_fov_node.getTextContent().isEmpty())
+            throw new AutonomousRobotException(TAG, "Element 'camera_field_of_view' not found");
+
+        String cameraFOV = camera_fov_node.getTextContent();
+        validateDoubleContent(cameraFOV, "camera_field_of_view");
+
         // <device_center_from_robot_center>
-        Node device_center_node = camera_offset_node.getNextSibling();
+        Node device_center_node = camera_fov_node.getNextSibling();
         device_center_node = XMLUtils.getNextElement(device_center_node);
         if (device_center_node == null || !device_center_node.getNodeName().equals("device_center_from_robot_center")
                 || camera_center_node.getTextContent().isEmpty())
@@ -134,7 +144,7 @@ public class StartParametersXML {
         String backdropY = backdrop_y_node.getTextContent();
         validateDoubleContent(backdropY, "robot_position_at_backdrop_y");
 
-        startParameters = new StartParameters(robotWidth, robotHeight, cameraCenter, cameraOffset,
+        startParameters = new StartParameters(robotWidth, robotHeight, cameraCenter, cameraOffset, cameraFOV,
                 deviceCenter, deviceOffset, backdropX, backdropY);
 
         RobotLogCommon.c(TAG, "In StartParametersXML; opened and parsed the XML file");
