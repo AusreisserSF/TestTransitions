@@ -46,10 +46,9 @@ public class FieldFXCenterStageBackdropLG {
     public static final double APRIL_TAG_WIDTH = PX_PER_INCH * 2.5;
     public static final double APRIL_TAG_HEIGHT = PX_PER_INCH * 3.0;
     public static final double APRIL_TAG_OFFSET = APRIL_TAG_HEIGHT + (PX_PER_INCH * 1.0); // from the bottom of the backdrop
-
-    public static final double APRIL_TAG_LEFT = PX_PER_INCH * 2.0;
-    public static final double APRIL_TAG_CENTER = (TILE_DIMENSIONS / 2) - (APRIL_TAG_WIDTH / 2);
-    public static final double APRIL_TAG_RIGHT = TILE_DIMENSIONS - (APRIL_TAG_WIDTH + (PX_PER_INCH * 2.0));
+    public static final double APRIL_TAG_LEFT = TILE_DIMENSIONS + (PX_PER_INCH * 2.0);
+    public static final double APRIL_TAG_CENTER = TILE_DIMENSIONS + + (TILE_DIMENSIONS / 2) - (APRIL_TAG_WIDTH / 2);
+    public static final double APRIL_TAG_RIGHT = (TILE_DIMENSIONS * 2) - (APRIL_TAG_WIDTH + (PX_PER_INCH * 2.0));
     public static final double BACKSTAGE_BOUNDARY_TO_ANGLE = PX_PER_INCH + (PX_PER_INCH * 10.75);
 
     // Identifiers for field objects.
@@ -115,7 +114,7 @@ public class FieldFXCenterStageBackdropLG {
         aprilTagLeftRect.setFill(Color.WHITE);
 
         StackPane aprilTagLeftStack = new StackPane();
-        aprilTagLeftStack.setLayoutX(TILE_DIMENSIONS + APRIL_TAG_LEFT);
+        aprilTagLeftStack.setLayoutX(APRIL_TAG_LEFT);
         aprilTagLeftStack.setLayoutY(BACKDROP_HEIGHT - APRIL_TAG_OFFSET);
         aprilTagLeftStack.getChildren().add(aprilTagLeftRect);
         collidables.add(aprilTagLeftRect);
@@ -124,7 +123,7 @@ public class FieldFXCenterStageBackdropLG {
         Rectangle aprilTagCenterRect = new Rectangle(APRIL_TAG_WIDTH, APRIL_TAG_HEIGHT);
         aprilTagCenterRect.setFill(Color.WHITE);
         StackPane aprilTagCenterStack = new StackPane();
-        aprilTagCenterStack.setLayoutX(TILE_DIMENSIONS + APRIL_TAG_CENTER);
+        aprilTagCenterStack.setLayoutX(APRIL_TAG_CENTER);
         aprilTagCenterStack.setLayoutY(BACKDROP_HEIGHT - APRIL_TAG_OFFSET);
         aprilTagCenterStack.getChildren().addAll(aprilTagCenterRect);
         collidables.add(aprilTagCenterRect);
@@ -133,7 +132,7 @@ public class FieldFXCenterStageBackdropLG {
         Rectangle aprilTagRightRect = new Rectangle(APRIL_TAG_WIDTH, APRIL_TAG_HEIGHT);
         aprilTagRightRect.setFill(Color.WHITE);
         StackPane aprilTagRightStack = new StackPane();
-        aprilTagRightStack.setLayoutX(TILE_DIMENSIONS + APRIL_TAG_RIGHT);
+        aprilTagRightStack.setLayoutX(APRIL_TAG_RIGHT);
         aprilTagRightStack.setLayoutY(BACKDROP_HEIGHT - APRIL_TAG_OFFSET);
         aprilTagRightStack.getChildren().addAll(aprilTagRightRect);
         collidables.add(aprilTagRightRect);

@@ -144,7 +144,9 @@ public class PreviewDragAndRelease {
             // the font color of the FOV to red and 2. redraw the lines - try
             // in the testbed first.
 
-            //**TODO Boundary checking is off; false positive for out-of-bounds
+            //**TODO Boundary checking is closer but still off; either the FOV window
+            // is too far to the left or the AprilTag center is too far to the right.
+            // Try AT in parent.
 
             Point2D updatedCameraCoord = cameraOnRobot.localToScene(cameraOnRobot.getX(), cameraOnRobot.getY());
             double updatedCameraFaceX = updatedCameraCoord.getX() + cameraOnRobot.getWidth() / 2;
