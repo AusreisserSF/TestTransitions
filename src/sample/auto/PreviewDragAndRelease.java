@@ -26,17 +26,9 @@ public class PreviewDragAndRelease {
     private double orgFOVLineLeftTranslateX, orgFOVLineLeftTranslateY;
     private double orgFOVLineRightTranslateX, orgFOVLineRightTranslateY;
 
-    //**TODO During Preview turn the uneditable FOV red in the
-    // start parameters if the user drags the preview robot to the point where
-    // the AprilTag target is outside the FOV.
-    //**TODO Not so easy because the triangle between the center of the camera
-    // face, the line that intersects all three AprilTags, and the distance
-    // from the camera face to the target AprilTag changes during the drag-
-    // and-release of the preview robot.
-
     public PreviewDragAndRelease(CenterStageControllerLG pController, Pane pField,
                                  Rectangle pApproachZone, RobotFXCenterStageLG pPreviewRobot,
-                                 double pTargetAprilTagX) {
+                                 double pTargetAprilTagCenterX) {
 
         // Show the preview robot on the field.
         Group previewRobotGroup = pPreviewRobot.getRobot();
@@ -138,16 +130,8 @@ public class PreviewDragAndRelease {
             fovLineRight.setTranslateY(newFOVLineRightTranslateY);
 
             //**TODO It would be ideal to redraw the FOV lines as the preview
-            // robot is dragged withing the approach zone. Then it would be
-            // easy to know if the AprilTag is within the camera's FOV or not.
-            // Do this in two steps: 1. trigonometry, validation, and changing
-            // the font color of the FOV to red and 2. redraw the lines - try
-            // in the testbed first.
-
-            //**TODO Boundary checking is closer but still off; either the FOV window
-            // is too far to the left or the AprilTag center is too far to the right.
-            // Try AT in parent.
-
+            // robot is dragged about within the approach zone. Do this in the
+            // testbed first.
             Point2D updatedCameraCoord = cameraOnRobot.localToScene(cameraOnRobot.getX(), cameraOnRobot.getY());
             double updatedCameraFaceX = updatedCameraCoord.getX() + cameraOnRobot.getWidth() / 2;
             double updatedCameraFaceY = updatedCameraCoord.getY();
@@ -161,7 +145,7 @@ public class PreviewDragAndRelease {
             double leftFOVBoundaryAtAprilTag = updatedCameraFaceX - updatedHalfFOVOpposite;
             double rightFOVBoundaryAtAprilTag = updatedCameraFaceX + updatedHalfFOVOpposite;
 
-            if (pTargetAprilTagX < leftFOVBoundaryAtAprilTag || pTargetAprilTagX > rightFOVBoundaryAtAprilTag) {
+            if (pTargetAprilTagCenterX < leftFOVBoundaryAtAprilTag || pTargetAprilTagCenterX > rightFOVBoundaryAtAprilTag) {
                 // The target AprilTag is outside of the camera's field of view.
                 // From jewelsea's answer in
                 // https://stackoverflow.com/questions/24702542/how-to-change-the-color-of-text-in-javafx-textfield

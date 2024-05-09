@@ -5,6 +5,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
@@ -30,7 +31,9 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 //**TODO This is really about positioning the robot with respect to
-// and AprilTag; the backdrop is just an example.
+// a target whose angle and distance from a camera mounted on a robot
+// can be determined - such as an AprilTag or, as in this simulation,
+// the three AprilTags on the backdrop of the CenterStage game.
 
 //**TODO Migrate all classes and fxml (some copy, some move) from this
 // test project, TestTransitions, into its own project.
@@ -120,13 +123,9 @@ public class CenterStageBackdrop extends Application {
                 return;
             }
 
-            //**TODO Disable all other TextFields but only disable editing of
-            // the camera field of view and the position fields in order to update the display..
             // Freeze the start parameters after the Preview button has been hit
             // and remove the Preview button.
-            //**TODO TEMP controller.start_parameters.setDisable(true);
-            controller.robot_position_at_backdrop_x.setEditable(false);
-            controller.robot_position_at_backdrop_y.setEditable(false);
+            freezeStartParameters();
             field.getChildren().remove(previewButton);
 
             // Show a Play/Pause button for the actual animation.
@@ -195,10 +194,12 @@ public class CenterStageBackdrop extends Application {
                     0.0);
 
             // Given the number of the target AprilTag, get its x-coordinate.
-            double aprilTagX = getAprilTagX(targetAprilTag);
+            Rectangle aprilTag = (Rectangle) field.lookup("#" + FieldFXCenterStageBackdropLG.APRIL_TAG_ID + targetAprilTag);
+            Point2D aprilTagCoord = aprilTag.localToScene(aprilTag.getX(), aprilTag.getY());
+            double aprilTagCenterX = aprilTagCoord.getX() + aprilTag.getWidth() / 2;
 
             // Show the draggable preview robot and camera field of view.
-            new PreviewDragAndRelease(controller, field, approachZone, previewRobot, aprilTagX);
+            new PreviewDragAndRelease(controller, field, approachZone, previewRobot, aprilTagCenterX);
 
             // Set the starting position for the animation robot.
             Point2D startingPosition;
@@ -240,17 +241,9 @@ public class CenterStageBackdrop extends Application {
         previewButton.setOnAction(event.get());
     }
 
-    //**TODO Fix spacing.
     private String allianceSelection() {
-        /*
-        FXMLLoader fxmlLoader = new FXMLLoader();
-        fxmlLoader.setLocation(getClass().getResource("allianceToggle.fxml"));
-        AnchorPane root = fxmlLoader.load();
-        AllianceToggleController controller = fxmlLoader.getController();
-        */
-
         // Create the custom dialog.
-        VBox allianceButtons = new VBox();
+        VBox allianceButtons = new VBox(5); // spacing
         Dialog<String> dialog = new Dialog<>();
         dialog.setTitle("Alliance selection");
         dialog.setHeaderText("Select alliance and confirm, fill in start parameters, hit Play");
@@ -321,31 +314,28 @@ public class CenterStageBackdrop extends Application {
         }
 
         if (!pStartParameters.robotPositionAtBackdropY.equals(controller.robot_position_at_backdrop_y.getText())) {
-            controller.robot_position_at_backdrop_x.setText(pStartParameters.robotPositionAtBackdropY);
+            controller.robot_position_at_backdrop_y.setText(pStartParameters.robotPositionAtBackdropY);
         }
     }
 
-    private double getAprilTagX(Integer pTargetAprilTag) {
-        double aprilTagX = 0.0;
-        switch (pTargetAprilTag) {
-            case 1:
-            case 4: {
-                aprilTagX = FieldFXCenterStageBackdropLG.APRIL_TAG_LEFT;
-                break;
-            }
-            case 2:
-            case 5: {
-                aprilTagX = FieldFXCenterStageBackdropLG.APRIL_TAG_CENTER;
-                break;
-            }
-            case 3:
-            case 6: {
-                aprilTagX = FieldFXCenterStageBackdropLG.APRIL_TAG_RIGHT;
-                break;
-            }
-        }
-
-        return aprilTagX;
+    // Disable all of the start parameters except for those that we want to update during
+    // the drag-and-release of the preview robot: camera field of view, robotPositionAtBackdropX,
+    // robotPositionAtBackdropY.
+    private void freezeStartParameters() {
+        controller.robot_width.setDisable(true);
+        controller.robot_height.setDisable(true);
+        controller.camera_center_from_robot_center.setDisable(true);
+        controller.camera_offset_from_robot_center.setDisable(true);
+        controller.camera_field_of_view.setEditable(false);
+        controller.device_center_from_robot_center.setDisable(true);
+        controller.device_offset_from_robot_center.setDisable(true);
+        controller.robot_position_at_backdrop_x.setEditable(false);
+        controller.robot_position_at_backdrop_y.setEditable(false);
+        controller.april_tag_spinner.setDisable(true);
+        controller.approach_toggle.getToggles().forEach(toggle -> {
+            Node node = (Node) toggle ;
+            node.setDisable(true);
+        });
     }
 
 }
