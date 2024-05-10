@@ -15,7 +15,7 @@ public class CameraToDeviceCorrections {
     // pre-rotation are the same.
     //**TODO For a turret device we need the pre-rotation device to target angle
     // and distance.
-    //**TODO Need drawings in Dia.
+    //**TODO Need diagrams of all of the triangles. Try https://app.diagrams.net/.
 
     public static CorrectionData getCameraToDeviceCorrections(double pAngleCameraFaceToTarget, double pDistanceCameraFaceToTarget,
                                                               double pDistanceRobotCenterToCameraFace, double pOffsetRobotCenterToCameraCenter,
@@ -169,6 +169,7 @@ public class CameraToDeviceCorrections {
             strafeDistance += rcdPreRotationOpposite;
             finalTurnFromRobotCenter = Math.abs(rdcPreRotationAngle) + Math.abs(rctAngle);
         }
+
         // The signs of the FTC angles from robot center to device and
         // device to target are the same so the angles overlap; for the
         // final turn take the absolute value of their difference.
@@ -176,6 +177,9 @@ public class CameraToDeviceCorrections {
             strafeDistance = Math.abs(strafeDistance - rcdPreRotationOpposite);
             finalTurnFromRobotCenter = Math.abs(Math.abs(rdcPreRotationAngle) - Math.abs(rctAngle));
         }
+
+        //**TODO For a turret the opposite side of the device to target triangle is the same
+        // as the strafe distance we have just calculated.
 
         // The FTC sign of the final turn is the inverse of the sign of the angle
         // from device to target.
@@ -205,7 +209,11 @@ public class CameraToDeviceCorrections {
 
         // After the strafe is complete we need to know the distance from the device
         // to the target.
+        //**TODO For a turret this is the adjacent side of the device to target triangle.
         double postStrafeDistanceDeviceToTarget = rcdPreRotationAdjacent - pDistanceRobotCenterToDeliveryDevice;
+
+        //**TODO For a turret we need to calculate the hypotenuse of the device
+        // to target triangle and we should log the angle.
 
         // Calculate the post-rotation distance from the device to target.
         // For this we need the triangle formed post-rotation from robot
