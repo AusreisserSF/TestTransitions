@@ -12,12 +12,14 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.util.Duration;
+import org.firstinspires.ftc.ftcdevcommon.AutonomousRobotException;
 import sample.auto.fx.FieldFXCenterStageBackdropLG;
 import sample.auto.fx.RobotFXCenterStageLG;
 import sample.auto.fx.CenterStageControllerLG;
 
 public class DeviceToTargetAnimation {
 
+    private final String TAG = DeviceToTargetAnimation.class.getSimpleName();
     private final RobotConstants.Alliance alliance;
     private final CenterStageControllerLG controller;
     private final Pane field;
@@ -118,7 +120,8 @@ public class DeviceToTargetAnimation {
         RadioButton selectedRadioButton = (RadioButton) controller.approach_toggle.getSelectedToggle();
         String radioButtonText = selectedRadioButton.getText();
 
-        //## The RotateTransition for the final rotation must be declared before the
+        //## The RotateTransition for the final rotation of the robot so that the
+        // device lines up with the target must be declared before the
         // ParallelTransition, i.e. out of the time sequence, because the angle to
         // rotate is only known after the ParallelTransition is complete.
         RotateTransition rotateDeviceTowardsAprilTagT = new RotateTransition(Duration.seconds(2));
@@ -136,6 +139,12 @@ public class DeviceToTargetAnimation {
             lineDH.setStrokeWidth(3.0);
             field.getChildren().add(lineDH);
         });
+
+        //**TODO If we're treating the device as a turret then the robot itself
+        // does not need to turn. Just draw the lines from the turret to the
+        // target.
+        PauseTransition turretToTargetPauseT = new PauseTransition(Duration.millis(750));
+        turretToTargetPauseT.setOnFinished(event -> removeCameraToTargetLines());
 
         // Follow the cubic curve and rotate in parallel.
         ParallelTransition parallelT = new ParallelTransition(pathTransition, rotateTransition);
@@ -257,9 +266,7 @@ public class DeviceToTargetAnimation {
         });
 
         PauseTransition cameraToTargetPauseT = new PauseTransition(Duration.millis(2500));
-        cameraToTargetPauseT.setOnFinished(event -> {
-            removeCameraToTargetLines();
-        });
+        cameraToTargetPauseT.setOnFinished(event -> removeCameraToTargetLines());
 
         PauseTransition robotCenterToDevicePauseT = new PauseTransition(Duration.millis(2500));
         robotCenterToDevicePauseT.setOnFinished(event -> {
@@ -326,10 +333,12 @@ public class DeviceToTargetAnimation {
 
         // Look at the startup parameter that indicates whether to strafe or rotate.
         SequentialTransition seqTransition = new SequentialTransition(postPreviewPauseT, parallelT); // common
-        if (radioButtonText.equals("Strafe to"))
-            seqTransition.getChildren().addAll(cameraToTargetPauseT, strafeTT);
-        else
-            seqTransition.getChildren().addAll(robotCenterToDevicePauseT, preRotationPauseT, rotateDeviceTowardsAprilTagT);
+        switch (radioButtonText) {
+            case "Strafe robot" -> seqTransition.getChildren().addAll(cameraToTargetPauseT, strafeTT);
+            case "Turn robot" -> seqTransition.getChildren().addAll(robotCenterToDevicePauseT, preRotationPauseT, rotateDeviceTowardsAprilTagT);
+            case "Turn turret" -> seqTransition.getChildren().add(turretToTargetPauseT);
+            default -> throw new AutonomousRobotException(TAG, "Unrecognized radio button text " + radioButtonText);
+        }
 
         new PlayPauseToggle(pPlayPauseButton, seqTransition, cubicCurveTo);
     }
@@ -417,7 +426,7 @@ public class DeviceToTargetAnimation {
                             playPauseButtonStateOnPress = PlayPauseButtonStateOnPress.RESUME_PLAY;
                         }
                     }
-                    default -> throw new RuntimeException("Invalid button state " + playPauseButtonStateOnPress);
+                    default -> throw new AutonomousRobotException(TAG, "Invalid button state " + playPauseButtonStateOnPress);
                 }
             };
 
