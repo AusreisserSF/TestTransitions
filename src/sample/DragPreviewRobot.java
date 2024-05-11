@@ -35,6 +35,10 @@ public class DragPreviewRobot extends Application {
         private double orgFOVLineLeftTranslateX, orgFOVLineLeftTranslateY;
         private double orgFOVLineRightTranslateX, orgFOVLineRightTranslateY;
 
+        //**TODO It would be ideal to redraw the FOV lines as the preview
+        // robot is dragged about within the approach zone. Do this in the
+        // testbed first.
+
         private PreviewRobotDragAndRelease(Rectangle pRobotRect, Line pFOVLineLeft, Line pFOVLineRight) {
 
             // --- remember initial coordinates of mouse cursor and nodes

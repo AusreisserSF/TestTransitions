@@ -34,12 +34,20 @@ import java.util.concurrent.atomic.AtomicReference;
 // a target whose angle and distance from a camera mounted on a robot
 // can be determined - such as an AprilTag or, as in this simulation,
 // the three AprilTags on the backdrop of the CenterStage game.
+// Assumptions/restrictions ...
+// The robot is square or rectangular.
+// The face of the camera is parallel to the side of the robot that
+// faces the target AprilTag at the point the camera gets the angle
+// and distance to the AprilTag (simulated here).
+// The same side of the robot is assumed to be parallel to a line
+// drawn through the center of the target AprilTag, i.e. there is
+// no "yaw".
 
 //**TODO Migrate all classes and fxml (some copy, some move) from this
 // test project, TestTransitions, into its own project.
 
-//**TODO Consider a turret simulation, i.e. one in which the body of
-// the robot is parallel to the plane of the target but the delivery
+//## Includes a turret simulation, i.e. one in which the body of the
+// robot is parallel to the plane of the target but the delivery
 // device itself turns towards the target, not the robot itself.
 public class CenterStageBackdrop extends Application {
 

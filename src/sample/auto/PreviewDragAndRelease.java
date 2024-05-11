@@ -129,9 +129,6 @@ public class PreviewDragAndRelease {
             fovLineRight.setTranslateX(newFOVLineRightTranslateX);
             fovLineRight.setTranslateY(newFOVLineRightTranslateY);
 
-            //**TODO It would be ideal to redraw the FOV lines as the preview
-            // robot is dragged about within the approach zone. Do this in the
-            // testbed first.
             Point2D updatedCameraCoord = cameraOnRobot.localToScene(cameraOnRobot.getX(), cameraOnRobot.getY());
             double updatedCameraFaceX = updatedCameraCoord.getX() + cameraOnRobot.getWidth() / 2;
             double updatedCameraFaceY = updatedCameraCoord.getY();
