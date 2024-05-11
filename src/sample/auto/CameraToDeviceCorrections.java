@@ -13,8 +13,7 @@ public class CameraToDeviceCorrections {
     // device to target post-rotation. Note that the adjacent sides of the robot
     // center to target triangle and the robot center to device triangle
     // pre-rotation are the same.
-    //**TODO For a turret device we need the pre-rotation device to target angle
-    // and distance.
+
     //**TODO Need diagrams of all of the triangles. Try https://app.diagrams.net/.
 
     public static CorrectionData getCameraToDeviceCorrections(double pAngleCameraFaceToTarget, double pDistanceCameraFaceToTarget,
@@ -178,9 +177,6 @@ public class CameraToDeviceCorrections {
             finalTurnFromRobotCenter = Math.abs(Math.abs(rdcPreRotationAngle) - Math.abs(rctAngle));
         }
 
-        //**TODO For a turret the opposite side of the device to target triangle is the same
-        // as the strafe distance we have just calculated.
-
         // The FTC sign of the final turn is the inverse of the sign of the angle
         // from device to target.
         if (rctAngle > 0) { // target is left of robot center
@@ -209,11 +205,7 @@ public class CameraToDeviceCorrections {
 
         // After the strafe is complete we need to know the distance from the device
         // to the target.
-        //**TODO For a turret this is the adjacent side of the device to target triangle.
         double postStrafeDistanceDeviceToTarget = rcdPreRotationAdjacent - pDistanceRobotCenterToDeliveryDevice;
-
-        //**TODO For a turret we need to calculate the hypotenuse of the device
-        // to target triangle and we should log the angle.
 
         // Calculate the post-rotation distance from the device to target.
         // For this we need the triangle formed post-rotation from robot
@@ -238,7 +230,6 @@ public class CameraToDeviceCorrections {
     }
 
     public static class CorrectionData {
-
         public final double strafeDistanceDeviceOppositeTarget; // FTC: positive to the left, negative to the right
         public final double postStrafeDistanceDeviceToTarget;
 

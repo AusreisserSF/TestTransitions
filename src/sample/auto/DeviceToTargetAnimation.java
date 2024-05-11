@@ -33,6 +33,7 @@ public class DeviceToTargetAnimation {
     private double deviceCenterY;
     private double aprilTagCenterX;
     private double aprilTagCenterY;
+    private CameraToDeviceCorrections.CorrectionData corrections;
 
     public DeviceToTargetAnimation(RobotConstants.Alliance pAlliance,
                                    CenterStageControllerLG pController, Pane pField,
@@ -140,11 +141,55 @@ public class DeviceToTargetAnimation {
             field.getChildren().add(lineDH);
         });
 
-        //**TODO If we're treating the device as a turret then the robot itself
-        // does not need to turn. Just draw the lines from the turret to the
-        // target.
+        // If we're treating the device as a turret then the robot itself does
+        // not need to turn. Just draw the lines from the turret to the target.
         PauseTransition turretToTargetPauseT = new PauseTransition(Duration.millis(750));
-        turretToTargetPauseT.setOnFinished(event -> removeCameraToTargetLines());
+        turretToTargetPauseT.setOnFinished(event -> {
+            removeCameraToTargetLines();
+
+            // Use information about the strafe distances to calculate the angle
+            // and distances for the turret.
+
+            // The opposite side of the turret to target triangle is the same
+            // as the strafe distance from the device to the target.
+            double distanceTurretToTargetOpposite = Math.abs(corrections.strafeDistanceDeviceOppositeTarget);
+
+            // The adjacent side of the turret to target triangle is the same
+            // as the final post-strafe distance from the device from the target.
+            double distanceTurretToTargetAdjacent = corrections.postStrafeDistanceDeviceToTarget;
+
+            // Now we can calculate the hypotenuse and the angle.
+            double ttHypotenuseSquared = Math.pow(distanceTurretToTargetOpposite, 2) + Math.pow(distanceTurretToTargetAdjacent, 2);
+            double ttHypotenuse = Math.sqrt(ttHypotenuseSquared);
+            System.out.println("Distance from turret to target" + ttHypotenuse);
+
+            // sin theta = opposite / hypotenuse
+            double sinTTAngle = distanceTurretToTargetOpposite / ttHypotenuse;
+            double ttAngle = Math.toDegrees(Math.asin(sinTTAngle));
+            System.out.println("Angle from turret to target" + ttAngle);
+
+            // Draw the turret to target triangle.
+            // Draw the adjacent side of the device (turret) to target (AprilTag) triangle.
+            Line lineTTA = new Line(deviceCenterX, deviceCenterY, deviceCenterX, aprilTagCenterY);
+            lineTTA.setStroke(Color.FUCHSIA);
+            lineTTA.getStrokeDashArray().addAll(10.0);
+            lineTTA.setStrokeWidth(3.0);
+            field.getChildren().add(lineTTA);
+
+            // Draw the opposite side of the device (turret) to target (AprilTag) triangle.
+            Line lineTTO = new Line(deviceCenterX, aprilTagCenterY, aprilTagCenterX, aprilTagCenterY);
+            lineTTO.setStroke(Color.FUCHSIA);
+            lineTTO.getStrokeDashArray().addAll(10.0);
+            lineTTO.setStrokeWidth(3.0);
+            field.getChildren().add(lineTTO);
+
+            // Draw the hypotenuse of the device (turret) to target (AprilTag) triangle.
+            Line lineTTH = new Line(deviceCenterX, deviceCenterY, aprilTagCenterX, aprilTagCenterY);
+            lineTTH.setStroke(Color.FUCHSIA);
+            lineTTH.getStrokeDashArray().addAll(10.0);
+            lineTTH.setStrokeWidth(3.0);
+            field.getChildren().add(lineTTH);
+        });
 
         // Follow the cubic curve and rotate in parallel.
         ParallelTransition parallelT = new ParallelTransition(pathTransition, rotateTransition);
@@ -245,7 +290,7 @@ public class DeviceToTargetAnimation {
             // not include the distance from the camera center to its face. We need this
             // because it is part of the full distance from robot center to target center -
             // so add 1/2 of the height of the camera here.
-            CameraToDeviceCorrections.CorrectionData corrections = CameraToDeviceCorrections.getCameraToDeviceCorrections(degreesFromCameraToAprilTag,
+            corrections = CameraToDeviceCorrections.getCameraToDeviceCorrections(degreesFromCameraToAprilTag,
                     distanceFromCameraToAprilTag,
                     animationRobot.cameraCenterFromRobotCenterPX + RobotFXCenterStageLG.CAMERA_HEIGHT / 2,
                     animationRobot.cameraOffsetFromRobotCenterPX,
