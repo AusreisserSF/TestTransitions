@@ -170,21 +170,21 @@ public class DeviceToTargetAnimation {
             // Draw the turret to target triangle.
             // Draw the adjacent side of the device (turret) to target (AprilTag) triangle.
             Line lineTTA = new Line(deviceCenterX, deviceCenterY, deviceCenterX, aprilTagCenterY);
-            lineTTA.setStroke(Color.FUCHSIA);
+            lineTTA.setStroke(Color.DEEPPINK);
             lineTTA.getStrokeDashArray().addAll(10.0);
             lineTTA.setStrokeWidth(3.0);
             field.getChildren().add(lineTTA);
 
             // Draw the opposite side of the device (turret) to target (AprilTag) triangle.
             Line lineTTO = new Line(deviceCenterX, aprilTagCenterY, aprilTagCenterX, aprilTagCenterY);
-            lineTTO.setStroke(Color.FUCHSIA);
+            lineTTO.setStroke(Color.DEEPPINK);
             lineTTO.getStrokeDashArray().addAll(10.0);
             lineTTO.setStrokeWidth(3.0);
             field.getChildren().add(lineTTO);
 
             // Draw the hypotenuse of the device (turret) to target (AprilTag) triangle.
             Line lineTTH = new Line(deviceCenterX, deviceCenterY, aprilTagCenterX, aprilTagCenterY);
-            lineTTH.setStroke(Color.FUCHSIA);
+            lineTTH.setStroke(Color.DEEPPINK);
             lineTTH.getStrokeDashArray().addAll(10.0);
             lineTTH.setStrokeWidth(3.0);
             field.getChildren().add(lineTTH);
@@ -318,7 +318,7 @@ public class DeviceToTargetAnimation {
             // Draw the triangle formed between the center of the robot and the delivery device.
             Line lineRCDH = new Line(robotCoordX, robotCoordY, Math.abs(robotCoordX - animationRobot.deviceOffsetFromRobotCenterPX), aprilTagCenterY);
             lineRCDH.setId("lineRCDH");
-            lineRCDH.setStroke(Color.FUCHSIA);
+            lineRCDH.setStroke(Color.DEEPPINK);
             lineRCDH.getStrokeDashArray().addAll(10.0);
             lineRCDH.setStrokeWidth(3.0);
             field.getChildren().add(lineRCDH);
@@ -328,14 +328,14 @@ public class DeviceToTargetAnimation {
             // this line.
             Line lineDC = new Line(Math.abs(robotCoordX - animationRobot.deviceOffsetFromRobotCenterPX), aprilTagCenterY, Math.abs(robotCoordX - animationRobot.deviceOffsetFromRobotCenterPX), robotCoordX + animationRobot.robotHeightPX / 2);
             lineDC.setId("lineDC");
-            lineDC.setStroke(Color.FUCHSIA);
+            lineDC.setStroke(Color.DEEPPINK);
             lineDC.getStrokeDashArray().addAll(10.0);
             lineDC.setStrokeWidth(3.0);
             field.getChildren().add(lineDC);
 
             Line lineRCDO = new Line(robotCoordX, aprilTagCenterY, Math.abs(robotCoordX - animationRobot.deviceOffsetFromRobotCenterPX), aprilTagCenterY);
             lineRCDO.setId("lineRCDO");
-            lineRCDO.setStroke(Color.FUCHSIA);
+            lineRCDO.setStroke(Color.DEEPPINK);
             lineRCDO.getStrokeDashArray().addAll(10.0);
             lineRCDO.setStrokeWidth(3.0);
             field.getChildren().add(lineRCDO);
@@ -344,7 +344,7 @@ public class DeviceToTargetAnimation {
             // two triangles.
             Line lineRCA = new Line(robotCoordX, robotCoordY, robotCoordX, aprilTagCenterY);
             lineRCA.setId("lineRCA");
-            lineRCA.setStroke(Color.FUCHSIA);
+            lineRCA.setStroke(Color.DEEPPINK);
             lineRCA.getStrokeDashArray().addAll(10.0);
             lineRCA.setStrokeWidth(3.0);
             field.getChildren().add(lineRCA);
