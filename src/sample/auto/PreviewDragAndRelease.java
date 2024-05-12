@@ -19,7 +19,6 @@ public class PreviewDragAndRelease {
     public static final String CAMERA_FOV_LINE_RIGHT = "lineHalfFOVRight";
 
     private final Rectangle cameraOnRobot;
-    private final double aprilTagCenterY;
     private double orgSceneX, orgSceneY;
     private double orgRobotTranslateX, orgRobotTranslateY;
     private double previousRobotTranslateX, previousRobotTranslateY;
@@ -28,7 +27,7 @@ public class PreviewDragAndRelease {
 
     public PreviewDragAndRelease(CenterStageControllerLG pController, Pane pField,
                                  Rectangle pApproachZone, RobotFXCenterStageLG pPreviewRobot,
-                                 double pTargetAprilTagCenterX) {
+                                 Rectangle pTargetAprilTag) {
 
         // Show the preview robot on the field.
         Group previewRobotGroup = pPreviewRobot.getRobot();
@@ -39,10 +38,10 @@ public class PreviewDragAndRelease {
         double cameraFaceX = cameraCoord.getX() + cameraOnRobot.getWidth() / 2;
         double cameraFaceY = cameraCoord.getY();
 
-        // Get the y coordinates of any AprilTag - they're all the same.
-        Rectangle aprilTag = (Rectangle) pField.lookup("#" + FieldFXCenterStageBackdropLG.APRIL_TAG_1_ID);
-        Point2D aprilTagCoord = aprilTag.localToScene(aprilTag.getX(), aprilTag.getY());
-        aprilTagCenterY = aprilTagCoord.getY() + aprilTag.getHeight() / 2;
+        // Get the y coordinate of the target AprilTag.
+        Point2D aprilTagCoord = pTargetAprilTag.localToScene(pTargetAprilTag.getX(), pTargetAprilTag.getY());
+        double aprilTagCenterX = aprilTagCoord.getX() + pTargetAprilTag.getWidth() / 2;
+        double aprilTagCenterY = aprilTagCoord.getY() + pTargetAprilTag.getHeight() / 2;
 
         // Get the adjacent side of the triangle from the camera to the AprilTag.
         double fovAdjacent = Math.abs(cameraFaceY - aprilTagCenterY);
@@ -142,7 +141,7 @@ public class PreviewDragAndRelease {
             double leftFOVBoundaryAtAprilTag = updatedCameraFaceX - updatedHalfFOVOpposite;
             double rightFOVBoundaryAtAprilTag = updatedCameraFaceX + updatedHalfFOVOpposite;
 
-            if (pTargetAprilTagCenterX < leftFOVBoundaryAtAprilTag || pTargetAprilTagCenterX > rightFOVBoundaryAtAprilTag) {
+            if (aprilTagCenterX < leftFOVBoundaryAtAprilTag || aprilTagCenterX > rightFOVBoundaryAtAprilTag) {
                 // The target AprilTag is outside of the camera's field of view.
                 // From jewelsea's answer in
                 // https://stackoverflow.com/questions/24702542/how-to-change-the-color-of-text-in-javafx-textfield

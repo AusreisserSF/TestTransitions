@@ -32,6 +32,7 @@ public class FieldFXCenterStageBackdropLG {
 
     // By convention the width is the distance across the wall facing the audience.
     public static final double FIELD_DIMENSIONS_IN = 141.7;
+    public static final double HALF_FIELD_DIMENSIONS_IN = FIELD_DIMENSIONS_IN / 2;
     public static final double FIELD_DIMENSIONS_MM = 3600;
     public static final double FIELD_DIMENSIONS_PX = FIELD_DIMENSIONS_MM / PIXEL_SCALE; // pixels
     public static final double PX_PER_INCH = (FIELD_DIMENSIONS_PX / FIELD_DIMENSIONS_IN) * VIEW_SCALE;

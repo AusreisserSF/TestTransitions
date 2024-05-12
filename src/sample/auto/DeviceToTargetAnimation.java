@@ -115,7 +115,6 @@ public class DeviceToTargetAnimation {
 
             Bounds robotBP = animationRobotGroup.getBoundsInParent();
             System.out.println("Robot position after strafe x " + robotBP.getCenterX() + ", y " + robotBP.getCenterY());
-            //**TODO Show or at least log post-strafe position in FTC field coordinates.
         });
 
         RadioButton selectedRadioButton = (RadioButton) controller.approach_toggle.getSelectedToggle();
@@ -205,7 +204,6 @@ public class DeviceToTargetAnimation {
             robotCoordY = robotBP.getCenterY();
 
             System.out.println("Robot center in front of backdrop x " + robotCoordX + ", y " + robotCoordY);
-            //**TODO Show or at least log position in FTC field coordinates?
             System.out.println("Robot rotation after positioning in front of backdrop x " + animationRobotGroup.getRotate());
 
             //## All of these coordinates and calculations can only be made after
@@ -380,7 +378,8 @@ public class DeviceToTargetAnimation {
         SequentialTransition seqTransition = new SequentialTransition(postPreviewPauseT, parallelT); // common
         switch (radioButtonText) {
             case "Strafe robot" -> seqTransition.getChildren().addAll(cameraToTargetPauseT, strafeTT);
-            case "Turn robot" -> seqTransition.getChildren().addAll(robotCenterToDevicePauseT, preRotationPauseT, rotateDeviceTowardsAprilTagT);
+            case "Turn robot" ->
+                    seqTransition.getChildren().addAll(robotCenterToDevicePauseT, preRotationPauseT, rotateDeviceTowardsAprilTagT);
             case "Turn turret" -> seqTransition.getChildren().add(turretToTargetPauseT);
             default -> throw new AutonomousRobotException(TAG, "Unrecognized radio button text " + radioButtonText);
         }
@@ -444,6 +443,7 @@ public class DeviceToTargetAnimation {
 
                         pCubicCurveTo.setX(robotPositionAtBackdropX);
                         pCubicCurveTo.setY(robotPositionAtBackdropY);
+                        logFTCFieldCoordinates(alliance, robotPositionAtBackdropX, robotPositionAtBackdropY);
 
                         // Clear the preview robot and the camera field-of-view lines.
                         Line fovLeft = (Line) field.lookup("#" + PreviewDragAndRelease.CAMERA_FOV_LINE_LEFT);
@@ -471,13 +471,29 @@ public class DeviceToTargetAnimation {
                             playPauseButtonStateOnPress = PlayPauseButtonStateOnPress.RESUME_PLAY;
                         }
                     }
-                    default -> throw new AutonomousRobotException(TAG, "Invalid button state " + playPauseButtonStateOnPress);
+                    default ->
+                            throw new AutonomousRobotException(TAG, "Invalid button state " + playPauseButtonStateOnPress);
                 }
             };
 
             playPauseButton.setOnAction(event);
             playPauseButton.setText("Play");
             playPauseButtonStateOnPress = PlayPauseButtonStateOnPress.FIRST_PLAY;
+        }
+    }
+
+    // The simulation show half of the FTC field. Based on the conventions for the
+    // FTC field coordinates, FTC 0,0 is at the lower right of the blue half of the
+    // field and FTC 0,0 is at the lower left of the red half of the field.
+    private void logFTCFieldCoordinates(RobotConstants.Alliance pAlliance, double pRobotX, double pRobotY) {
+        if (pAlliance == RobotConstants.Alliance.BLUE) {
+            double ftcRobotXIn = FieldFXCenterStageBackdropLG.HALF_FIELD_DIMENSIONS_IN - (pRobotY / FieldFXCenterStageBackdropLG.PX_PER_INCH);
+            double ftcRobotYIN = FieldFXCenterStageBackdropLG.HALF_FIELD_DIMENSIONS_IN - (pRobotX / FieldFXCenterStageBackdropLG.PX_PER_INCH);
+            System.out.println("BLUE alliance FTC field coordinates: robot center x " + ftcRobotXIn + ", y " + ftcRobotYIN);
+        } else { // must be RED
+            double ftcRobotXIn = FieldFXCenterStageBackdropLG.HALF_FIELD_DIMENSIONS_IN - (pRobotY / FieldFXCenterStageBackdropLG.PX_PER_INCH);
+            double ftcRobotYIN = 0 - (pRobotX / FieldFXCenterStageBackdropLG.PX_PER_INCH);
+            System.out.println("RED alliance FTC field coordinates: robot center x " + ftcRobotXIn + ", y " + ftcRobotYIN);
         }
     }
 

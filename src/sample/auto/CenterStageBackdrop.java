@@ -30,7 +30,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
-//**TODO This is really about positioning the robot with respect to
+//**TODO Documentation
+// This is really about positioning the robot with respect to
 // a target whose angle and distance from a camera mounted on a robot
 // can be determined - such as an AprilTag or, as in this simulation,
 // the three AprilTags on the backdrop of the CenterStage game.
@@ -201,13 +202,9 @@ public class CenterStageBackdrop extends Application {
                             robotPositionAtBackdropY - ((robotHeightIn * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2)),
                     0.0);
 
-            // Given the number of the target AprilTag, get its x-coordinate.
-            Rectangle aprilTag = (Rectangle) field.lookup("#" + FieldFXCenterStageBackdropLG.APRIL_TAG_ID + targetAprilTag);
-            Point2D aprilTagCoord = aprilTag.localToScene(aprilTag.getX(), aprilTag.getY());
-            double aprilTagCenterX = aprilTagCoord.getX() + aprilTag.getWidth() / 2;
-
             // Show the draggable preview robot and camera field of view.
-            new PreviewDragAndRelease(controller, field, approachZone, previewRobot, aprilTagCenterX);
+            Rectangle aprilTag = (Rectangle) field.lookup("#" + FieldFXCenterStageBackdropLG.APRIL_TAG_ID + targetAprilTag);
+            new PreviewDragAndRelease(controller, field, approachZone, previewRobot, aprilTag);
 
             // Set the starting position for the animation robot.
             Point2D startingPosition;
