@@ -61,7 +61,7 @@ public class CenterStageBackdrop extends Application {
     @Override
     public void start(final Stage pStage) throws IOException, ParserConfigurationException, SAXException {
         FXMLLoader fxmlLoader = new FXMLLoader();
-        fxmlLoader.setLocation(getClass().getResource("/sample/auto/fx/centerStageLG.fxml")); // absolute path under src
+        fxmlLoader.setLocation(getClass().getResource("/sample/auto/fx/CenterStageLG.fxml")); // absolute path under src
         BorderPane root = fxmlLoader.load();
         controller = fxmlLoader.getController();
         Pane field = controller.field;
