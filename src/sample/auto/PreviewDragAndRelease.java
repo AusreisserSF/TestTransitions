@@ -51,14 +51,14 @@ public class PreviewDragAndRelease {
 
         Line fovLineLeft = new Line(cameraFaceX, cameraFaceY, cameraFaceX - halfFOVOpposite, aprilTagCenterY);
         fovLineLeft.setId(CAMERA_FOV_LINE_LEFT);
-        fovLineLeft.setStroke(Color.AQUA);
+        fovLineLeft.setStroke(Color.CORAL);
         fovLineLeft.getStrokeDashArray().addAll(10.0);
         fovLineLeft.setStrokeWidth(3.0);
         pField.getChildren().add(fovLineLeft);
 
         Line fovLineRight = new Line(cameraFaceX, cameraFaceY, cameraFaceX + halfFOVOpposite, aprilTagCenterY);
         fovLineRight.setId(CAMERA_FOV_LINE_RIGHT);
-        fovLineRight.setStroke(Color.AQUA);
+        fovLineRight.setStroke(Color.CORAL);
         fovLineRight.getStrokeDashArray().addAll(10.0);
         fovLineRight.setStrokeWidth(3.0);
         pField.getChildren().add(fovLineRight);

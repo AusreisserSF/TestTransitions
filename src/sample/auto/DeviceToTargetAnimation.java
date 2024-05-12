@@ -254,7 +254,7 @@ public class DeviceToTargetAnimation {
             // Draw a line from the camera to the target AprilTag, the hypotenuse of the camera triangle.
             Line lineCH = new Line(cameraFaceX, cameraFaceY, aprilTagCenterX, aprilTagCenterY);
             lineCH.setId("lineCH");
-            lineCH.setStroke(Color.FUCHSIA);
+            lineCH.setStroke(Color.LIME);
             lineCH.getStrokeDashArray().addAll(10.0);
             lineCH.setStrokeWidth(3.0);
             field.getChildren().add(lineCH);
@@ -262,7 +262,7 @@ public class DeviceToTargetAnimation {
             // Draw the opposite side of the camera triangle.
             Line lineCO = new Line(cameraFaceX, aprilTagCenterY, aprilTagCenterX, aprilTagCenterY);
             lineCO.setId("lineCO");
-            lineCO.setStroke(Color.FUCHSIA);
+            lineCO.setStroke(Color.LIME);
             lineCO.getStrokeDashArray().addAll(10.0);
             lineCO.setStrokeWidth(3.0);
             field.getChildren().add(lineCO);
@@ -270,7 +270,7 @@ public class DeviceToTargetAnimation {
             // Draw the adjacent side of the camera triangle.
             Line lineCA = new Line(cameraFaceX, cameraFaceY, cameraFaceX, aprilTagCenterY);
             lineCA.setId("lineCA");
-            lineCA.setStroke(Color.FUCHSIA);
+            lineCA.setStroke(Color.LIME);
             lineCA.getStrokeDashArray().addAll(10.0);
             lineCA.setStrokeWidth(3.0);
             field.getChildren().add(lineCA);
