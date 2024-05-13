@@ -5,8 +5,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
-//**TODO Camera and device are both yellow and so don't show well
-// when they are at the same position on the robot.
 public class RobotFXCenterStageLG extends RobotFXLG {
     public static final String PREVIEW_ROBOT_ID = "previewRobot";
     public static final String ANIMATION_ROBOT_ID = "animationRobot";

@@ -28,6 +28,7 @@ public class CameraToDeviceCorrections {
         double cameraAdjacentSquared = Math.pow(pDistanceCameraFaceToTarget, 2) - Math.pow(cameraOpposite, 2);
         double cameraAdjacent = Math.sqrt(cameraAdjacentSquared);
 
+        //**TODO Explain why we need this intermediate step.
         // Make the transformations that will yield the angle and distance from the
         // center of the robot to the target. Use the opposite and adjacent sides of
         // the camera triangle and the known position of the camera in relation to
