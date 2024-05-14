@@ -144,7 +144,7 @@ public class CameraToDeviceCorrections {
         // Get the angle at the center of the robot given the triangle defined above.
         double rcdPreRotationSin = rcdPreRotationOpposite / rdcPreRotationHypotenuse;
         double rdcPreRotationAngle = Math.toDegrees(Math.asin(rcdPreRotationSin));
-        System.out.println("Angle from robot center to right angle between device and target " + rdcPreRotationAngle);
+        System.out.println("Angle from robot center to intersection of lines between device and target " + rdcPreRotationAngle);
 
         // Set the angle to rotate so that the device is facing the target. Use
         // the FTC convention: positive angle for a CCW turn, negative for CW.
