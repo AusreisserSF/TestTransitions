@@ -28,14 +28,15 @@ public class CameraToDeviceCorrections {
         double cameraAdjacentSquared = Math.pow(pDistanceCameraFaceToTarget, 2) - Math.pow(cameraOpposite, 2);
         double cameraAdjacent = Math.sqrt(cameraAdjacentSquared);
 
-        //**TODO Explain why we need this intermediate step.
-        // Make the transformations that will yield the angle and distance from the
-        // center of the robot to the target. Use the opposite and adjacent sides of
-        // the camera triangle and the known position of the camera in relation to
-        // the center of the robot to calculate the opposite and adjacent sides of
-        // the "robot center to target" triangle. Then we can get the hypotenuse,
-        // which is the distance from the center of the robot to the target, and the
-        // angle from the center of the robot to the target.
+        // Make the transformations that will yield the triangle formed between
+        // the center of the robot and the target. This triangle will be used as
+        // an intermediate step in the final calculations of the strafe distance
+        // and the "turn to" angle. To get this triangle se the opposite and
+        // adjacent sides of the camera triangle and the known position of the
+        // camera in relation tonthe center of the robot to calculate the opposite
+        // and adjacent sides of the "robot center to target" triangle. Then we can
+        // get the hypotenuse, which is the distance from the center of the robot
+        // to the target, and the angle from the center of the robot to the target.
 
         // First get the opposite edge of the robot center to target triangle.
 
