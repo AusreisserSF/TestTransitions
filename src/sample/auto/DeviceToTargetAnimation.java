@@ -142,7 +142,7 @@ public class DeviceToTargetAnimation {
 
         // If we're treating the device as a turret then the robot itself does
         // not need to turn. Just draw the lines from the turret to the target.
-        PauseTransition turretToTargetPauseT = new PauseTransition(Duration.millis(750));
+        PauseTransition turretToTargetPauseT = new PauseTransition(Duration.millis(2500));
         turretToTargetPauseT.setOnFinished(event -> {
             removeCameraToTargetLines();
 
@@ -167,6 +167,7 @@ public class DeviceToTargetAnimation {
             double ttAngle = Math.toDegrees(Math.asin(sinTTAngle));
             System.out.println("Angle from turret to target" + ttAngle);
 
+            /*
             // Draw the turret to target triangle.
             // Draw the adjacent side of the device (turret) to target (AprilTag) triangle.
             Line lineTTA = new Line(deviceCenterX, deviceCenterY, deviceCenterX, aprilTagCenterY);
@@ -181,10 +182,11 @@ public class DeviceToTargetAnimation {
             lineTTO.getStrokeDashArray().addAll(10.0);
             lineTTO.setStrokeWidth(3.0);
             field.getChildren().add(lineTTO);
+            */
 
             // Draw the hypotenuse of the device (turret) to target (AprilTag) triangle.
             Line lineTTH = new Line(deviceCenterX, deviceCenterY, aprilTagCenterX, aprilTagCenterY);
-            lineTTH.setStroke(Color.DEEPPINK);
+            lineTTH.setStroke(Color.YELLOW);
             lineTTH.getStrokeDashArray().addAll(10.0);
             lineTTH.setStrokeWidth(3.0);
             field.getChildren().add(lineTTH);
@@ -308,76 +310,134 @@ public class DeviceToTargetAnimation {
             rotateDeviceTowardsAprilTagT.setByAngle(-corrections.rotateRobotCenterToAlignDevice);
         });
 
-        PauseTransition cameraToTargetPauseT = new PauseTransition(Duration.millis(2500));
-        cameraToTargetPauseT.setOnFinished(event -> removeCameraToTargetLines());
+        PauseTransition strafePauseT = new PauseTransition(Duration.millis(2500));
+        strafePauseT.setOnFinished(event -> {
+            removeCameraToTargetLines();
+
+            //**TODO This is common with the turn path. Turret?
+            // Draw the triangle formed between the center of the robot and the target
+            // AprilTag.
+            // Hypotenuse.
+            Line lineRCTH = new Line(robotCoordX, robotCoordY, aprilTagCenterX, aprilTagCenterY);
+            lineRCTH.setId("lineRCTH");
+            lineRCTH.setStroke(Color.AQUA);
+            lineRCTH.getStrokeDashArray().addAll(10.0);
+            lineRCTH.setStrokeWidth(3.0);
+            field.getChildren().add(lineRCTH);
+
+            // Opposite.
+            Line lineRCTO = new Line(robotCoordX, aprilTagCenterY, aprilTagCenterX, aprilTagCenterY);
+            lineRCTO.setId("lineRCTO");
+            lineRCTO.setStroke(Color.AQUA);
+            lineRCTO.getStrokeDashArray().addAll(10.0);
+            lineRCTO.setStrokeWidth(3.0);
+            field.getChildren().add(lineRCTO);
+
+            // The adjacent side of this triangle is shared with the robot center
+            // to device triangle already drawn above.
+            // Draw the adjacent side of the triangle.
+            Line lineRCTA = new Line(robotCoordX, robotCoordY, robotCoordX, aprilTagCenterY);
+            lineRCTA.setId("lineRCTA");
+            lineRCTA.setStroke(Color.AQUA);
+            lineRCTA.getStrokeDashArray().addAll(10.0);
+            lineRCTA.setStrokeWidth(3.0);
+            field.getChildren().add(lineRCTA);
+
+            //**TODO Need to show robot center to device offset at the AT level. Overlaps?
+        });
+
+        PauseTransition preStrafePauseT = new PauseTransition(Duration.millis(2500));
+        preStrafePauseT.setOnFinished(event -> {
+            removeRobotCenterToTargetLines();
+        });
 
         PauseTransition robotCenterToDevicePauseT = new PauseTransition(Duration.millis(2500));
         robotCenterToDevicePauseT.setOnFinished(event -> {
             removeCameraToTargetLines();
 
-            // Draw the triangle formed between the center of the robot and the delivery device.
-            Line lineRCDH = new Line(robotCoordX, robotCoordY, Math.abs(robotCoordX - animationRobot.deviceOffsetFromRobotCenterPX), aprilTagCenterY);
+            // Draw the hypotenuse of the triangle formed between the center of the
+            // robot and the delivery device.
+            Line lineRCDH = new Line(robotCoordX, robotCoordY,
+                    Math.abs(robotCoordX - animationRobot.deviceOffsetFromRobotCenterPX), aprilTagCenterY);
             lineRCDH.setId("lineRCDH");
             lineRCDH.setStroke(Color.DEEPPINK);
             lineRCDH.getStrokeDashArray().addAll(10.0);
             lineRCDH.setStrokeWidth(3.0);
             field.getChildren().add(lineRCDH);
 
-            // Draw a line from the end point of the hypotenuse down through the center of the
-            // device to the bottom of the robot. In general the device can be anywhere along
-            // this line.
-            Line lineDC = new Line(Math.abs(robotCoordX - animationRobot.deviceOffsetFromRobotCenterPX), aprilTagCenterY, Math.abs(robotCoordX - animationRobot.deviceOffsetFromRobotCenterPX), robotCoordX + animationRobot.robotHeightPX / 2);
+            // Draw a line from the end point of the hypotenuse down to the center of
+            // the device.
+            Line lineDC = new Line(Math.abs(robotCoordX - animationRobot.deviceOffsetFromRobotCenterPX), aprilTagCenterY,
+                    Math.abs(robotCoordX - animationRobot.deviceOffsetFromRobotCenterPX), Math.abs(robotCoordY - animationRobot.deviceCenterFromRobotCenterPX));
             lineDC.setId("lineDC");
             lineDC.setStroke(Color.DEEPPINK);
             lineDC.getStrokeDashArray().addAll(10.0);
             lineDC.setStrokeWidth(3.0);
             field.getChildren().add(lineDC);
 
-            Line lineRCDO = new Line(robotCoordX, aprilTagCenterY, Math.abs(robotCoordX - animationRobot.deviceOffsetFromRobotCenterPX), aprilTagCenterY);
+            // Draw the opposite side of the triangle, which is the distance from the
+            // center of the robot to the device. The y-coordinate of this line is at
+            // the level of the AprilTag.
+            Line lineRCDO = new Line(robotCoordX, aprilTagCenterY,
+                    Math.abs(robotCoordX - animationRobot.deviceOffsetFromRobotCenterPX), aprilTagCenterY);
             lineRCDO.setId("lineRCDO");
             lineRCDO.setStroke(Color.DEEPPINK);
             lineRCDO.getStrokeDashArray().addAll(10.0);
             lineRCDO.setStrokeWidth(3.0);
             field.getChildren().add(lineRCDO);
 
-            // Draw the adjacent side of the triangle. This side is shared between
-            // two triangles.
-            Line lineRCA = new Line(robotCoordX, robotCoordY, robotCoordX, aprilTagCenterY);
-            lineRCA.setId("lineRCA");
-            lineRCA.setStroke(Color.DEEPPINK);
-            lineRCA.getStrokeDashArray().addAll(10.0);
-            lineRCA.setStrokeWidth(3.0);
-            field.getChildren().add(lineRCA);
+            // Draw the adjacent side of the triangle.
+            Line lineRCDA = new Line(robotCoordX, robotCoordY, robotCoordX, aprilTagCenterY);
+            lineRCDA.setId("lineRCDA");
+            lineRCDA.setStroke(Color.DEEPPINK);
+            lineRCDA.getStrokeDashArray().addAll(10.0);
+            lineRCDA.setStrokeWidth(3.0);
+            field.getChildren().add(lineRCDA);
 
-            // Also show the hypotenuse of the right triangle formed between the center
-            // of the robot and the AprilTag.
-            Line lineRCAH = new Line(robotCoordX, robotCoordY, aprilTagCenterX, aprilTagCenterY);
-            lineRCAH.setId("lineRCAH");
-            lineRCAH.setStroke(Color.AQUA);
-            lineRCAH.getStrokeDashArray().addAll(10.0);
-            lineRCAH.setStrokeWidth(3.0);
-            field.getChildren().add(lineRCAH);
+            // Draw the triangle formed between the center of the robot and the target
+            // AprilTag.
+            // Hypotenuse.
+            Line lineRCTH = new Line(robotCoordX, robotCoordY, aprilTagCenterX, aprilTagCenterY);
+            lineRCTH.setId("lineRCTH");
+            lineRCTH.setStroke(Color.AQUA);
+            lineRCTH.getStrokeDashArray().addAll(10.0);
+            lineRCTH.setStrokeWidth(3.0);
+            field.getChildren().add(lineRCTH);
+
+            // Opposite.
+            Line lineRCTO = new Line(robotCoordX, aprilTagCenterY, aprilTagCenterX, aprilTagCenterY);
+            lineRCTO.setId("lineRCTO");
+            lineRCTO.setStroke(Color.AQUA);
+            lineRCTO.getStrokeDashArray().addAll(10.0);
+            lineRCTO.setStrokeWidth(3.0);
+            field.getChildren().add(lineRCTO);
+
+            // The adjacent side of this triangle is shared with the robot center
+            // to device triangle already drawn above.
+            //**TODO Interleave the two dashed lines.
+
         });
 
         PauseTransition preRotationPauseT = new PauseTransition(Duration.millis(2500));
         preRotationPauseT.setOnFinished(event -> {
             // Erase the lines from robot center to device.
             Line lineRCDHRef = (Line) field.lookup("#lineRCDH");
-            field.getChildren().remove(lineRCDHRef);
             Line lineDCRef = (Line) field.lookup("#lineDC");
-            field.getChildren().remove(lineDCRef);
             Line lineRCDORef = (Line) field.lookup("#lineRCDO");
-            field.getChildren().remove(lineRCDORef);
-            Line lineRCARef = (Line) field.lookup("#lineRCA");
-            field.getChildren().remove(lineRCARef);
-            Line lineRCAHRef = (Line) field.lookup("#lineRCAH");
-            field.getChildren().remove(lineRCAHRef);
+            Line lineRCDARef = (Line) field.lookup("#lineRCDA");
+            field.getChildren().removeAll(lineRCDHRef, lineDCRef, lineRCDORef, lineRCDARef);
+
+            //**TODO duplicate
+            // Erase lines from robot center to target AprilTag.
+            Line lineRCTHRef = (Line) field.lookup("#lineRCTH");
+            Line lineRCTORef = (Line) field.lookup("#lineRCTO");
+            field.getChildren().removeAll(lineRCTHRef, lineRCTORef);
         });
 
         // Look at the startup parameter that indicates whether to strafe or rotate.
         SequentialTransition seqTransition = new SequentialTransition(postPreviewPauseT, parallelT); // common
         switch (radioButtonText) {
-            case "Strafe robot" -> seqTransition.getChildren().addAll(cameraToTargetPauseT, strafeTT);
+            case "Strafe robot" -> seqTransition.getChildren().addAll(strafePauseT, preStrafePauseT, strafeTT);
             case "Turn robot" ->
                     seqTransition.getChildren().addAll(robotCenterToDevicePauseT, preRotationPauseT, rotateDeviceTowardsAprilTagT);
             case "Turn turret" -> seqTransition.getChildren().add(turretToTargetPauseT);
@@ -392,6 +452,14 @@ public class DeviceToTargetAnimation {
         Line lineCORef = (Line) field.lookup("#lineCO");
         Line lineCARef = (Line) field.lookup("#lineCA");
         field.getChildren().removeAll(lineCHRef, lineCORef, lineCARef);
+    }
+
+    private void removeRobotCenterToTargetLines() {
+        // Erase lines from robot center to target AprilTag.
+        Line lineRCTHRef = (Line) field.lookup("#lineRCTH");
+        Line lineRCTORef = (Line) field.lookup("#lineRCTO");
+        Line lineRCTARef = (Line) field.lookup("#lineRCTA");
+        field.getChildren().removeAll(lineRCTHRef, lineRCTORef, lineRCTARef);
     }
 
     private class PlayPauseToggle {
