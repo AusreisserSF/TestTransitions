@@ -46,7 +46,8 @@ public class DeviceToTargetAnimation {
         animationRobotGroup = animationRobot.getRobot();
     }
 
-    //**TODO When dashed lines interleave make sure both show.
+    //**TODO Clarify flow of control; separate onFinished events?
+    //**TODO When dashed lines interleave make sure both show. [10.0, 7.0] vs [7.0, 10.0; offset 7]
     public void runDeviceToTargetAnimation(Button pPlayPauseButton) {
 
         //## As a demonstration start the robot facing inward from the BLUE

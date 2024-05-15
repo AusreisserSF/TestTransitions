@@ -1,6 +1,7 @@
 package sample;
 
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -47,17 +48,29 @@ public class DragPreviewRobot extends Application {
     private static class PreviewRobotDragAndRelease {
         private double orgSceneX, orgSceneY;
         private double orgRobotTranslateX, orgRobotTranslateY;
+        private EventHandler<MouseEvent> robotGroupMouseDraggedHandler;
         private double orgFOVLineLeftTranslateX, orgFOVLineLeftTranslateY;
         private double orgFOVLineRightTranslateX, orgFOVLineRightTranslateY;
+        private double orgCameraTranslateX;
+        private double orgCameraTranslateY;
 
         //**TODO It would be ideal to redraw the FOV lines as the preview
         // robot is dragged about within the approach zone. Do this in the
         // testbed first.
 
+        //**TODO Camera drag/release works but robot group also moves slightly.
         private PreviewRobotDragAndRelease(RobotFXCenterStageLG pPreviewRobot, Line pLineFOVLeft, Line pLineFOVRight) {
 
             // Get the Group that contains the actual robot.
             Group previewRobotGroup = pPreviewRobot.getRobot();
+
+            Rectangle cameraOnRobot = (Rectangle) previewRobotGroup.lookup("#" + previewRobotGroup.getId() + "_" + RobotFXCenterStageLG.CAMERA_ON_ROBOT_ID);
+            cameraOnRobot.addEventFilter(MouseEvent.MOUSE_PRESSED, (MouseEvent mouseEvent) -> {
+                orgSceneX = mouseEvent.getSceneX();
+                orgSceneY = mouseEvent.getSceneY();
+                orgCameraTranslateX = cameraOnRobot.getTranslateX();
+                orgCameraTranslateY = cameraOnRobot.getTranslateY();
+            });
 
             // --- remember initial coordinates of mouse cursor and nodes
             previewRobotGroup.addEventFilter(MouseEvent.MOUSE_PRESSED, (MouseEvent mouseEvent) -> {
@@ -74,8 +87,7 @@ public class DragPreviewRobot extends Application {
                 orgFOVLineRightTranslateY = pLineFOVRight.getTranslateY();
             });
 
-            // --- Coordinated drag of nodes calculated from mouse cursor movement
-            previewRobotGroup.addEventFilter(MouseEvent.MOUSE_DRAGGED, (MouseEvent mouseEvent) -> {
+            robotGroupMouseDraggedHandler = (MouseEvent mouseEvent) -> {
                 double offsetX = mouseEvent.getSceneX() - orgSceneX;
                 double offsetY = mouseEvent.getSceneY() - orgSceneY;
 
@@ -96,9 +108,30 @@ public class DragPreviewRobot extends Application {
                 double newFOVLineRightTranslateY = orgFOVLineRightTranslateY + offsetY;
                 pLineFOVRight.setTranslateX(newFOVLineRightTranslateX);
                 pLineFOVRight.setTranslateY(newFOVLineRightTranslateY);
-            });
-        }
+            };
 
+            cameraOnRobot.addEventFilter(MouseEvent.MOUSE_DRAGGED, (MouseEvent mouseEvent) -> {
+
+                previewRobotGroup.removeEventFilter(MouseEvent.MOUSE_DRAGGED, robotGroupMouseDraggedHandler);
+
+                double offsetX = mouseEvent.getSceneX() - orgSceneX;
+                double offsetY = mouseEvent.getSceneY() - orgSceneY;
+
+                // Drag the camera.
+                double newCameraTranslateX = orgCameraTranslateX + offsetX;
+                double newCameraTranslateY = orgCameraTranslateY + offsetY;
+                cameraOnRobot.setTranslateX(newCameraTranslateX);
+                cameraOnRobot.setTranslateY(newCameraTranslateY);
+            });
+
+            cameraOnRobot.addEventFilter(MouseEvent.MOUSE_RELEASED, (MouseEvent mouseEvent) -> {
+                // restore
+                previewRobotGroup.addEventFilter(MouseEvent.MOUSE_DRAGGED, robotGroupMouseDraggedHandler);
+                    });
+
+            // --- Coordinated drag of nodes calculated from mouse cursor movement
+            previewRobotGroup.addEventFilter(MouseEvent.MOUSE_DRAGGED, robotGroupMouseDraggedHandler);
+        }
     }
 
 }
