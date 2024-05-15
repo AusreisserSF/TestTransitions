@@ -15,8 +15,8 @@ import sample.auto.fx.RobotFXCenterStageLG;
 import java.util.Locale;
 
 public class PreviewDragAndRelease {
-    public static final String CAMERA_FOV_LINE_LEFT = "lineHalfFOVLeft";
-    public static final String CAMERA_FOV_LINE_RIGHT = "lineHalfFOVRight";
+    public static final String CAMERA_FOV_LINE_LEFT = "lineFOVLeft";
+    public static final String CAMERA_FOV_LINE_RIGHT = "lineFOVRight";
 
     private final Rectangle cameraOnRobot;
     private double orgSceneX, orgSceneY;
