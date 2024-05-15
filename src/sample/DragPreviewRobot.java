@@ -59,6 +59,10 @@ public class DragPreviewRobot extends Application {
         // testbed first.
 
         //**TODO Camera drag/release works but robot group also moves slightly.
+        // May have to filter on events within the group and the detect children.
+        // What if camera and device are in the same location?
+        //**TODO See https://stackoverflow.com/questions/34887546/javafx-check-if-the-mouse-is-on-nodes-children
+        // answer from jewelsea.
         private PreviewRobotDragAndRelease(RobotFXCenterStageLG pPreviewRobot, Line pLineFOVLeft, Line pLineFOVRight) {
 
             // Get the Group that contains the actual robot.
