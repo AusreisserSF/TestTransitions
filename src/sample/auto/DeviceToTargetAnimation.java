@@ -47,7 +47,6 @@ public class DeviceToTargetAnimation {
     }
 
     //**TODO Clarify flow of control; separate onFinished events?
-    //**TODO When dashed lines interleave make sure both show. [10.0, 7.0] vs [7.0, 10.0; offset 7]
     public void runDeviceToTargetAnimation(Button pPlayPauseButton) {
 
         //## As a demonstration start the robot facing inward from the BLUE
@@ -375,7 +374,7 @@ public class DeviceToTargetAnimation {
                     Math.abs(robotCoordX - animationRobot.deviceOffsetFromRobotCenterPX), Math.abs(robotCoordY - animationRobot.deviceCenterFromRobotCenterPX));
             lineDC.setId("lineDC");
             lineDC.setStroke(Color.DEEPPINK);
-            lineDC.getStrokeDashArray().addAll(10.0, 5.0);
+            lineDC.getStrokeDashArray().addAll(10.0, 7.0);
             lineDC.setStrokeWidth(3.0);
             field.getChildren().add(lineDC);
 
@@ -386,7 +385,7 @@ public class DeviceToTargetAnimation {
                     Math.abs(robotCoordX - animationRobot.deviceOffsetFromRobotCenterPX), aprilTagCenterY);
             lineRCDO.setId("lineRCDO");
             lineRCDO.setStroke(Color.DEEPPINK);
-            lineRCDO.getStrokeDashArray().addAll(10.0, 5.0);
+            lineRCDO.getStrokeDashArray().addAll(10.0, 7.0);
             lineRCDO.setStrokeWidth(3.0);
             field.getChildren().add(lineRCDO);
 
@@ -394,7 +393,7 @@ public class DeviceToTargetAnimation {
             Line lineRCDA = new Line(robotCoordX, robotCoordY, robotCoordX, aprilTagCenterY);
             lineRCDA.setId("lineRCDA");
             lineRCDA.setStroke(Color.DEEPPINK);
-            lineRCDA.getStrokeDashArray().addAll(10.0, 5.0);
+            lineRCDA.getStrokeDashArray().addAll(10.0, 7.0);
             lineRCDA.setStrokeWidth(3.0);
             field.getChildren().add(lineRCDA);
 
@@ -404,7 +403,8 @@ public class DeviceToTargetAnimation {
             Line lineRCTH = new Line(robotCoordX, robotCoordY, aprilTagCenterX, aprilTagCenterY);
             lineRCTH.setId("lineRCTH");
             lineRCTH.setStroke(Color.AQUA);
-            lineRCTH.getStrokeDashArray().addAll(5.0);
+            lineRCTH.getStrokeDashArray().addAll(7.0, 10.0);
+            lineRCTH.setStrokeDashOffset(7.0);
             lineRCTH.setStrokeWidth(3.0);
             field.getChildren().add(lineRCTH);
 
@@ -412,7 +412,8 @@ public class DeviceToTargetAnimation {
             // Line lineRCTO = new Line(robotCoordX, aprilTagCenterY, aprilTagCenterX, aprilTagCenterY);
             // lineRCTO.setId("lineRCTO");
             // lineRCTO.setStroke(Color.AQUA);
-            // lineRCTO.getStrokeDashArray().addAll(5.0);
+            // lineRCTO.getStrokeDashArray().addAll(7.0, 10.0);
+            // lineRCTO.setStrokeDashOffset(7.0);
             // lineRCTO.setStrokeWidth(3.0);
             // field.getChildren().add(lineRCTO);
 
@@ -421,7 +422,8 @@ public class DeviceToTargetAnimation {
             Line lineRCTA = new Line(robotCoordX, robotCoordY, robotCoordX, aprilTagCenterY);
             lineRCTA.setId("lineRCTA");
             lineRCTA.setStroke(Color.AQUA);
-            lineRCTA.getStrokeDashArray().addAll(5.0);
+            lineRCTA.getStrokeDashArray().addAll(7.0, 10.0);
+            lineRCTA.setStrokeDashOffset(7.0);
             lineRCTA.setStrokeWidth(3.0);
             field.getChildren().add(lineRCTA);
         });
