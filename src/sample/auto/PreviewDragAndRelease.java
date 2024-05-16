@@ -99,6 +99,8 @@ public class PreviewDragAndRelease {
                     previewRobotBounds.getMaxY() > approachZoneBounds.getMaxY()) {
 
                 // Revert to the last good position.
+                //**TODO Do you really need previousRobotTranslateX? Use
+                // currentTranslateX = getTranslate()
                 previewRobotGroup.setTranslateX(previousRobotTranslateX);
                 previewRobotGroup.setTranslateY(previousRobotTranslateY);
                 return;

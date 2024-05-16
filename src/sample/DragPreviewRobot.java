@@ -49,12 +49,15 @@ public class DragPreviewRobot extends Application {
     private static class PreviewRobotDragAndRelease {
         private double orgRobotMouseX, orgRobotMouseY;
         private double orgRobotTranslateX, orgRobotTranslateY;
+        private Bounds robotBodyBounds;
         private double orgFOVLineLeftTranslateX, orgFOVLineLeftTranslateY;
         private double orgFOVLineRightTranslateX, orgFOVLineRightTranslateY;
         private double orgCameraMouseX, orgCameraMouseY;
         private double orgCameraTranslateX, orgCameraTranslateY;
+        private Bounds cameraBounds;
         private double orgDeviceMouseX, orgDeviceMouseY;
         private double orgDeviceTranslateX, orgDeviceTranslateY;
+        private Bounds deviceBounds;
 
         //**TODO It would be ideal to redraw the FOV lines as the preview
         // robot is dragged about within the approach zone. Do this in the
@@ -80,6 +83,7 @@ public class DragPreviewRobot extends Application {
                 orgCameraMouseY = mouseEvent.getSceneY();
                 orgCameraTranslateX = cameraOnRobot.getTranslateX();
                 orgCameraTranslateY = cameraOnRobot.getTranslateY();
+                cameraBounds = cameraOnRobot.getLayoutBounds();
             });
 
             Circle deviceOnRobot = (Circle) previewRobotGroup.lookup("#" + previewRobotGroup.getId() + "_" + RobotFXCenterStageLG.DEVICE_ON_ROBOT_ID);
@@ -88,6 +92,7 @@ public class DragPreviewRobot extends Application {
                 orgDeviceMouseY = mouseEvent.getSceneY();
                 orgDeviceTranslateX = deviceOnRobot.getTranslateX();
                 orgDeviceTranslateY = deviceOnRobot.getTranslateY();
+                deviceBounds = deviceOnRobot.getLayoutBounds();
             });
 
             // --- remember initial coordinates of mouse cursor and nodes
@@ -96,6 +101,7 @@ public class DragPreviewRobot extends Application {
                 orgRobotMouseY = mouseEvent.getSceneY();
                 orgRobotTranslateX = previewRobotGroup.getTranslateX();
                 orgRobotTranslateY = previewRobotGroup.getTranslateY();
+                robotBodyBounds = robotBody.getLayoutBounds();
                 orgFOVLineLeftTranslateX = pLineFOVLeft.getTranslateX();
                 orgFOVLineLeftTranslateY = pLineFOVLeft.getTranslateY();
                 orgFOVLineRightTranslateX = pLineFOVRight.getTranslateX();
@@ -110,37 +116,22 @@ public class DragPreviewRobot extends Application {
 
                 // Drag the camera.
                 double currentTranslateX = cameraOnRobot.getTranslateX();
-                System.out.println("currentTranslateX " + currentTranslateX); //**TODO TEMP
-
                 double currentTranslateY = cameraOnRobot.getTranslateY();
-
-                //**TODO newCameraTranslate is relative to its original position.
-                // I want the comparison to be absolute. But watch out because
-                // the dragging of the camera is ok.
                 double newCameraTranslateX = orgCameraTranslateX + offsetX;
-                System.out.println("newCameraTranslateX " + newCameraTranslateX); //**TODO TEMP
-
                 double newCameraTranslateY = orgCameraTranslateY + offsetY;
                 cameraOnRobot.setTranslateX(newCameraTranslateX);
                 cameraOnRobot.setTranslateY(newCameraTranslateY);
 
                 // Make sure the new position of the camera is within the bounds
-                // of the approach zone.
-                Bounds cameraBounds = cameraOnRobot.getLayoutBounds();
-                Bounds robotBodyBounds = robotBody.getLayoutBounds();
-
-                System.out.println("camera bounds max X " + cameraBounds.getMaxX()); //**TODO TEMP
-                System.out.println("robot bounds max X " + robotBodyBounds.getMaxX()); //**TODO TEMP
-
-                if (cameraBounds.getMinX() < robotBodyBounds.getMinX() ||
-                        cameraBounds.getMaxX() > robotBodyBounds.getMaxX() ||
-                        cameraBounds.getMinY() < robotBodyBounds.getMinY() ||
-                        cameraBounds.getMaxY() > robotBodyBounds.getMaxY()) {
+                // of the robot body.
+                if (cameraBounds.getMinX() + newCameraTranslateX < robotBodyBounds.getMinX() ||
+                        cameraBounds.getMaxX() + newCameraTranslateX > robotBodyBounds.getMaxX() ||
+                        cameraBounds.getMinY() + newCameraTranslateY < robotBodyBounds.getMinY() ||
+                        cameraBounds.getMaxY() + newCameraTranslateY > robotBodyBounds.getMaxY()) {
 
                     // Revert to the last good position.
                     cameraOnRobot.setTranslateX(currentTranslateX);
                     cameraOnRobot.setTranslateY(currentTranslateY);
-                    return;
                 }
             });
 
@@ -151,10 +142,24 @@ public class DragPreviewRobot extends Application {
                 double offsetY = mouseEvent.getSceneY() - orgDeviceMouseY;
 
                 // Drag the device.
-                double newCameraTranslateX = orgDeviceTranslateX + offsetX;
-                double newCameraTranslateY = orgDeviceTranslateY + offsetY;
-                deviceOnRobot.setTranslateX(newCameraTranslateX);
-                deviceOnRobot.setTranslateY(newCameraTranslateY);
+                double currentTranslateX = deviceOnRobot.getTranslateX();
+                double currentTranslateY = deviceOnRobot.getTranslateY();
+                double newDeviceTranslateX = orgDeviceTranslateX + offsetX;
+                double newDeviceTranslateY = orgDeviceTranslateY + offsetY;
+                deviceOnRobot.setTranslateX(newDeviceTranslateX);
+                deviceOnRobot.setTranslateY(newDeviceTranslateY);
+
+                // Make sure the new position of the device is within the bounds
+                // of the robot body.
+                if (deviceBounds.getMinX() + newDeviceTranslateX < robotBodyBounds.getMinX() ||
+                        deviceBounds.getMaxX() + newDeviceTranslateX > robotBodyBounds.getMaxX() ||
+                        deviceBounds.getMinY() + newDeviceTranslateY < robotBodyBounds.getMinY() ||
+                        deviceBounds.getMaxY() + newDeviceTranslateY > robotBodyBounds.getMaxY()) {
+
+                    // Revert to the last good position.
+                    deviceOnRobot.setTranslateX(currentTranslateX);
+                    deviceOnRobot.setTranslateY(currentTranslateY);
+                }
             });
 
             // --- Coordinated drag of nodes calculated from mouse cursor movement
