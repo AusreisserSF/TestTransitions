@@ -1,18 +1,19 @@
 package sample;
 
 import javafx.application.Application;
-import javafx.event.EventHandler;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import sample.auto.fx.FieldFXCenterStageBackdropLG;
 import sample.auto.fx.RobotFXCenterStageLG;
+import sample.auto.fx.RobotFXLG;
 
 // Start with the drag-and-release code from here:
 // http://java-buddy.blogspot.com/2013/07/javafx-drag-and-move-something.html#google_vignette
@@ -26,14 +27,14 @@ public class DragPreviewRobot extends Application {
                 14.0, 14.0, Color.GREEN,
                 6.0, -6.0, 78.0,
                 6.0, 6.0,
-                new Point2D(36.0  * FieldFXCenterStageBackdropLG.PX_PER_INCH - ((14.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2),
+                new Point2D(36.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH - ((14.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2),
                         36.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH - ((14.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2)),
                 0.0);
 
-        Line fovLineLeft = new Line(42.0  * FieldFXCenterStageBackdropLG.PX_PER_INCH, 36.0  * FieldFXCenterStageBackdropLG.PX_PER_INCH - ((14.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2),
-                26.0  * FieldFXCenterStageBackdropLG.PX_PER_INCH, 16.0  * FieldFXCenterStageBackdropLG.PX_PER_INCH);
-        Line fovLineRight = new Line(42.0  * FieldFXCenterStageBackdropLG.PX_PER_INCH, 36.0  * FieldFXCenterStageBackdropLG.PX_PER_INCH - ((14.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2),
-                56.0  * FieldFXCenterStageBackdropLG.PX_PER_INCH, 16.0  * FieldFXCenterStageBackdropLG.PX_PER_INCH);
+        Line fovLineLeft = new Line(42.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH, 36.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH - ((14.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2),
+                26.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH, 16.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH);
+        Line fovLineRight = new Line(42.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH, 36.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH - ((14.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2),
+                56.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH, 16.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH);
 
         new PreviewRobotDragAndRelease(previewRobot, fovLineLeft, fovLineRight);
 
@@ -46,43 +47,53 @@ public class DragPreviewRobot extends Application {
     }
 
     private static class PreviewRobotDragAndRelease {
-        private double orgSceneX, orgSceneY;
+        private double orgRobotMouseX, orgRobotMouseY;
         private double orgRobotTranslateX, orgRobotTranslateY;
-        private EventHandler<MouseEvent> robotGroupMouseDraggedHandler;
         private double orgFOVLineLeftTranslateX, orgFOVLineLeftTranslateY;
         private double orgFOVLineRightTranslateX, orgFOVLineRightTranslateY;
-        private double orgCameraTranslateX;
-        private double orgCameraTranslateY;
+        private double orgCameraMouseX, orgCameraMouseY;
+        private double orgCameraTranslateX, orgCameraTranslateY;
+        private double orgDeviceMouseX, orgDeviceMouseY;
+        private double orgDeviceTranslateX, orgDeviceTranslateY;
 
         //**TODO It would be ideal to redraw the FOV lines as the preview
         // robot is dragged about within the approach zone. Do this in the
         // testbed first.
 
-        //**TODO Camera drag/release works but robot group also moves slightly.
-        // May have to filter on events within the group and the detect children.
-        // What if camera and device are in the same location?
-        //**TODO See https://stackoverflow.com/questions/34887546/javafx-check-if-the-mouse-is-on-nodes-children
-        // answer from jewelsea.
+        //!! See answer from jewelsea in:
+        // https://stackoverflow.com/questions/34887546/javafx-check-if-the-mouse-is-on-nodes-children
+        // This post contains a link to:
+        // https://docs.oracle.com/javase/8/javafx/events-tutorial/processing.htm
+        //!! which talks about Event Filter (event capturing phase) and Event Handlers
+        // (event bubbling phase). If we use EventHandlers then the children of the
+        // Group will be processed first in the event bubbling phase. Then we can
+        // consume the event and prevent it from bubbling upwards.
         private PreviewRobotDragAndRelease(RobotFXCenterStageLG pPreviewRobot, Line pLineFOVLeft, Line pLineFOVRight) {
 
             // Get the Group that contains the actual robot.
             Group previewRobotGroup = pPreviewRobot.getRobot();
+            Rectangle robotBody = (Rectangle) previewRobotGroup.lookup("#" + previewRobotGroup.getId() + "_" + RobotFXLG.ROBOT_BODY_ID);
 
             Rectangle cameraOnRobot = (Rectangle) previewRobotGroup.lookup("#" + previewRobotGroup.getId() + "_" + RobotFXCenterStageLG.CAMERA_ON_ROBOT_ID);
-            cameraOnRobot.addEventFilter(MouseEvent.MOUSE_PRESSED, (MouseEvent mouseEvent) -> {
-                orgSceneX = mouseEvent.getSceneX();
-                orgSceneY = mouseEvent.getSceneY();
+            cameraOnRobot.addEventHandler(MouseEvent.MOUSE_PRESSED, (MouseEvent mouseEvent) -> {
+                orgCameraMouseX = mouseEvent.getSceneX();
+                orgCameraMouseY = mouseEvent.getSceneY();
                 orgCameraTranslateX = cameraOnRobot.getTranslateX();
                 orgCameraTranslateY = cameraOnRobot.getTranslateY();
             });
 
-            // --- remember initial coordinates of mouse cursor and nodes
-            previewRobotGroup.addEventFilter(MouseEvent.MOUSE_PRESSED, (MouseEvent mouseEvent) -> {
-                orgSceneX = mouseEvent.getSceneX();
-                orgSceneY = mouseEvent.getSceneY();
+            Circle deviceOnRobot = (Circle) previewRobotGroup.lookup("#" + previewRobotGroup.getId() + "_" + RobotFXCenterStageLG.DEVICE_ON_ROBOT_ID);
+            deviceOnRobot.addEventHandler(MouseEvent.MOUSE_PRESSED, (MouseEvent mouseEvent) -> {
+                orgDeviceMouseX = mouseEvent.getSceneX();
+                orgDeviceMouseY = mouseEvent.getSceneY();
+                orgDeviceTranslateX = deviceOnRobot.getTranslateX();
+                orgDeviceTranslateY = deviceOnRobot.getTranslateY();
+            });
 
-                //**TODO These are different for each Shape ... ??generalize by
-                // putting into an EnumMap??
+            // --- remember initial coordinates of mouse cursor and nodes
+            previewRobotGroup.addEventHandler(MouseEvent.MOUSE_PRESSED, (MouseEvent mouseEvent) -> {
+                orgRobotMouseX = mouseEvent.getSceneX();
+                orgRobotMouseY = mouseEvent.getSceneY();
                 orgRobotTranslateX = previewRobotGroup.getTranslateX();
                 orgRobotTranslateY = previewRobotGroup.getTranslateY();
                 orgFOVLineLeftTranslateX = pLineFOVLeft.getTranslateX();
@@ -91,9 +102,65 @@ public class DragPreviewRobot extends Application {
                 orgFOVLineRightTranslateY = pLineFOVRight.getTranslateY();
             });
 
-            robotGroupMouseDraggedHandler = (MouseEvent mouseEvent) -> {
-                double offsetX = mouseEvent.getSceneX() - orgSceneX;
-                double offsetY = mouseEvent.getSceneY() - orgSceneY;
+            cameraOnRobot.addEventHandler(MouseEvent.MOUSE_DRAGGED, (MouseEvent mouseEvent) -> {
+                mouseEvent.consume();
+
+                double offsetX = mouseEvent.getSceneX() - orgCameraMouseX;
+                double offsetY = mouseEvent.getSceneY() - orgCameraMouseY;
+
+                // Drag the camera.
+                double currentTranslateX = cameraOnRobot.getTranslateX();
+                System.out.println("currentTranslateX " + currentTranslateX); //**TODO TEMP
+
+                double currentTranslateY = cameraOnRobot.getTranslateY();
+
+                //**TODO newCameraTranslate is relative to its original position.
+                // I want the comparison to be absolute. But watch out because
+                // the dragging of the camera is ok.
+                double newCameraTranslateX = orgCameraTranslateX + offsetX;
+                System.out.println("newCameraTranslateX " + newCameraTranslateX); //**TODO TEMP
+
+                double newCameraTranslateY = orgCameraTranslateY + offsetY;
+                cameraOnRobot.setTranslateX(newCameraTranslateX);
+                cameraOnRobot.setTranslateY(newCameraTranslateY);
+
+                // Make sure the new position of the camera is within the bounds
+                // of the approach zone.
+                Bounds cameraBounds = cameraOnRobot.getLayoutBounds();
+                Bounds robotBodyBounds = robotBody.getLayoutBounds();
+
+                System.out.println("camera bounds max X " + cameraBounds.getMaxX()); //**TODO TEMP
+                System.out.println("robot bounds max X " + robotBodyBounds.getMaxX()); //**TODO TEMP
+
+                if (cameraBounds.getMinX() < robotBodyBounds.getMinX() ||
+                        cameraBounds.getMaxX() > robotBodyBounds.getMaxX() ||
+                        cameraBounds.getMinY() < robotBodyBounds.getMinY() ||
+                        cameraBounds.getMaxY() > robotBodyBounds.getMaxY()) {
+
+                    // Revert to the last good position.
+                    cameraOnRobot.setTranslateX(currentTranslateX);
+                    cameraOnRobot.setTranslateY(currentTranslateY);
+                    return;
+                }
+            });
+
+            deviceOnRobot.addEventHandler(MouseEvent.MOUSE_DRAGGED, (MouseEvent mouseEvent) -> {
+                mouseEvent.consume();
+
+                double offsetX = mouseEvent.getSceneX() - orgDeviceMouseX;
+                double offsetY = mouseEvent.getSceneY() - orgDeviceMouseY;
+
+                // Drag the device.
+                double newCameraTranslateX = orgDeviceTranslateX + offsetX;
+                double newCameraTranslateY = orgDeviceTranslateY + offsetY;
+                deviceOnRobot.setTranslateX(newCameraTranslateX);
+                deviceOnRobot.setTranslateY(newCameraTranslateY);
+            });
+
+            // --- Coordinated drag of nodes calculated from mouse cursor movement
+            previewRobotGroup.addEventHandler(MouseEvent.MOUSE_DRAGGED, (MouseEvent mouseEvent) -> {
+                double offsetX = mouseEvent.getSceneX() - orgRobotMouseX;
+                double offsetY = mouseEvent.getSceneY() - orgRobotMouseY;
 
                 // Drag the robot.
                 double newRobotTranslateX = orgRobotTranslateX + offsetX;
@@ -112,29 +179,7 @@ public class DragPreviewRobot extends Application {
                 double newFOVLineRightTranslateY = orgFOVLineRightTranslateY + offsetY;
                 pLineFOVRight.setTranslateX(newFOVLineRightTranslateX);
                 pLineFOVRight.setTranslateY(newFOVLineRightTranslateY);
-            };
-
-            cameraOnRobot.addEventFilter(MouseEvent.MOUSE_DRAGGED, (MouseEvent mouseEvent) -> {
-
-                previewRobotGroup.removeEventFilter(MouseEvent.MOUSE_DRAGGED, robotGroupMouseDraggedHandler);
-
-                double offsetX = mouseEvent.getSceneX() - orgSceneX;
-                double offsetY = mouseEvent.getSceneY() - orgSceneY;
-
-                // Drag the camera.
-                double newCameraTranslateX = orgCameraTranslateX + offsetX;
-                double newCameraTranslateY = orgCameraTranslateY + offsetY;
-                cameraOnRobot.setTranslateX(newCameraTranslateX);
-                cameraOnRobot.setTranslateY(newCameraTranslateY);
             });
-
-            cameraOnRobot.addEventFilter(MouseEvent.MOUSE_RELEASED, (MouseEvent mouseEvent) -> {
-                // restore
-                previewRobotGroup.addEventFilter(MouseEvent.MOUSE_DRAGGED, robotGroupMouseDraggedHandler);
-                    });
-
-            // --- Coordinated drag of nodes calculated from mouse cursor movement
-            previewRobotGroup.addEventFilter(MouseEvent.MOUSE_DRAGGED, robotGroupMouseDraggedHandler);
         }
     }
 

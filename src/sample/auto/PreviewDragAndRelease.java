@@ -89,7 +89,7 @@ public class PreviewDragAndRelease {
             previewRobotGroup.setTranslateX(newRobotTranslateX);
             previewRobotGroup.setTranslateY(newRobotTranslateY);
 
-            // Make sure the new position of the preview robot is withing the bounds
+            // Make sure the new position of the preview robot is within the bounds
             // of the approach zone.
             Bounds previewRobotBounds = previewRobotGroup.getBoundsInParent();
             Bounds approachZoneBounds = pApproachZone.getBoundsInParent();

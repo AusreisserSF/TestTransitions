@@ -11,6 +11,7 @@ public abstract class RobotFXLG {
     public static final double WHEEL_OFFSET = FieldFXCenterStageBackdropLG.PX_PER_INCH * 1;
 
     protected final Group robot;
+    public static final String ROBOT_BODY_ID = "robotBody";
     public final double robotWidthPX;
     public final double robotHeightPX;
 
@@ -24,6 +25,7 @@ public abstract class RobotFXLG {
         robotHeightPX = pRobotHeightPX;
 
         Rectangle robotBody = new Rectangle(pRobotScreenCoordinates.getX(), pRobotScreenCoordinates.getY(), pRobotWidthPX, pRobotHeightPX);
+        robotBody.setId(robot.getId() + "_" + ROBOT_BODY_ID);
         robotBody.setArcHeight(15);
         robotBody.setArcWidth(15);
         robotBody.setStroke(Color.BLACK);
