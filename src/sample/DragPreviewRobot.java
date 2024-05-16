@@ -31,6 +31,7 @@ public class DragPreviewRobot extends Application {
                         36.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH - ((14.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2)),
                 0.0);
 
+        //**TODO Should the FOV lines belong to a Group with the camera?
         Line fovLineLeft = new Line(42.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH, 36.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH - ((14.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2),
                 26.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH, 16.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH);
         Line fovLineRight = new Line(42.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH, 36.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH - ((14.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2),
@@ -135,6 +136,10 @@ public class DragPreviewRobot extends Application {
                 }
             });
 
+            cameraOnRobot.addEventHandler(MouseEvent.MOUSE_RELEASED, (MouseEvent mouseEvent) -> {
+                //**TODO Redraw FOV lines on mouse release?
+                    });
+
             deviceOnRobot.addEventHandler(MouseEvent.MOUSE_DRAGGED, (MouseEvent mouseEvent) -> {
                 mouseEvent.consume();
 
@@ -173,6 +178,7 @@ public class DragPreviewRobot extends Application {
                 previewRobotGroup.setTranslateX(newRobotTranslateX);
                 previewRobotGroup.setTranslateY(newRobotTranslateY);
 
+                //**TODO Redraw FOV lines as the camera is dragged.
                 // Drag the left boundary of the camera field of view.
                 double newFOVLineLeftTranslateX = orgFOVLineLeftTranslateX + offsetX;
                 double newFOVLineLeftTranslateY = orgFOVLineLeftTranslateY + offsetY;
