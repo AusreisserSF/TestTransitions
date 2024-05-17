@@ -524,8 +524,8 @@ public class DeviceToTargetAnimation {
                         logFTCFieldCoordinates(alliance, robotPositionAtBackdropX, robotPositionAtBackdropY);
 
                         // Clear the preview robot and the camera field-of-view lines.
-                        Line fovLeft = (Line) field.lookup("#" + PreviewDragAndRelease.CAMERA_FOV_LINE_LEFT);
-                        Line fovRight = (Line) field.lookup("#" + PreviewDragAndRelease.CAMERA_FOV_LINE_RIGHT);
+                        Line fovLeft = (Line) field.lookup("#" + PreviewDragAndRelease.CAMERA_FOV_LINE_LEFT_ID);
+                        Line fovRight = (Line) field.lookup("#" + PreviewDragAndRelease.CAMERA_FOV_LINE_RIGHT_ID);
                         field.getChildren().removeAll(previewRobotGroup, fovLeft, fovRight);
 
                         // Now show the animation robot.

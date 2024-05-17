@@ -6,82 +6,154 @@ import javafx.scene.Group;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import sample.auto.fx.CenterStageControllerLG;
 import sample.auto.fx.FieldFXCenterStageBackdropLG;
 import sample.auto.fx.RobotFXCenterStageLG;
+import sample.auto.fx.RobotFXLG;
 
 import java.util.Locale;
 
 public class PreviewDragAndRelease {
-    public static final String CAMERA_FOV_LINE_LEFT = "lineFOVLeft";
-    public static final String CAMERA_FOV_LINE_RIGHT = "lineFOVRight";
+    public static final String CAMERA_FOV_LINE_LEFT_ID = "fovLineLeft";
+    public static final String CAMERA_FOV_LINE_RIGHT_ID = "fovLineRight";
 
+    private final Pane field;
     private final Rectangle cameraOnRobot;
-    private double orgSceneX, orgSceneY;
+    private Line fovLineLeft;
+    private Line fovLineRight;
+    private double orgRobotMouseX, orgRobotMouseY;
     private double orgRobotTranslateX, orgRobotTranslateY;
-    private double previousRobotTranslateX, previousRobotTranslateY;
-    private double orgFOVLineLeftTranslateX, orgFOVLineLeftTranslateY;
-    private double orgFOVLineRightTranslateX, orgFOVLineRightTranslateY;
+    private Bounds robotBodyBounds;
+    private double orgCameraMouseX, orgCameraMouseY;
+    private double orgCameraTranslateX, orgCameraTranslateY;
+    private Bounds cameraBounds;
+    private double orgDeviceMouseX, orgDeviceMouseY;
+    private double orgDeviceTranslateX, orgDeviceTranslateY;
+    private Bounds deviceBounds;
 
+    //**TODO #1 Merged code from DragPreviewRobot but the result is
+    // not quite right: when I drag the camera or device the robot
+    // also moves - unlike in the test version DragPreviewRobot.
     public PreviewDragAndRelease(CenterStageControllerLG pController, Pane pField,
                                  Rectangle pApproachZone, RobotFXCenterStageLG pPreviewRobot,
                                  Rectangle pTargetAprilTag) {
 
         // Show the preview robot on the field.
+        field = pField;
         Group previewRobotGroup = pPreviewRobot.getRobot();
         pField.getChildren().add(previewRobotGroup);
 
         cameraOnRobot = (Rectangle) previewRobotGroup.lookup("#" + previewRobotGroup.getId() + "_" + RobotFXCenterStageLG.CAMERA_ON_ROBOT_ID);
-        Point2D cameraCoord = cameraOnRobot.localToScene(cameraOnRobot.getX(), cameraOnRobot.getY());
-        double cameraFaceX = cameraCoord.getX() + cameraOnRobot.getWidth() / 2;
-        double cameraFaceY = cameraCoord.getY();
 
         // Get the y coordinate of the target AprilTag.
         Point2D aprilTagCoord = pTargetAprilTag.localToScene(pTargetAprilTag.getX(), pTargetAprilTag.getY());
         double aprilTagCenterX = aprilTagCoord.getX() + pTargetAprilTag.getWidth() / 2;
         double aprilTagCenterY = aprilTagCoord.getY() + pTargetAprilTag.getHeight() / 2;
 
-        // Get the adjacent side of the triangle from the camera to the AprilTag.
-        double fovAdjacent = Math.abs(cameraFaceY - aprilTagCenterY);
-        // tangent  = opposite / adjacent
-        double halfFOVTan = Math.tan(Math.toRadians(pPreviewRobot.cameraFieldOfView / 2));
-        double halfFOVOpposite = halfFOVTan * fovAdjacent;
+        // Draw the camera FOV lines from the default position of the camera.
+        drawCameraFOV(cameraOnRobot, pPreviewRobot.cameraFieldOfView, aprilTagCenterY);
 
-        Line fovLineLeft = new Line(cameraFaceX, cameraFaceY, cameraFaceX - halfFOVOpposite, aprilTagCenterY);
-        fovLineLeft.setId(CAMERA_FOV_LINE_LEFT);
-        fovLineLeft.setStroke(Color.CORAL);
-        fovLineLeft.getStrokeDashArray().addAll(10.0);
-        fovLineLeft.setStrokeWidth(3.0);
-        pField.getChildren().add(fovLineLeft);
+        // Get the robot body, which defines the limits of the camera and device.
+        Rectangle robotBody = (Rectangle) previewRobotGroup.lookup("#" + previewRobotGroup.getId() + "_" + RobotFXLG.ROBOT_BODY_ID);
 
-        Line fovLineRight = new Line(cameraFaceX, cameraFaceY, cameraFaceX + halfFOVOpposite, aprilTagCenterY);
-        fovLineRight.setId(CAMERA_FOV_LINE_RIGHT);
-        fovLineRight.setStroke(Color.CORAL);
-        fovLineRight.getStrokeDashArray().addAll(10.0);
-        fovLineRight.setStrokeWidth(3.0);
-        pField.getChildren().add(fovLineRight);
+        cameraOnRobot.addEventHandler(MouseEvent.MOUSE_PRESSED, (MouseEvent mouseEvent) -> {
+            orgCameraMouseX = mouseEvent.getSceneX();
+            orgCameraMouseY = mouseEvent.getSceneY();
+            orgCameraTranslateX = cameraOnRobot.getTranslateX();
+            orgCameraTranslateY = cameraOnRobot.getTranslateY();
+            cameraBounds = cameraOnRobot.getLayoutBounds();
+        });
+
+        Circle deviceOnRobot = (Circle) previewRobotGroup.lookup("#" + previewRobotGroup.getId() + "_" + RobotFXCenterStageLG.DEVICE_ON_ROBOT_ID);
+        deviceOnRobot.addEventHandler(MouseEvent.MOUSE_PRESSED, (MouseEvent mouseEvent) -> {
+            orgDeviceMouseX = mouseEvent.getSceneX();
+            orgDeviceMouseY = mouseEvent.getSceneY();
+            orgDeviceTranslateX = deviceOnRobot.getTranslateX();
+            orgDeviceTranslateY = deviceOnRobot.getTranslateY();
+            deviceBounds = deviceOnRobot.getLayoutBounds();
+        });
 
         // --- remember initial coordinates of mouse cursor and nodes
         previewRobotGroup.addEventFilter(MouseEvent.MOUSE_PRESSED, (MouseEvent mouseEvent) -> {
-            orgSceneX = mouseEvent.getSceneX();
-            orgSceneY = mouseEvent.getSceneY();
-
+            orgRobotMouseX = mouseEvent.getSceneX();
+            orgRobotMouseY = mouseEvent.getSceneY();
             orgRobotTranslateX = previewRobotGroup.getTranslateX();
             orgRobotTranslateY = previewRobotGroup.getTranslateY();
-            previousRobotTranslateX = orgRobotTranslateX;
-            previousRobotTranslateY = orgRobotTranslateY;
-            orgFOVLineLeftTranslateX = fovLineLeft.getTranslateX();
-            orgFOVLineLeftTranslateY = fovLineLeft.getTranslateY();
-            orgFOVLineRightTranslateX = fovLineRight.getTranslateX();
-            orgFOVLineRightTranslateY = fovLineRight.getTranslateY();
+            robotBodyBounds = robotBody.getLayoutBounds();
+        });
+
+        //**TODO Make the uneditable TextField for the camera position in
+        // StartParameters reflect the drag (in inches).
+        cameraOnRobot.addEventHandler(MouseEvent.MOUSE_DRAGGED, (MouseEvent mouseEvent) -> {
+            mouseEvent.consume();
+
+            double offsetX = mouseEvent.getSceneX() - orgCameraMouseX;
+            double offsetY = mouseEvent.getSceneY() - orgCameraMouseY;
+
+            // Drag the camera.
+            double currentTranslateX = cameraOnRobot.getTranslateX();
+            double currentTranslateY = cameraOnRobot.getTranslateY();
+            double newCameraTranslateX = orgCameraTranslateX + offsetX;
+            double newCameraTranslateY = orgCameraTranslateY + offsetY;
+            cameraOnRobot.setTranslateX(newCameraTranslateX);
+            cameraOnRobot.setTranslateY(newCameraTranslateY);
+
+            // Make sure the new position of the camera is within the bounds
+            // of the robot body.
+            if (cameraBounds.getMinX() + newCameraTranslateX < robotBodyBounds.getMinX() ||
+                    cameraBounds.getMaxX() + newCameraTranslateX > robotBodyBounds.getMaxX() ||
+                    cameraBounds.getMinY() + newCameraTranslateY < robotBodyBounds.getMinY() ||
+                    cameraBounds.getMaxY() + newCameraTranslateY > robotBodyBounds.getMaxY()) {
+
+                // Revert to the last good position.
+                cameraOnRobot.setTranslateX(currentTranslateX);
+                cameraOnRobot.setTranslateY(currentTranslateY);
+                return;
+            }
+
+            // Remove the current FOV lines and redraw them from the new
+            // camera position.
+            drawCameraFOV(cameraOnRobot, pPreviewRobot.cameraFieldOfView, aprilTagCenterY);
+        });
+
+        //**TODO Make the uneditable TextField for the device position in
+        // StartParameters reflect the drag (in inches).
+        deviceOnRobot.addEventHandler(MouseEvent.MOUSE_DRAGGED, (MouseEvent mouseEvent) -> {
+            mouseEvent.consume();
+
+            double offsetX = mouseEvent.getSceneX() - orgDeviceMouseX;
+            double offsetY = mouseEvent.getSceneY() - orgDeviceMouseY;
+
+            // Drag the device.
+            double currentTranslateX = deviceOnRobot.getTranslateX();
+            double currentTranslateY = deviceOnRobot.getTranslateY();
+            double newDeviceTranslateX = orgDeviceTranslateX + offsetX;
+            double newDeviceTranslateY = orgDeviceTranslateY + offsetY;
+            deviceOnRobot.setTranslateX(newDeviceTranslateX);
+            deviceOnRobot.setTranslateY(newDeviceTranslateY);
+
+            // Make sure the new position of the device is within the bounds
+            // of the robot body.
+            if (deviceBounds.getMinX() + newDeviceTranslateX < robotBodyBounds.getMinX() ||
+                    deviceBounds.getMaxX() + newDeviceTranslateX > robotBodyBounds.getMaxX() ||
+                    deviceBounds.getMinY() + newDeviceTranslateY < robotBodyBounds.getMinY() ||
+                    deviceBounds.getMaxY() + newDeviceTranslateY > robotBodyBounds.getMaxY()) {
+
+                // Revert to the last good position.
+                deviceOnRobot.setTranslateX(currentTranslateX);
+                deviceOnRobot.setTranslateY(currentTranslateY);
+            }
         });
 
         // --- Coordinated drag of nodes calculated from mouse cursor movement
         previewRobotGroup.addEventFilter(MouseEvent.MOUSE_DRAGGED, (MouseEvent mouseEvent) -> {
-            double offsetX = mouseEvent.getSceneX() - orgSceneX;
-            double offsetY = mouseEvent.getSceneY() - orgSceneY;
+            double offsetX = mouseEvent.getSceneX() - orgRobotMouseX;
+            double offsetY = mouseEvent.getSceneY() - orgRobotMouseY;
+            double currentTranslateX = previewRobotGroup.getTranslateX();
+            double currentTranslateY = previewRobotGroup.getTranslateY();
 
             // Drag the robot.
             double newRobotTranslateX = orgRobotTranslateX + offsetX;
@@ -99,18 +171,16 @@ public class PreviewDragAndRelease {
                     previewRobotBounds.getMaxY() > approachZoneBounds.getMaxY()) {
 
                 // Revert to the last good position.
-                //**TODO Do you really need previousRobotTranslateX? Use
-                // currentTranslateX = getTranslate()
-                previewRobotGroup.setTranslateX(previousRobotTranslateX);
-                previewRobotGroup.setTranslateY(previousRobotTranslateY);
+                previewRobotGroup.setTranslateX(currentTranslateX);
+                previewRobotGroup.setTranslateY(currentTranslateY);
                 return;
             }
 
-            // Save known good position for next time around.
-            previousRobotTranslateX = newRobotTranslateX;
-            previousRobotTranslateY = newRobotTranslateY;
+            // Remove the current FOV lines and redraw them from the new
+            // camera position.
+            drawCameraFOV(cameraOnRobot, pPreviewRobot.cameraFieldOfView, aprilTagCenterY);
 
-            // Updating the start parameter display with the new x and y
+            // Update the start parameter display with the new x and y
             // positions of the center of the preview robot.
             double previewRobotCenterInX = previewRobotBounds.getCenterX() / FieldFXCenterStageBackdropLG.PX_PER_INCH;
             double previewRobotCenterInY = previewRobotBounds.getCenterY() / FieldFXCenterStageBackdropLG.PX_PER_INCH;
@@ -118,18 +188,8 @@ public class PreviewDragAndRelease {
             pController.robot_position_at_backdrop_x.setText(String.format(Locale.US, "%.2f", previewRobotCenterInX));
             pController.robot_position_at_backdrop_y.setText(String.format(Locale.US, "%.2f", previewRobotCenterInY));
 
-            // Drag the left boundary of the camera field of view.
-            double newFOVLineLeftTranslateX = orgFOVLineLeftTranslateX + offsetX;
-            double newFOVLineLeftTranslateY = orgFOVLineLeftTranslateY + offsetY;
-            fovLineLeft.setTranslateX(newFOVLineLeftTranslateX);
-            fovLineLeft.setTranslateY(newFOVLineLeftTranslateY);
-
-            // Drag the right boundary of the camera field of view.
-            double newFOVLineRightTranslateX = orgFOVLineRightTranslateX + offsetX;
-            double newFOVLineRightTranslateY = orgFOVLineRightTranslateY + offsetY;
-            fovLineRight.setTranslateX(newFOVLineRightTranslateX);
-            fovLineRight.setTranslateY(newFOVLineRightTranslateY);
-
+            // If the target AprilTag is outside of the camera's field of view,
+            // turn the display of FOV degrees in the start parameters area to red.
             Point2D updatedCameraCoord = cameraOnRobot.localToScene(cameraOnRobot.getX(), cameraOnRobot.getY());
             double updatedCameraFaceX = updatedCameraCoord.getX() + cameraOnRobot.getWidth() / 2;
             double updatedCameraFaceY = updatedCameraCoord.getY();
@@ -144,7 +204,6 @@ public class PreviewDragAndRelease {
             double rightFOVBoundaryAtAprilTag = updatedCameraFaceX + updatedHalfFOVOpposite;
 
             if (aprilTagCenterX < leftFOVBoundaryAtAprilTag || aprilTagCenterX > rightFOVBoundaryAtAprilTag) {
-                // The target AprilTag is outside of the camera's field of view.
                 // From jewelsea's answer in
                 // https://stackoverflow.com/questions/24702542/how-to-change-the-color-of-text-in-javafx-textfield
                 // textField.setStyle("-fx-text-inner-color: red;");
@@ -152,6 +211,39 @@ public class PreviewDragAndRelease {
             } else
                 pController.camera_field_of_view.setStyle("-fx-text-inner-color: black; -fx-font-weight: normal;");
         });
+    }
+
+    private void drawCameraFOV(Rectangle pCamera, double pCameraFOV, double pAprilTagCenterY) {
+
+        // Remove the current FOV lines.
+        field.getChildren().removeAll(fovLineLeft, fovLineRight);
+
+        Point2D cameraCoord = pCamera.localToScene(pCamera.getX(), pCamera.getY());
+        double cameraFaceX = cameraCoord.getX() + pCamera.getWidth() / 2;
+        double cameraFaceY = cameraCoord.getY();
+
+        // Get the y coordinate of the target.
+        double adjustedAprilTagCenterY = pAprilTagCenterY - 10.0; // a point a little higher than the target
+
+        // Get the adjacent side of the triangle from the camera to the target AprilTag.
+        double fovAdjacent = Math.abs(cameraFaceY - adjustedAprilTagCenterY);
+        // tangent  = opposite / adjacent
+        double halfFOVTan = Math.tan(Math.toRadians(pCameraFOV / 2));
+        double halfFOVOpposite = halfFOVTan * fovAdjacent;
+
+        fovLineLeft = new Line(cameraFaceX, cameraFaceY, cameraFaceX - halfFOVOpposite, adjustedAprilTagCenterY);
+        fovLineLeft.setId(CAMERA_FOV_LINE_LEFT_ID);
+        fovLineLeft.setStroke(Color.CORAL);
+        fovLineLeft.getStrokeDashArray().addAll(10.0);
+        fovLineLeft.setStrokeWidth(3.0);
+        field.getChildren().add(fovLineLeft);
+
+        fovLineRight = new Line(cameraFaceX, cameraFaceY, cameraFaceX + halfFOVOpposite, adjustedAprilTagCenterY);
+        fovLineRight.setId(CAMERA_FOV_LINE_RIGHT_ID);
+        fovLineRight.setStroke(Color.CORAL);
+        fovLineRight.getStrokeDashArray().addAll(10.0);
+        fovLineRight.setStrokeWidth(3.0);
+        field.getChildren().add(fovLineRight);
     }
 }
 
