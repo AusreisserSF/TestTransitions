@@ -19,6 +19,10 @@ import sample.auto.fx.RobotFXLG;
 // http://java-buddy.blogspot.com/2013/07/javafx-drag-and-move-something.html#google_vignette
 public class DragPreviewRobot extends Application {
 
+    private static final double TARGET_CENTER_LINE_Y = 100;
+    Line fovLineLeft;
+    Line fovLineRight;
+
     @Override
     public void start(Stage primaryStage) throws Exception {
 
@@ -31,23 +35,33 @@ public class DragPreviewRobot extends Application {
                         36.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH - ((14.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2)),
                 0.0);
 
-        //**TODO Should the FOV lines belong to a Group with the camera?
-        Line fovLineLeft = new Line(42.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH, 36.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH - ((14.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2),
-                26.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH, 16.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH);
-        Line fovLineRight = new Line(42.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH, 36.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH - ((14.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2),
-                56.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH, 16.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH);
+        //**TODO Draw FOV lines dynamically from the camera to a point just beyond the target center line.
+        Line targetCenterLine = new Line(0, TARGET_CENTER_LINE_Y, 600, TARGET_CENTER_LINE_Y);
+        targetCenterLine.setStrokeWidth(3.0);
+        targetCenterLine.setStroke(Color.BLACK);
 
-        new PreviewRobotDragAndRelease(previewRobot, fovLineLeft, fovLineRight);
+        // Draw the camera FOV lines from the default position of the camera.
+        //**TODO The default lies should show the 78-degree FOV from the camera face
+        // to points just above the target center line.
+
+        fovLineLeft = new Line(42.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH, 36.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH - ((14.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2),
+                26.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH, 16.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH);
+        fovLineLeft.setId("cameraFOVLineLeft");
+        fovLineRight = new Line(42.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH, 36.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH - ((14.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2),
+                56.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH, 16.0 * FieldFXCenterStageBackdropLG.PX_PER_INCH);
+        fovLineRight.setId("cameraFOVLineRight");
+
+        new PreviewRobotDragAndRelease(previewRobot);
 
         Group root = new Group();
-        root.getChildren().addAll(previewRobot.getRobot(), fovLineLeft, fovLineRight);
+        root.getChildren().addAll(targetCenterLine, previewRobot.getRobot(), fovLineLeft, fovLineRight);
         primaryStage.setResizable(false);
         primaryStage.setScene(new Scene(root, 600, 600));
         primaryStage.setTitle(DragPreviewRobot.class.getSimpleName());
         primaryStage.show();
     }
 
-    private static class PreviewRobotDragAndRelease {
+    private class PreviewRobotDragAndRelease {
         private double orgRobotMouseX, orgRobotMouseY;
         private double orgRobotTranslateX, orgRobotTranslateY;
         private Bounds robotBodyBounds;
@@ -72,7 +86,7 @@ public class DragPreviewRobot extends Application {
         // (event bubbling phase). If we use EventHandlers then the children of the
         // Group will be processed first in the event bubbling phase. Then we can
         // consume the event and prevent it from bubbling upwards.
-        private PreviewRobotDragAndRelease(RobotFXCenterStageLG pPreviewRobot, Line pLineFOVLeft, Line pLineFOVRight) {
+        private PreviewRobotDragAndRelease(RobotFXCenterStageLG pPreviewRobot) {
 
             // Get the Group that contains the actual robot.
             Group previewRobotGroup = pPreviewRobot.getRobot();
@@ -103,10 +117,10 @@ public class DragPreviewRobot extends Application {
                 orgRobotTranslateX = previewRobotGroup.getTranslateX();
                 orgRobotTranslateY = previewRobotGroup.getTranslateY();
                 robotBodyBounds = robotBody.getLayoutBounds();
-                orgFOVLineLeftTranslateX = pLineFOVLeft.getTranslateX();
-                orgFOVLineLeftTranslateY = pLineFOVLeft.getTranslateY();
-                orgFOVLineRightTranslateX = pLineFOVRight.getTranslateX();
-                orgFOVLineRightTranslateY = pLineFOVRight.getTranslateY();
+                orgFOVLineLeftTranslateX = fovLineLeft.getTranslateX();
+                orgFOVLineLeftTranslateY = fovLineLeft.getTranslateY();
+                orgFOVLineRightTranslateX = fovLineRight.getTranslateX();
+                orgFOVLineRightTranslateY = fovLineRight.getTranslateY();
             });
 
             cameraOnRobot.addEventHandler(MouseEvent.MOUSE_DRAGGED, (MouseEvent mouseEvent) -> {
@@ -133,7 +147,11 @@ public class DragPreviewRobot extends Application {
                     // Revert to the last good position.
                     cameraOnRobot.setTranslateX(currentTranslateX);
                     cameraOnRobot.setTranslateY(currentTranslateY);
+                    return;
                 }
+
+                //**TODO Remove the current FOV lines and redraw them from the new
+                // camera position.
             });
 
             cameraOnRobot.addEventHandler(MouseEvent.MOUSE_RELEASED, (MouseEvent mouseEvent) -> {
@@ -178,19 +196,26 @@ public class DragPreviewRobot extends Application {
                 previewRobotGroup.setTranslateX(newRobotTranslateX);
                 previewRobotGroup.setTranslateY(newRobotTranslateY);
 
-                //**TODO Redraw FOV lines as the camera is dragged.
+                //**TODO Redraw FOV lines as the *robot* is dragged.
                 // Drag the left boundary of the camera field of view.
                 double newFOVLineLeftTranslateX = orgFOVLineLeftTranslateX + offsetX;
                 double newFOVLineLeftTranslateY = orgFOVLineLeftTranslateY + offsetY;
-                pLineFOVLeft.setTranslateX(newFOVLineLeftTranslateX);
-                pLineFOVLeft.setTranslateY(newFOVLineLeftTranslateY);
+                fovLineLeft.setTranslateX(newFOVLineLeftTranslateX);
+                fovLineLeft.setTranslateY(newFOVLineLeftTranslateY);
 
                 // Drag the right boundary of the camera field of view.
                 double newFOVLineRightTranslateX = orgFOVLineRightTranslateX + offsetX;
                 double newFOVLineRightTranslateY = orgFOVLineRightTranslateY + offsetY;
-                pLineFOVRight.setTranslateX(newFOVLineRightTranslateX);
-                pLineFOVRight.setTranslateY(newFOVLineRightTranslateY);
+                fovLineRight.setTranslateX(newFOVLineRightTranslateX);
+                fovLineRight.setTranslateY(newFOVLineRightTranslateY);
             });
+        }
+
+        //**TODO Return Pair<Point2D, Point2D> of the coordinates of the
+        // endpoints of the lines that show the recalculated boundaries
+        // of the camera FOV.
+        private void recalculateFOVPosition(Rectangle pCamera, double pCameraFov) {
+
         }
     }
 
