@@ -14,6 +14,7 @@ import sample.auto.fx.FieldFXCenterStageBackdropLG;
 import sample.auto.fx.RobotFXCenterStageLG;
 import sample.auto.fx.RobotFXLG;
 
+import java.text.DecimalFormat;
 import java.util.Locale;
 
 public class PreviewDragAndRelease {
@@ -123,15 +124,19 @@ public class PreviewDragAndRelease {
             // Get the distance in pixels between robot center and camera center,
             // both fore and aft and side to side, set the correct sign for FTC,
             // and convert to inches.
-            //**TODO camera center from robot center is always negative, camera offset is always positive.
-            double newCameraCenterFromRobotCenter = (cameraBounds.getCenterY() + newCameraTranslateY) - robotBodyBounds.getCenterY();
-            newCameraCenterFromRobotCenter = (newCameraCenterFromRobotCenter > 0) ? newCameraCenterFromRobotCenter * -1 : newCameraCenterFromRobotCenter;
+            Bounds cameraBoundsInScene = cameraOnRobot.localToScene(cameraOnRobot.getBoundsInLocal());
+            Bounds robotBodyBoundsInScene = robotBody.localToScene(robotBody.getBoundsInLocal());
+
+            double newCameraCenterFromRobotCenter = cameraBoundsInScene.getCenterY() - robotBodyBoundsInScene.getCenterY();
+            newCameraCenterFromRobotCenter *= -1; // FTC direction
             newCameraCenterFromRobotCenter /= FieldFXCenterStageBackdropLG.PX_PER_INCH;
-            double newCameraOffsetFromRobotCenter = (cameraBounds.getCenterX() + newCameraTranslateX) - robotBodyBounds.getCenterX();
-            newCameraOffsetFromRobotCenter = (newCameraOffsetFromRobotCenter < 0) ? newCameraOffsetFromRobotCenter * -1 : newCameraOffsetFromRobotCenter;
+
+            double newCameraOffsetFromRobotCenter = cameraBoundsInScene.getCenterX() - robotBodyBoundsInScene.getCenterX();
+            newCameraOffsetFromRobotCenter *= -1; // FTC direction
             newCameraOffsetFromRobotCenter /= FieldFXCenterStageBackdropLG.PX_PER_INCH;
 
             // Update the start parameters display.
+            DecimalFormat numform = new DecimalFormat("00.00;-00.00");
             pController.camera_center_from_robot_center.setText(String.format(Locale.US, "%.2f", newCameraCenterFromRobotCenter));
             pController.camera_offset_from_robot_center.setText(String.format(Locale.US, "%.2f", newCameraOffsetFromRobotCenter));
         });
@@ -163,9 +168,23 @@ public class PreviewDragAndRelease {
                 return;
             }
 
-            //**TODO Get the distance in pixels between robot center and device
-            // center - both fore and aft and side to side - convert to inches
-            // and update the start parameters display. Watch the FTC signs.
+            // Get the distance in pixels between robot center and device center,
+            // both fore and aft and side to side, set the correct sign for FTC,
+            // and convert to inches.
+            Bounds deviceBoundsInScene = deviceOnRobot.localToScene(deviceOnRobot.getBoundsInLocal());
+            Bounds robotBodyBoundsInScene = robotBody.localToScene(robotBody.getBoundsInLocal());
+
+            double newDeviceCenterFromRobotCenter = deviceBoundsInScene.getCenterY() - robotBodyBoundsInScene.getCenterY();
+            newDeviceCenterFromRobotCenter *= -1; // FTC direction
+            newDeviceCenterFromRobotCenter /= FieldFXCenterStageBackdropLG.PX_PER_INCH;
+
+            double newDeviceOffsetFromRobotCenter = deviceBoundsInScene.getCenterX() - robotBodyBoundsInScene.getCenterX();
+            newDeviceOffsetFromRobotCenter *= -1; // FTC direction
+            newDeviceOffsetFromRobotCenter /= FieldFXCenterStageBackdropLG.PX_PER_INCH;
+
+            // Update the start parameters display.
+            pController.device_center_from_robot_center.setText(String.format(Locale.US, "%.2f", newDeviceCenterFromRobotCenter));
+            pController.device_offset_from_robot_center.setText(String.format(Locale.US, "%.2f", newDeviceOffsetFromRobotCenter));
         });
 
         // --- Coordinated drag of nodes calculated from mouse cursor movement

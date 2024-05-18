@@ -73,6 +73,7 @@ public class CenterStageBackdrop extends Application {
 
         String allianceString = allianceSelection();
         RobotConstants.Alliance alliance = RobotConstants.Alliance.valueOf(allianceString);
+        System.out.println("Alliance " + alliance);
 
         // Draw the alliance-specific view of the field.
         new FieldFXCenterStageBackdropLG(alliance, field);
@@ -141,19 +142,19 @@ public class CenterStageBackdrop extends Application {
             freezeStartParameters();
             field.getChildren().remove(previewButton);
 
-            // Show a Play/Pause button for the actual animation.
-            Button animationButton = new Button("Play");
-            animationButton.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
+            // Show the Play/Pause button for the actual animation.
+            Button playButton = new Button("Play");
+            playButton.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
 
             // Place the button on the opposite side of the field from the selected
             // alliance.
-            animationButton.setLayoutY(FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 3 - 50);
+            playButton.setLayoutY(FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 3 - 50);
             if (alliance == RobotConstants.Alliance.BLUE)
-                animationButton.setLayoutX((FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 3) - FieldFXCenterStageBackdropLG.FIELD_OUTSIDE_BORDER_SIZE - 60);
+                playButton.setLayoutX((FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 3) - FieldFXCenterStageBackdropLG.FIELD_OUTSIDE_BORDER_SIZE - 60);
             else
-                animationButton.setLayoutX(FieldFXCenterStageBackdropLG.FIELD_OUTSIDE_BORDER_SIZE + 10);
+                playButton.setLayoutX(FieldFXCenterStageBackdropLG.FIELD_OUTSIDE_BORDER_SIZE + 10);
 
-            field.getChildren().add(animationButton);
+            field.getChildren().add(playButton);
 
             // Place the robot on the field with the dimensions entered by the user.
             double robotWidthIn = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_WIDTH);
@@ -186,7 +187,7 @@ public class CenterStageBackdrop extends Application {
             approachZone.setStrokeWidth(2.0);
             field.getChildren().add(approachZone);
 
-            // Collect the start parameters.
+            // Collect the default start parameters.
             double cameraCenterFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_CENTER_FROM_ROBOT_CENTER);
             double cameraOffsetFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_OFFSET_FROM_ROBOT_CENTER);
             double cameraFieldOfView = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_FIELD_OF_VIEW);
@@ -223,19 +224,8 @@ public class CenterStageBackdrop extends Application {
                 startingRotation = -90.0;
             }
 
-            // Create the animation robot now but do not show yet.
-            RobotFXCenterStageLG animationRobot = new RobotFXCenterStageLG(RobotFXCenterStageLG.ANIMATION_ROBOT_ID,
-                    robotWidthIn, robotHeightIn, Color.GREEN,
-                    cameraCenterFromRobotCenter, cameraOffsetFromRobotCenter, cameraFieldOfView,
-                    deviceCenterFromRobotCenter, deviceOffsetFromRobotCenter,
-                    startingPosition, startingRotation);
-
-            System.out.println("Alliance " + alliance);
-            System.out.println("Camera center from robot center " + cameraCenterFromRobotCenter);
-            System.out.println("Camera offset from robot center " + cameraOffsetFromRobotCenter);
+            // The Preview button is showing: these fields may not be changed.
             System.out.println("Camera field of view " + cameraFieldOfView);
-            System.out.println("Device center from robot center " + deviceCenterFromRobotCenter);
-            System.out.println("Device offset from robot center " + deviceOffsetFromRobotCenter);
             System.out.println("AprilTag Id " + targetAprilTag);
             System.out.println("Approach " + radioButtonText);
 
@@ -243,8 +233,8 @@ public class CenterStageBackdrop extends Application {
             // its final position in which the delivery device is aligned with
             // the target. At this point the preview robot and camera field-of-
             // view display are on the screen and the Play button is visible.
-            DeviceToTargetAnimation animation = new DeviceToTargetAnimation(alliance, controller, field, previewRobot, animationRobot);
-            animation.runDeviceToTargetAnimation(animationButton);
+            DeviceToTargetAnimation animation = new DeviceToTargetAnimation(alliance, controller, field, previewRobot, startingPosition, startingRotation);
+            animation.runDeviceToTargetAnimation(playButton);
         });
 
         previewButton.setOnAction(event.get());

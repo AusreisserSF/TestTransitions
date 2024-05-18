@@ -26,6 +26,8 @@ public class DeviceToTargetAnimation {
     private final RobotFXCenterStageLG previewRobot;
     private final RobotFXCenterStageLG animationRobot;
     private final Group animationRobotGroup;
+    private final Point2D animationStartingPosition;
+    private final double animationStartingRotation;
 
     private double robotCoordX;
     private double robotCoordY;
@@ -35,15 +37,17 @@ public class DeviceToTargetAnimation {
     private double aprilTagCenterY;
     private CameraToDeviceCorrections.CorrectionData corrections;
 
+    //**TODO #1 Need access to StartParameterValidation.
     public DeviceToTargetAnimation(RobotConstants.Alliance pAlliance,
                                    CenterStageControllerLG pController, Pane pField,
-                                   RobotFXCenterStageLG pPreviewRobot, RobotFXCenterStageLG pAnimationRobot) {
+                                   RobotFXCenterStageLG pPreviewRobot,
+                                   Point2D pAnimationStartingPosition, double pAnimationStartingRotation) {
         alliance = pAlliance;
         controller = pController;
         field = pField;
-        animationRobot = pAnimationRobot;
         previewRobot = pPreviewRobot;
-        animationRobotGroup = animationRobot.getRobot();
+        animationStartingPosition = pAnimationStartingPosition;
+        animationStartingRotation = pAnimationStartingRotation;
     }
 
     //**TODO Clarify flow of control; separate onFinished events?
@@ -53,6 +57,10 @@ public class DeviceToTargetAnimation {
         // alliance wall and make the robot follow a CubicCurve pathToBackdrop while
         // simultaneously rotating -90 degrees to face the backdrop.
 
+        //**TODO #2 This won't work here - we can't create the animation robot
+        // until the Preview drag and release is complete and the user has hit
+        // the Play button.
+
         //!! I noticed the use of localToScene(() in some code from the FTCSimulator -
         // this is more like it. By the way, this is the *center* of the robot.
         Point2D animationRobotLocation = animationRobotGroup.localToScene(animationRobotGroup.getBoundsInParent().getCenterX(), animationRobotGroup.getBoundsInParent().getCenterY());
@@ -61,7 +69,7 @@ public class DeviceToTargetAnimation {
         PauseTransition postPreviewPauseT = new PauseTransition(Duration.millis(500));
 
         // It would be clearer if we could define the paths from the animation robot's
-        // blue or red start position to the robot's position in fron t of the backdrop.
+        // blue or red start position to the robot's position in front of the backdrop.
         // But the Preview is still in effect and the user may drag and release the
         // preview robot. So we have to wait until the user hits the Play button to
         // capture the preview robot's final position in front of the backdrop so that
@@ -500,8 +508,31 @@ public class DeviceToTargetAnimation {
             EventHandler<ActionEvent> event = e -> {
                 switch (playPauseButtonStateOnPress) {
                     case FIRST_PLAY -> {
-                        // We're done with the Preview so we can use the final position of the
-                        // preview robot as the target position for the animation robot.
+                        // We're done with the Preview so collect the possibly changed
+                        // start parameters and create the animation robot.
+
+                        // Collect the start parameters.
+                        double cameraCenterFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_CENTER_FROM_ROBOT_CENTER);
+                        double cameraOffsetFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_OFFSET_FROM_ROBOT_CENTER);
+                        double cameraFieldOfView = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_FIELD_OF_VIEW);
+                        double deviceCenterFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.DEVICE_CENTER_FROM_ROBOT_CENTER);
+                        double deviceOffsetFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.DEVICE_OFFSET_FROM_ROBOT_CENTER);
+                        double robotPositionAtBackdropX = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_POSITION_AT_BACKDROP_X) * FieldFXCenterStageBackdropLG.PX_PER_INCH;
+                        double robotPositionAtBackdropY = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_POSITION_AT_BACKDROP_Y) * FieldFXCenterStageBackdropLG.PX_PER_INCH;
+
+                        RobotFXCenterStageLG animationRobot = new RobotFXCenterStageLG(RobotFXCenterStageLG.ANIMATION_ROBOT_ID,
+                                robotWidthIn, robotHeightIn, Color.GREEN,
+                                cameraCenterFromRobotCenter, cameraOffsetFromRobotCenter, cameraFieldOfView,
+                                deviceCenterFromRobotCenter, deviceOffsetFromRobotCenter,
+                                startingPosition, startingRotation);
+
+                        System.out.println("Camera center from robot center " + cameraCenterFromRobotCenter);
+                        System.out.println("Camera offset from robot center " + cameraOffsetFromRobotCenter);
+                        System.out.println("Device center from robot center " + deviceCenterFromRobotCenter);
+                        System.out.println("Device offset from robot center " + deviceOffsetFromRobotCenter);
+
+                        // Use the final position of the preview robot as the target
+                        // position for the animation robot.
 
                         //## The curves are a proof-of-concept. They will be different depending
                         // on the user's selection for the final position in front of the backdrop.
