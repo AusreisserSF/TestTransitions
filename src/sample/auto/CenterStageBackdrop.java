@@ -106,6 +106,10 @@ public class CenterStageBackdrop extends Application {
         Button previewButton = new Button("Preview");
         previewButton.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
 
+        //**TODO Place the Preview button on the right-hand side of the field
+        // and the Save (XML) button on the left-hand side. The alliance does
+        // not affect the position of the buttons.
+
         // Place the button on the opposite side of the field from the selected
         // alliance.
         previewButton.setLayoutY(FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 3 - 50);
@@ -323,17 +327,17 @@ public class CenterStageBackdrop extends Application {
         }
     }
 
-    // Disable all of the start parameters except for those that we want to update during
-    // the drag-and-release of the preview robot: camera field of view, robotPositionAtBackdropX,
-    // robotPositionAtBackdropY.
+    // Set uneditable all of the start parameters that we want to update during
+    // the drag-and-release of the preview robot, the camera, and the device.
+    // Disable all others.
     private void freezeStartParameters() {
         controller.robot_width.setDisable(true);
         controller.robot_height.setDisable(true);
-        controller.camera_center_from_robot_center.setDisable(true);
-        controller.camera_offset_from_robot_center.setDisable(true);
+        controller.camera_center_from_robot_center.setEditable(false);
+        controller.camera_offset_from_robot_center.setEditable(false);
         controller.camera_field_of_view.setEditable(false);
-        controller.device_center_from_robot_center.setDisable(true);
-        controller.device_offset_from_robot_center.setDisable(true);
+        controller.device_center_from_robot_center.setEditable(false);
+        controller.device_offset_from_robot_center.setEditable(false);
         controller.robot_position_at_backdrop_x.setEditable(false);
         controller.robot_position_at_backdrop_y.setEditable(false);
         controller.april_tag_spinner.setDisable(true);

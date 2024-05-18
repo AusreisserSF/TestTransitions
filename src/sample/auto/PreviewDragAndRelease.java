@@ -34,9 +34,14 @@ public class PreviewDragAndRelease {
     private double orgDeviceTranslateX, orgDeviceTranslateY;
     private Bounds deviceBounds;
 
-    //**TODO #1 Merged code from DragPreviewRobot but the result is
-    // not quite right: when I drag the camera or device the robot
-    // also moves - unlike in the test version DragPreviewRobot.
+    //!! For background see the answer from jewelsea in:
+    // https://stackoverflow.com/questions/34887546/javafx-check-if-the-mouse-is-on-nodes-children
+    // This post contains a link to:
+    // https://docs.oracle.com/javase/8/javafx/events-tutorial/processing.htm
+    //!! which talks about Event Filters (event capturing phase) and Event Handlers
+    // (event bubbling phase). If we use EventHandlers then the children of the
+    // Group will be processed first in the event bubbling phase. Then we can
+    // consume the event and prevent it from bubbling upwards.
     public PreviewDragAndRelease(CenterStageControllerLG pController, Pane pField,
                                  Rectangle pApproachZone, RobotFXCenterStageLG pPreviewRobot,
                                  Rectangle pTargetAprilTag) {
@@ -58,7 +63,6 @@ public class PreviewDragAndRelease {
 
         // Get the robot body, which defines the limits of the camera and device.
         Rectangle robotBody = (Rectangle) previewRobotGroup.lookup("#" + previewRobotGroup.getId() + "_" + RobotFXLG.ROBOT_BODY_ID);
-
         cameraOnRobot.addEventHandler(MouseEvent.MOUSE_PRESSED, (MouseEvent mouseEvent) -> {
             orgCameraMouseX = mouseEvent.getSceneX();
             orgCameraMouseY = mouseEvent.getSceneY();
@@ -77,7 +81,7 @@ public class PreviewDragAndRelease {
         });
 
         // --- remember initial coordinates of mouse cursor and nodes
-        previewRobotGroup.addEventFilter(MouseEvent.MOUSE_PRESSED, (MouseEvent mouseEvent) -> {
+        previewRobotGroup.addEventHandler(MouseEvent.MOUSE_PRESSED, (MouseEvent mouseEvent) -> {
             orgRobotMouseX = mouseEvent.getSceneX();
             orgRobotMouseY = mouseEvent.getSceneY();
             orgRobotTranslateX = previewRobotGroup.getTranslateX();
@@ -85,8 +89,6 @@ public class PreviewDragAndRelease {
             robotBodyBounds = robotBody.getLayoutBounds();
         });
 
-        //**TODO Make the uneditable TextField for the camera position in
-        // StartParameters reflect the drag (in inches).
         cameraOnRobot.addEventHandler(MouseEvent.MOUSE_DRAGGED, (MouseEvent mouseEvent) -> {
             mouseEvent.consume();
 
@@ -117,10 +119,12 @@ public class PreviewDragAndRelease {
             // Remove the current FOV lines and redraw them from the new
             // camera position.
             drawCameraFOV(cameraOnRobot, pPreviewRobot.cameraFieldOfView, aprilTagCenterY);
+
+            //**TODO Get the distance in pixels between robot center and camera
+            // center (not face) - both fore and aft and side to side - convert to inches
+            // and update the start parameters display. Watch the FTC signs.
         });
 
-        //**TODO Make the uneditable TextField for the device position in
-        // StartParameters reflect the drag (in inches).
         deviceOnRobot.addEventHandler(MouseEvent.MOUSE_DRAGGED, (MouseEvent mouseEvent) -> {
             mouseEvent.consume();
 
@@ -145,11 +149,16 @@ public class PreviewDragAndRelease {
                 // Revert to the last good position.
                 deviceOnRobot.setTranslateX(currentTranslateX);
                 deviceOnRobot.setTranslateY(currentTranslateY);
+                return;
             }
+
+            //**TODO Get the distance in pixels between robot center and device
+            // center - both fore and aft and side to side - convert to inches
+            // and update the start parameters display. Watch the FTC signs.
         });
 
         // --- Coordinated drag of nodes calculated from mouse cursor movement
-        previewRobotGroup.addEventFilter(MouseEvent.MOUSE_DRAGGED, (MouseEvent mouseEvent) -> {
+        previewRobotGroup.addEventHandler(MouseEvent.MOUSE_DRAGGED, (MouseEvent mouseEvent) -> {
             double offsetX = mouseEvent.getSceneX() - orgRobotMouseX;
             double offsetY = mouseEvent.getSceneY() - orgRobotMouseY;
             double currentTranslateX = previewRobotGroup.getTranslateX();
