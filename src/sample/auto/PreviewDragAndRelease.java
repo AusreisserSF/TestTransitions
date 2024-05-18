@@ -120,9 +120,20 @@ public class PreviewDragAndRelease {
             // camera position.
             drawCameraFOV(cameraOnRobot, pPreviewRobot.cameraFieldOfView, aprilTagCenterY);
 
-            //**TODO Get the distance in pixels between robot center and camera
-            // center (not face) - both fore and aft and side to side - convert to inches
-            // and update the start parameters display. Watch the FTC signs.
+            // Get the distance in pixels between robot center and camera center,
+            // both fore and aft and side to side, set the correct sign for FTC,
+            // and convert to inches.
+            //**TODO camera center from robot center is always negative, camera offset is always positive.
+            double newCameraCenterFromRobotCenter = (cameraBounds.getCenterY() + newCameraTranslateY) - robotBodyBounds.getCenterY();
+            newCameraCenterFromRobotCenter = (newCameraCenterFromRobotCenter > 0) ? newCameraCenterFromRobotCenter * -1 : newCameraCenterFromRobotCenter;
+            newCameraCenterFromRobotCenter /= FieldFXCenterStageBackdropLG.PX_PER_INCH;
+            double newCameraOffsetFromRobotCenter = (cameraBounds.getCenterX() + newCameraTranslateX) - robotBodyBounds.getCenterX();
+            newCameraOffsetFromRobotCenter = (newCameraOffsetFromRobotCenter < 0) ? newCameraOffsetFromRobotCenter * -1 : newCameraOffsetFromRobotCenter;
+            newCameraOffsetFromRobotCenter /= FieldFXCenterStageBackdropLG.PX_PER_INCH;
+
+            // Update the start parameters display.
+            pController.camera_center_from_robot_center.setText(String.format(Locale.US, "%.2f", newCameraCenterFromRobotCenter));
+            pController.camera_offset_from_robot_center.setText(String.format(Locale.US, "%.2f", newCameraOffsetFromRobotCenter));
         });
 
         deviceOnRobot.addEventHandler(MouseEvent.MOUSE_DRAGGED, (MouseEvent mouseEvent) -> {
