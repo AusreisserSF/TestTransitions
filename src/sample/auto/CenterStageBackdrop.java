@@ -140,8 +140,9 @@ public class CenterStageBackdrop extends Application {
             freezeStartParameters();
             field.getChildren().remove(previewButton);
 
-            //**TODO Place a Save (XML) button on the field when the Play button
-            // is showing. Allow the Save button to be clicked once.
+            //**TODO Place a Save (XML) preview changes button on the field when
+            // the Play button is showing. Once the Play button has been clicked,
+            // remove the Save button.
 
             // Show the Play/Pause button for the actual animation.
             Button playButton = new Button("Play");
