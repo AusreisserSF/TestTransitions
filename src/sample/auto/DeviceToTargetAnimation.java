@@ -24,8 +24,9 @@ public class DeviceToTargetAnimation {
     private final CenterStageControllerLG controller;
     private final Pane field;
     private final RobotFXCenterStageLG previewRobot;
-    private final RobotFXCenterStageLG animationRobot;
-    private final Group animationRobotGroup;
+    private final StartParameterValidation startParameterValidation;
+    private RobotFXCenterStageLG animationRobot;
+    private Group animationRobotGroup;
     private final Point2D animationStartingPosition;
     private final double animationStartingRotation;
 
@@ -37,15 +38,16 @@ public class DeviceToTargetAnimation {
     private double aprilTagCenterY;
     private CameraToDeviceCorrections.CorrectionData corrections;
 
-    //**TODO #1 Need access to StartParameterValidation.
     public DeviceToTargetAnimation(RobotConstants.Alliance pAlliance,
                                    CenterStageControllerLG pController, Pane pField,
                                    RobotFXCenterStageLG pPreviewRobot,
+                                   StartParameterValidation pStartParameterValidation,
                                    Point2D pAnimationStartingPosition, double pAnimationStartingRotation) {
         alliance = pAlliance;
         controller = pController;
         field = pField;
         previewRobot = pPreviewRobot;
+        startParameterValidation = pStartParameterValidation;
         animationStartingPosition = pAnimationStartingPosition;
         animationStartingRotation = pAnimationStartingRotation;
     }
@@ -57,7 +59,8 @@ public class DeviceToTargetAnimation {
         // alliance wall and make the robot follow a CubicCurve pathToBackdrop while
         // simultaneously rotating -90 degrees to face the backdrop.
 
-        //**TODO #2 This won't work here - we can't create the animation robot
+        //**TODO START CUT - move to PlayPauseToggle
+        //**TODO #1 This won't work here - we can't create the animation robot
         // until the Preview drag and release is complete and the user has hit
         // the Play button.
 
@@ -91,7 +94,8 @@ public class DeviceToTargetAnimation {
         PathTransition pathTransition = new PathTransition();
         pathTransition.setDuration(Duration.millis(3000));
         pathTransition.setPath(pathToBackdrop);
-        pathTransition.setNode(animationRobotGroup);
+        pathTransition.setNode(animationRobotGroup); //**TODO !!NOT initialized yet ...
+        //**TODO END CUT
 
         RotateTransition rotateTransition =
                 new RotateTransition(Duration.millis(3000), animationRobotGroup);
@@ -512,19 +516,21 @@ public class DeviceToTargetAnimation {
                         // start parameters and create the animation robot.
 
                         // Collect the start parameters.
+                        double robotWidthIn = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_WIDTH);
+                        double robotHeightIn = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_HEIGHT);
                         double cameraCenterFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_CENTER_FROM_ROBOT_CENTER);
                         double cameraOffsetFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_OFFSET_FROM_ROBOT_CENTER);
                         double cameraFieldOfView = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_FIELD_OF_VIEW);
                         double deviceCenterFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.DEVICE_CENTER_FROM_ROBOT_CENTER);
                         double deviceOffsetFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.DEVICE_OFFSET_FROM_ROBOT_CENTER);
-                        double robotPositionAtBackdropX = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_POSITION_AT_BACKDROP_X) * FieldFXCenterStageBackdropLG.PX_PER_INCH;
-                        double robotPositionAtBackdropY = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_POSITION_AT_BACKDROP_Y) * FieldFXCenterStageBackdropLG.PX_PER_INCH;
 
-                        RobotFXCenterStageLG animationRobot = new RobotFXCenterStageLG(RobotFXCenterStageLG.ANIMATION_ROBOT_ID,
+                        animationRobot = new RobotFXCenterStageLG(RobotFXCenterStageLG.ANIMATION_ROBOT_ID,
                                 robotWidthIn, robotHeightIn, Color.GREEN,
                                 cameraCenterFromRobotCenter, cameraOffsetFromRobotCenter, cameraFieldOfView,
                                 deviceCenterFromRobotCenter, deviceOffsetFromRobotCenter,
-                                startingPosition, startingRotation);
+                                animationStartingPosition, animationStartingRotation);
+
+                        animationRobotGroup = animationRobot.getRobot();
 
                         System.out.println("Camera center from robot center " + cameraCenterFromRobotCenter);
                         System.out.println("Camera offset from robot center " + cameraOffsetFromRobotCenter);

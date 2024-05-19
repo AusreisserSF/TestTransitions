@@ -225,6 +225,8 @@ public class CenterStageBackdrop extends Application {
             }
 
             // The Preview button is showing: these fields may not be changed.
+            System.out.println("Robot width inches " + robotWidthIn);
+            System.out.println("Robot height inches " + robotHeightIn);
             System.out.println("Camera field of view " + cameraFieldOfView);
             System.out.println("AprilTag Id " + targetAprilTag);
             System.out.println("Approach " + radioButtonText);
@@ -233,7 +235,8 @@ public class CenterStageBackdrop extends Application {
             // its final position in which the delivery device is aligned with
             // the target. At this point the preview robot and camera field-of-
             // view display are on the screen and the Play button is visible.
-            DeviceToTargetAnimation animation = new DeviceToTargetAnimation(alliance, controller, field, previewRobot, startingPosition, startingRotation);
+            DeviceToTargetAnimation animation = new DeviceToTargetAnimation(alliance, controller, field, previewRobot,
+                    startParameterValidation, startingPosition, startingRotation);
             animation.runDeviceToTargetAnimation(playButton);
         });
 
