@@ -231,9 +231,8 @@ public class CenterStageBackdrop extends Application {
             // its final position in which the delivery device is aligned with
             // the target. At this point the preview robot and camera field-of-
             // view display are on the screen and the Play button is visible.
-            DeviceToTargetAnimation animation = new DeviceToTargetAnimation(alliance, controller, field, previewRobot,
-                    startParameterValidation, startingPosition, startingRotation);
-            animation.runDeviceToTargetAnimation(playButton);
+            new DeviceToTargetAnimation(alliance, controller, field, previewRobot,
+                    startParameterValidation, startingPosition, startingRotation, playButton);
         });
 
         previewButton.setOnAction(event.get());

@@ -13,9 +13,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.util.Duration;
 import org.firstinspires.ftc.ftcdevcommon.AutonomousRobotException;
+import sample.auto.fx.CenterStageControllerLG;
 import sample.auto.fx.FieldFXCenterStageBackdropLG;
 import sample.auto.fx.RobotFXCenterStageLG;
-import sample.auto.fx.CenterStageControllerLG;
 
 public class DeviceToTargetAnimation {
 
@@ -29,6 +29,7 @@ public class DeviceToTargetAnimation {
     private Group animationRobotGroup;
     private final Point2D animationStartingPosition;
     private final double animationStartingRotation;
+    private final Button playPauseButton;
 
     private double robotCoordX;
     private double robotCoordY;
@@ -42,7 +43,8 @@ public class DeviceToTargetAnimation {
                                    CenterStageControllerLG pController, Pane pField,
                                    RobotFXCenterStageLG pPreviewRobot,
                                    StartParameterValidation pStartParameterValidation,
-                                   Point2D pAnimationStartingPosition, double pAnimationStartingRotation) {
+                                   Point2D pAnimationStartingPosition, double pAnimationStartingRotation,
+                                   Button pPlayPauseButton) {
         alliance = pAlliance;
         controller = pController;
         field = pField;
@@ -50,14 +52,123 @@ public class DeviceToTargetAnimation {
         startParameterValidation = pStartParameterValidation;
         animationStartingPosition = pAnimationStartingPosition;
         animationStartingRotation = pAnimationStartingRotation;
+        playPauseButton = pPlayPauseButton;
+
+        //**TODO DON'T need PlayPauseToggle as a separate class; pull up into DeviceToTargetAnimation here.
+        new PlayPauseToggle();
     }
 
     //**TODO Clarify flow of control; separate onFinished events?
-    public void runDeviceToTargetAnimation(Button pPlayPauseButton) {
 
-        //**TODO #1 NONE of this works here - we can't create the animation robot
-        // until the Preview drag and release is complete and the user has hit
-        // the Play button.
+    private class PlayPauseToggle {
+
+        private enum PlayPauseButtonStateOnPress {FIRST_PLAY, RESUME_PLAY, PAUSE}
+
+        private PlayPauseButtonStateOnPress playPauseButtonStateOnPress;
+
+        private SequentialTransition sequentialTransition;
+
+        // When this class is constructed the Play button is showing but has
+        // not yet been pressed.
+        private PlayPauseToggle() {
+            playPauseButtonStateOnPress = PlayPauseButtonStateOnPress.PAUSE; // state for the next button press
+
+            // Action event for the play/pause button.
+            EventHandler<ActionEvent> event = e -> {
+                switch (playPauseButtonStateOnPress) {
+                    case FIRST_PLAY -> {
+                        sequentialTransition = animationFirstPlay();
+
+                        // When the SequentialTransitions are complete, disable the play/pause button.
+                        sequentialTransition.statusProperty().addListener((observableValue, oldValue, newValue) -> {
+                                    if (newValue == Animation.Status.STOPPED)
+                                        playPauseButton.setDisable(true);
+                                }
+                        );
+
+                        playPauseButton.setText("Pause");
+                        playPauseButtonStateOnPress = PlayPauseButtonStateOnPress.PAUSE;
+                        sequentialTransition.play();
+                    }
+                    case RESUME_PLAY -> {
+                        if (sequentialTransition.getStatus() != Animation.Status.STOPPED) {
+                            playPauseButton.setText("Pause");
+                            playPauseButtonStateOnPress = PlayPauseButtonStateOnPress.PAUSE;
+                            sequentialTransition.play();
+                        }
+                    }
+                    case PAUSE -> {
+                        if (sequentialTransition.getStatus() != Animation.Status.STOPPED) {
+                            sequentialTransition.pause();
+                            playPauseButton.setText("Play");
+                            playPauseButtonStateOnPress = PlayPauseButtonStateOnPress.RESUME_PLAY;
+                        }
+                    }
+                    default ->
+                            throw new AutonomousRobotException(TAG, "Invalid button state " + playPauseButtonStateOnPress);
+                }
+            };
+
+            playPauseButton.setOnAction(event);
+            playPauseButton.setText("Play");
+            playPauseButtonStateOnPress = PlayPauseButtonStateOnPress.FIRST_PLAY;
+        }
+    }
+
+    private SequentialTransition animationFirstPlay() {
+
+        // We're done with the Preview so collect the possibly changed
+        // start parameters and create the animation robot.
+
+        // Collect the start parameters.
+        double robotWidthIn = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_WIDTH);
+        double robotHeightIn = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_HEIGHT);
+        double cameraCenterFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_CENTER_FROM_ROBOT_CENTER);
+        double cameraOffsetFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_OFFSET_FROM_ROBOT_CENTER);
+        double cameraFieldOfView = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_FIELD_OF_VIEW);
+        double deviceCenterFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.DEVICE_CENTER_FROM_ROBOT_CENTER);
+        double deviceOffsetFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.DEVICE_OFFSET_FROM_ROBOT_CENTER);
+
+        animationRobot = new RobotFXCenterStageLG(RobotFXCenterStageLG.ANIMATION_ROBOT_ID,
+                robotWidthIn, robotHeightIn, Color.GREEN,
+                cameraCenterFromRobotCenter, cameraOffsetFromRobotCenter, cameraFieldOfView,
+                deviceCenterFromRobotCenter, deviceOffsetFromRobotCenter,
+                animationStartingPosition, animationStartingRotation);
+
+        animationRobotGroup = animationRobot.getRobot();
+
+        System.out.println("Camera center from robot center " + cameraCenterFromRobotCenter);
+        System.out.println("Camera offset from robot center " + cameraOffsetFromRobotCenter);
+        System.out.println("Device center from robot center " + deviceCenterFromRobotCenter);
+        System.out.println("Device offset from robot center " + deviceOffsetFromRobotCenter);
+
+        // Use the final position of the preview robot as the target
+        // position for the animation robot.
+
+        //## The curves are a proof-of-concept. They will be different depending
+        // on the user's selection for the final position in front of the backdrop.
+        // CubicCurveTo constructor parameters: controlX1, controlX2, controlY1, controlY2, endX, endY
+
+        // Instead of getting the coordinates, which are those of the center
+        // of the robot, from the start parameters get them from the preview
+        // robot - because its position may have changed by drag-and-release.
+        Group previewRobotGroup = previewRobot.getRobot();
+        Bounds previewRobotBounds = previewRobotGroup.getBoundsInParent();
+        double robotPositionAtBackdropX = previewRobotBounds.getCenterX();
+        double robotPositionAtBackdropY = previewRobotBounds.getCenterY();
+        logFTCFieldCoordinates(alliance, robotPositionAtBackdropX, robotPositionAtBackdropY);
+
+        // The position of the animation robot in front of the backdrop can
+        // only be logged now that the preview robot drag-release is complete.
+        System.out.println("Animation robot approach position at the backdrop " + robotPositionAtBackdropX + ", y " + robotPositionAtBackdropY);
+
+        // Clear the preview robot and the camera field-of-view lines.
+        Line fovLeft = (Line) field.lookup("#" + PreviewDragAndRelease.CAMERA_FOV_LINE_LEFT_ID);
+        Line fovRight = (Line) field.lookup("#" + PreviewDragAndRelease.CAMERA_FOV_LINE_RIGHT_ID);
+        field.getChildren().removeAll(previewRobotGroup, fovLeft, fovRight);
+
+        // Now show the animation robot.
+        field.getChildren().add(animationRobotGroup);
 
         //## As a demonstration start the robot facing inward from the BLUE
         // alliance wall and make the robot follow a CubicCurve pathToBackdrop while
@@ -81,10 +192,10 @@ public class DeviceToTargetAnimation {
         CubicCurveTo cubicCurveTo;
         float rotation;
         if (alliance == RobotConstants.Alliance.BLUE) {
-            cubicCurveTo = new CubicCurveTo(400.0, 300.0, 300.0, 300.0, 0, 0);
+            cubicCurveTo = new CubicCurveTo(400.0, 300.0, 300.0, 300.0, robotPositionAtBackdropX, robotPositionAtBackdropY);
             rotation = -90.0f;
         } else { // RED
-            cubicCurveTo = new CubicCurveTo(200.0, 300.0, 300.0, 300.0, 0, 0);
+            cubicCurveTo = new CubicCurveTo(200.0, 300.0, 300.0, 300.0, robotPositionAtBackdropX, robotPositionAtBackdropY);
             rotation = 90.0f;
         }
 
@@ -93,10 +204,10 @@ public class DeviceToTargetAnimation {
         PathTransition pathTransition = new PathTransition();
         pathTransition.setDuration(Duration.millis(3000));
         pathTransition.setPath(pathToBackdrop);
-        pathTransition.setNode(animationRobotGroup); //**TODO !!NOT initialized yet 1 ...
+        pathTransition.setNode(animationRobotGroup);
 
         RotateTransition rotateTransition =
-                new RotateTransition(Duration.millis(3000), animationRobotGroup); //**TODO !!NOT initialized yet 2 ...
+                new RotateTransition(Duration.millis(3000), animationRobotGroup);
         rotateTransition.setByAngle(rotation);
         rotateTransition.setOnFinished(event -> System.out.println("Angle after initial rotation " + animationRobotGroup.getRotate()));
 
@@ -464,135 +575,7 @@ public class DeviceToTargetAnimation {
             default -> throw new AutonomousRobotException(TAG, "Unrecognized radio button text " + radioButtonText);
         }
 
-        new PlayPauseToggle(pPlayPauseButton, seqTransition, cubicCurveTo);
-    }
-
-    private void removeCameraToTargetLines() {
-        Line lineCTHRef = (Line) field.lookup("#lineCTH");
-        Line lineCTORef = (Line) field.lookup("#lineCTO");
-        Line lineCTARef = (Line) field.lookup("#lineCTA");
-        field.getChildren().removeAll(lineCTHRef, lineCTORef, lineCTARef);
-    }
-
-    private void removeRobotCenterToTargetLines() {
-        // Erase lines from robot center to target AprilTag.
-        Line lineRCTHRef = (Line) field.lookup("#lineRCTH");
-        Line lineRCTORef = (Line) field.lookup("#lineRCTO");
-        Line lineRCTARef = (Line) field.lookup("#lineRCTA");
-        field.getChildren().removeAll(lineRCTHRef, lineRCTORef, lineRCTARef);
-    }
-
-    private class PlayPauseToggle {
-
-        private enum PlayPauseButtonStateOnPress {FIRST_PLAY, RESUME_PLAY, PAUSE}
-
-        private PlayPauseButtonStateOnPress playPauseButtonStateOnPress;
-
-        private final Button playPauseButton;
-        private final SequentialTransition sequentialTransition;
-
-        // Assume when this class is constructed that the Play button has already been
-        // pressed.
-        private PlayPauseToggle(Button pPlayPauseButton, SequentialTransition pSequentialTransaction,
-                                CubicCurveTo pCubicCurveTo) {
-            playPauseButton = pPlayPauseButton;
-            sequentialTransition = pSequentialTransaction;
-            playPauseButtonStateOnPress = PlayPauseButtonStateOnPress.PAUSE; // state for the next button press
-
-            // When the SequentialTransitions are complete, disable the play/pause button.
-            sequentialTransition.statusProperty().addListener((observableValue, oldValue, newValue) -> {
-                        if (newValue == Animation.Status.STOPPED)
-                            playPauseButton.setDisable(true);
-                    }
-            );
-
-            // Action event for the play/pause button.
-            EventHandler<ActionEvent> event = e -> {
-                switch (playPauseButtonStateOnPress) {
-                    case FIRST_PLAY -> {
-                        // We're done with the Preview so collect the possibly changed
-                        // start parameters and create the animation robot.
-
-                        // Collect the start parameters.
-                        double robotWidthIn = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_WIDTH);
-                        double robotHeightIn = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_HEIGHT);
-                        double cameraCenterFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_CENTER_FROM_ROBOT_CENTER);
-                        double cameraOffsetFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_OFFSET_FROM_ROBOT_CENTER);
-                        double cameraFieldOfView = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.CAMERA_FIELD_OF_VIEW);
-                        double deviceCenterFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.DEVICE_CENTER_FROM_ROBOT_CENTER);
-                        double deviceOffsetFromRobotCenter = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.DEVICE_OFFSET_FROM_ROBOT_CENTER);
-
-                        animationRobot = new RobotFXCenterStageLG(RobotFXCenterStageLG.ANIMATION_ROBOT_ID,
-                                robotWidthIn, robotHeightIn, Color.GREEN,
-                                cameraCenterFromRobotCenter, cameraOffsetFromRobotCenter, cameraFieldOfView,
-                                deviceCenterFromRobotCenter, deviceOffsetFromRobotCenter,
-                                animationStartingPosition, animationStartingRotation);
-
-                        animationRobotGroup = animationRobot.getRobot();
-
-                        System.out.println("Camera center from robot center " + cameraCenterFromRobotCenter);
-                        System.out.println("Camera offset from robot center " + cameraOffsetFromRobotCenter);
-                        System.out.println("Device center from robot center " + deviceCenterFromRobotCenter);
-                        System.out.println("Device offset from robot center " + deviceOffsetFromRobotCenter);
-
-                        // Use the final position of the preview robot as the target
-                        // position for the animation robot.
-
-                        //## The curves are a proof-of-concept. They will be different depending
-                        // on the user's selection for the final position in front of the backdrop.
-                        // CubicCurveTo constructor parameters: controlX1, controlX2, controlY1, controlY2, endX, endY
-
-                        // Instead of getting the coordinates, which are those of the center
-                        // of the robot, from the start parameters get them from the preview
-                        // robot - because its position may have changed by drag-and-release.
-                        Group previewRobotGroup = previewRobot.getRobot();
-                        Bounds previewRobotBounds = previewRobotGroup.getBoundsInParent();
-                        double robotPositionAtBackdropX = previewRobotBounds.getCenterX();
-                        double robotPositionAtBackdropY = previewRobotBounds.getCenterY();
-
-                        // The position of the animation robot in front of the backdrop can
-                        // only be logged now that the preview robot drag-release is complete.
-                        System.out.println("Animation robot approach position at the backdrop " + robotPositionAtBackdropX + ", y " + robotPositionAtBackdropY);
-
-                        pCubicCurveTo.setX(robotPositionAtBackdropX);
-                        pCubicCurveTo.setY(robotPositionAtBackdropY);
-                        logFTCFieldCoordinates(alliance, robotPositionAtBackdropX, robotPositionAtBackdropY);
-
-                        // Clear the preview robot and the camera field-of-view lines.
-                        Line fovLeft = (Line) field.lookup("#" + PreviewDragAndRelease.CAMERA_FOV_LINE_LEFT_ID);
-                        Line fovRight = (Line) field.lookup("#" + PreviewDragAndRelease.CAMERA_FOV_LINE_RIGHT_ID);
-                        field.getChildren().removeAll(previewRobotGroup, fovLeft, fovRight);
-
-                        // Now show the animation robot.
-                        field.getChildren().add(animationRobotGroup);
-
-                        playPauseButton.setText("Pause");
-                        playPauseButtonStateOnPress = PlayPauseButtonStateOnPress.PAUSE;
-                        sequentialTransition.play();
-                    }
-                    case RESUME_PLAY -> {
-                        if (sequentialTransition.getStatus() != Animation.Status.STOPPED) {
-                            playPauseButton.setText("Pause");
-                            playPauseButtonStateOnPress = PlayPauseButtonStateOnPress.PAUSE;
-                            sequentialTransition.play();
-                        }
-                    }
-                    case PAUSE -> {
-                        if (sequentialTransition.getStatus() != Animation.Status.STOPPED) {
-                            sequentialTransition.pause();
-                            playPauseButton.setText("Play");
-                            playPauseButtonStateOnPress = PlayPauseButtonStateOnPress.RESUME_PLAY;
-                        }
-                    }
-                    default ->
-                            throw new AutonomousRobotException(TAG, "Invalid button state " + playPauseButtonStateOnPress);
-                }
-            };
-
-            playPauseButton.setOnAction(event);
-            playPauseButton.setText("Play");
-            playPauseButtonStateOnPress = PlayPauseButtonStateOnPress.FIRST_PLAY;
-        }
+        return seqTransition;
     }
 
     // The simulation show half of the FTC field. Based on the conventions for the
@@ -608,6 +591,21 @@ public class DeviceToTargetAnimation {
             double ftcRobotYIN = 0 - (pRobotX / FieldFXCenterStageBackdropLG.PX_PER_INCH);
             System.out.println("RED alliance FTC field coordinates: robot center x " + ftcRobotXIn + ", y " + ftcRobotYIN);
         }
+    }
+
+    private void removeCameraToTargetLines() {
+        Line lineCTHRef = (Line) field.lookup("#lineCTH");
+        Line lineCTORef = (Line) field.lookup("#lineCTO");
+        Line lineCTARef = (Line) field.lookup("#lineCTA");
+        field.getChildren().removeAll(lineCTHRef, lineCTORef, lineCTARef);
+    }
+
+    private void removeRobotCenterToTargetLines() {
+        // Erase lines from robot center to target AprilTag.
+        Line lineRCTHRef = (Line) field.lookup("#lineRCTH");
+        Line lineRCTORef = (Line) field.lookup("#lineRCTO");
+        Line lineRCTARef = (Line) field.lookup("#lineRCTA");
+        field.getChildren().removeAll(lineRCTHRef, lineRCTORef, lineRCTARef);
     }
 
 }
