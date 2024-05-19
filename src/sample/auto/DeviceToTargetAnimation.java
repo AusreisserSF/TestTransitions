@@ -55,14 +55,13 @@ public class DeviceToTargetAnimation {
     //**TODO Clarify flow of control; separate onFinished events?
     public void runDeviceToTargetAnimation(Button pPlayPauseButton) {
 
+        //**TODO #1 NONE of this works here - we can't create the animation robot
+        // until the Preview drag and release is complete and the user has hit
+        // the Play button.
+
         //## As a demonstration start the robot facing inward from the BLUE
         // alliance wall and make the robot follow a CubicCurve pathToBackdrop while
         // simultaneously rotating -90 degrees to face the backdrop.
-
-        //**TODO START CUT - move to PlayPauseToggle
-        //**TODO #1 This won't work here - we can't create the animation robot
-        // until the Preview drag and release is complete and the user has hit
-        // the Play button.
 
         //!! I noticed the use of localToScene(() in some code from the FTCSimulator -
         // this is more like it. By the way, this is the *center* of the robot.
@@ -94,11 +93,10 @@ public class DeviceToTargetAnimation {
         PathTransition pathTransition = new PathTransition();
         pathTransition.setDuration(Duration.millis(3000));
         pathTransition.setPath(pathToBackdrop);
-        pathTransition.setNode(animationRobotGroup); //**TODO !!NOT initialized yet ...
-        //**TODO END CUT
+        pathTransition.setNode(animationRobotGroup); //**TODO !!NOT initialized yet 1 ...
 
         RotateTransition rotateTransition =
-                new RotateTransition(Duration.millis(3000), animationRobotGroup);
+                new RotateTransition(Duration.millis(3000), animationRobotGroup); //**TODO !!NOT initialized yet 2 ...
         rotateTransition.setByAngle(rotation);
         rotateTransition.setOnFinished(event -> System.out.println("Angle after initial rotation " + animationRobotGroup.getRotate()));
 

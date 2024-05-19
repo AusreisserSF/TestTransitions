@@ -120,6 +120,8 @@ public class CenterStageBackdrop extends Application {
             previewButton.setLayoutX(FieldFXCenterStageBackdropLG.FIELD_OUTSIDE_BORDER_SIZE + 10);
 
         field.getChildren().add(previewButton);
+
+        // Actions to take when the Preview button has been hit.
         AtomicReference<EventHandler<ActionEvent>> event = new AtomicReference<>();
         event.set((e) -> {
             if (!startParameterValidation.allStartParametersValid()) {
@@ -156,21 +158,14 @@ public class CenterStageBackdrop extends Application {
 
             field.getChildren().add(playButton);
 
-            // Place the robot on the field with the dimensions entered by the user.
-            double robotWidthIn = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_WIDTH);
-            double robotHeightIn = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_HEIGHT);
-
-            // When the start parameters are frozen and the preview screen is showing,
-            // allow the user to drag and release the preview robot and the associated
-            // camera field of view lines to set the final position of the robot in front
-            // of the backdrop.
-
-            //## Allowing the user to drag/release the camera and device on the preview
-            // robot is possible but is outside the scope of this project.
+            // At this point the start parameters are frozen and the Play button is showing.
+            // Get ready to show the preview robot.
 
             // Mark a portion of the field as the approach zone, i.e. the area in which
             // the robot can stop in front of the backdrop. The outside boundaries of the
             // robot must be inside the approach zone.
+            double robotWidthIn = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_WIDTH);
+            double robotHeightIn = startParameterValidation.getStartParameter(StartParameterValidation.StartParameter.ROBOT_HEIGHT);
             double approachZoneX = StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_X_MIN * FieldFXCenterStageBackdropLG.PX_PER_INCH -
                     (robotWidthIn * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2;
             double approachZoneY = StartParameterValidation.ROBOT_POSITION_AT_BACKDROP_Y_MIN * FieldFXCenterStageBackdropLG.PX_PER_INCH -
@@ -207,7 +202,7 @@ public class CenterStageBackdrop extends Application {
                             robotPositionAtBackdropY - ((robotHeightIn * FieldFXCenterStageBackdropLG.PX_PER_INCH) / 2)),
                     0.0);
 
-            // Show the draggable preview robot and camera field of view.
+            // Show the draggable preview robot and its internally draggable camera and device.
             Rectangle aprilTag = (Rectangle) field.lookup("#" + FieldFXCenterStageBackdropLG.APRIL_TAG_ID + targetAprilTag);
             new PreviewDragAndRelease(controller, field, approachZone, previewRobot, aprilTag);
 
@@ -225,6 +220,7 @@ public class CenterStageBackdrop extends Application {
             }
 
             // The Preview button is showing: these fields may not be changed.
+            System.out.println("Read-only start parameters");
             System.out.println("Robot width inches " + robotWidthIn);
             System.out.println("Robot height inches " + robotHeightIn);
             System.out.println("Camera field of view " + cameraFieldOfView);
