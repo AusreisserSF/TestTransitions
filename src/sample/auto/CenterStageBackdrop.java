@@ -107,10 +107,6 @@ public class CenterStageBackdrop extends Application {
         Button previewButton = new Button("Preview");
         previewButton.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
 
-        //**TODO Place the Preview button on the right-hand side of the field
-        // and the Save (XML) button on the left-hand side. The alliance does
-        // not affect the position of the buttons.
-
         // Place the button on the opposite side of the field from the selected
         // alliance.
         previewButton.setLayoutY(FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 3 - 50);
@@ -143,6 +139,9 @@ public class CenterStageBackdrop extends Application {
             // and remove the Preview button.
             freezeStartParameters();
             field.getChildren().remove(previewButton);
+
+            //**TODO Place a Save (XML) button on the field when the Play button
+            // is showing. Allow the Save button to be clicked once.
 
             // Show the Play/Pause button for the actual animation.
             Button playButton = new Button("Play");

@@ -29,7 +29,13 @@ public class DeviceToTargetAnimation {
     private Group animationRobotGroup;
     private final Point2D animationStartingPosition;
     private final double animationStartingRotation;
+
     private final Button playPauseButton;
+
+    private enum PlayPauseButtonStateOnPress {FIRST_PLAY, RESUME_PLAY, PAUSE}
+
+    private PlayPauseButtonStateOnPress playPauseButtonStateOnPress;
+    private SequentialTransition sequentialTransition;
 
     private double robotCoordX;
     private double robotCoordY;
@@ -54,66 +60,51 @@ public class DeviceToTargetAnimation {
         animationStartingRotation = pAnimationStartingRotation;
         playPauseButton = pPlayPauseButton;
 
-        //**TODO DON'T need PlayPauseToggle as a separate class; pull up into DeviceToTargetAnimation here.
-        new PlayPauseToggle();
-    }
+        // At this point the Play button is showing but has not yet been pressed.
+        playPauseButtonStateOnPress = PlayPauseButtonStateOnPress.PAUSE; // state for the next button press
 
-    //**TODO Clarify flow of control; separate onFinished events?
+        // Action event for the play/pause button.
+        EventHandler<ActionEvent> event = e -> {
+            switch (playPauseButtonStateOnPress) {
+                case FIRST_PLAY -> {
+                    sequentialTransition = animationFirstPlay();
 
-    private class PlayPauseToggle {
+                    // When the SequentialTransitions are complete, disable the play/pause button.
+                    sequentialTransition.statusProperty().addListener((observableValue, oldValue, newValue) -> {
+                                if (newValue == Animation.Status.STOPPED)
+                                    playPauseButton.setDisable(true);
+                            }
+                    );
 
-        private enum PlayPauseButtonStateOnPress {FIRST_PLAY, RESUME_PLAY, PAUSE}
-
-        private PlayPauseButtonStateOnPress playPauseButtonStateOnPress;
-
-        private SequentialTransition sequentialTransition;
-
-        // When this class is constructed the Play button is showing but has
-        // not yet been pressed.
-        private PlayPauseToggle() {
-            playPauseButtonStateOnPress = PlayPauseButtonStateOnPress.PAUSE; // state for the next button press
-
-            // Action event for the play/pause button.
-            EventHandler<ActionEvent> event = e -> {
-                switch (playPauseButtonStateOnPress) {
-                    case FIRST_PLAY -> {
-                        sequentialTransition = animationFirstPlay();
-
-                        // When the SequentialTransitions are complete, disable the play/pause button.
-                        sequentialTransition.statusProperty().addListener((observableValue, oldValue, newValue) -> {
-                                    if (newValue == Animation.Status.STOPPED)
-                                        playPauseButton.setDisable(true);
-                                }
-                        );
-
+                    playPauseButton.setText("Pause");
+                    playPauseButtonStateOnPress = PlayPauseButtonStateOnPress.PAUSE;
+                    sequentialTransition.play();
+                }
+                case RESUME_PLAY -> {
+                    if (sequentialTransition.getStatus() != Animation.Status.STOPPED) {
                         playPauseButton.setText("Pause");
                         playPauseButtonStateOnPress = PlayPauseButtonStateOnPress.PAUSE;
                         sequentialTransition.play();
                     }
-                    case RESUME_PLAY -> {
-                        if (sequentialTransition.getStatus() != Animation.Status.STOPPED) {
-                            playPauseButton.setText("Pause");
-                            playPauseButtonStateOnPress = PlayPauseButtonStateOnPress.PAUSE;
-                            sequentialTransition.play();
-                        }
-                    }
-                    case PAUSE -> {
-                        if (sequentialTransition.getStatus() != Animation.Status.STOPPED) {
-                            sequentialTransition.pause();
-                            playPauseButton.setText("Play");
-                            playPauseButtonStateOnPress = PlayPauseButtonStateOnPress.RESUME_PLAY;
-                        }
-                    }
-                    default ->
-                            throw new AutonomousRobotException(TAG, "Invalid button state " + playPauseButtonStateOnPress);
                 }
-            };
+                case PAUSE -> {
+                    if (sequentialTransition.getStatus() != Animation.Status.STOPPED) {
+                        sequentialTransition.pause();
+                        playPauseButton.setText("Play");
+                        playPauseButtonStateOnPress = PlayPauseButtonStateOnPress.RESUME_PLAY;
+                    }
+                }
+                default ->
+                        throw new AutonomousRobotException(TAG, "Invalid button state " + playPauseButtonStateOnPress);
+            }
+        };
 
-            playPauseButton.setOnAction(event);
-            playPauseButton.setText("Play");
-            playPauseButtonStateOnPress = PlayPauseButtonStateOnPress.FIRST_PLAY;
-        }
+        playPauseButton.setOnAction(event);
+        playPauseButton.setText("Play");
+        playPauseButtonStateOnPress = PlayPauseButtonStateOnPress.FIRST_PLAY;
     }
+
+    //**TODO Clarify flow of control; separate onFinished events?
 
     private SequentialTransition animationFirstPlay() {
 
