@@ -84,7 +84,13 @@ public class CenterStageBackdrop extends Application {
         Color allianceColor = (alliance == RobotConstants.Alliance.BLUE) ? Color.BLUE : Color.RED;
         controller.alliance.setTextFill(allianceColor); // or jewelsea setStyle("-fx-text-inner-color: red;");
 
-        // Set up the start parameters with the value specified in the fxml.
+        //**TODO Flow control/redundancy problem. If you change StartParametersXML
+        // to access StartParametersXML in order to write changes back to the DOM,
+        // then, when you call overrideStartParameters, all non-default parameters
+        // will be written to the DOM with the same values they started with. ?Put
+        // getXXX methods in StartParametersXML to compare?
+
+        // Set up the start parameters with the values specified in the fxml.
         startParameterValidation = new StartParameterValidation(controller);
 
         // Read start parameters from an XML file and for each value that is different
@@ -274,6 +280,8 @@ public class CenterStageBackdrop extends Application {
 
     }
 
+    // Override the default start parameters with those from the XML file -
+    // hut only if the XML values are different from the defaults.
     private void overrideStartParameters(StartParameters pStartParameters) {
 
         // Any change to a TextField will trigger the ChangeListener already
