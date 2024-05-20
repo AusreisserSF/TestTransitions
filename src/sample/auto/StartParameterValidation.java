@@ -13,6 +13,7 @@ import javafx.scene.control.TextInputDialog;
 import javafx.util.converter.DoubleStringConverter;
 import org.firstinspires.ftc.ftcdevcommon.AutonomousRobotException;
 import sample.auto.fx.CenterStageControllerLG;
+import sample.auto.xml.StartParametersXML;
 
 import java.util.EnumMap;
 import java.util.List;
@@ -43,8 +44,13 @@ public class StartParameterValidation {
 
     private final EnumMap<StartParameter, StartParameterInfo> startParameters =
             new EnumMap<>(StartParameter.class);
+    private final StartParametersXML startParametersXML;
+    private boolean updateXML = false;
 
-    public StartParameterValidation(CenterStageControllerLG pCenterStageControllerLG) {
+    public StartParameterValidation(CenterStageControllerLG pCenterStageControllerLG,
+                                    StartParametersXML pStartParametersXML) {
+
+        startParametersXML = pStartParametersXML;
 
         // Create one listener for each start parameter that takes a range of double values.
         // Robot width.
@@ -53,7 +59,7 @@ public class StartParameterValidation {
         PredicateChangeListener widthListener = (new PredicateChangeListener(
                 pCenterStageControllerLG.robot_width,
                 widthP -> {
-                    // If the user doesn't enter a value for the width the animation runs
+                    //**TODO Still true?  If the user doesn't enter a value for the width the animation runs
                     // but when the user closes the application window this change listener
                     // fires with a null value for widthP.
                     if (widthP == null)
@@ -66,6 +72,7 @@ public class StartParameterValidation {
                     }
 
                     widthInfo.setValid(widthP);
+                    startParametersXML.setRobotWidth(widthInfo.getParameterValue()); // update XML
                     return true;
                 },
                 "The width of the robot must be between " + ROBOT_BODY_DIMENSION_MIN + " and " + ROBOT_BODY_DIMENSION_MAX));
@@ -91,6 +98,7 @@ public class StartParameterValidation {
                     }
 
                     heightInfo.setValid(heightP);
+                    startParametersXML.setRobotHeight(heightInfo.getParameterValue()); // update XML
                     return true;
                 },
                 "The height of the robot must be between " + ROBOT_BODY_DIMENSION_MIN + " and " + ROBOT_BODY_DIMENSION_MAX));
@@ -120,6 +128,7 @@ public class StartParameterValidation {
                     }
 
                     cameraCenterInfo.setValid(cameraCenterP);
+                    startParametersXML.setCameraCenterFromRobotCenter(cameraCenterInfo.getParameterValue()); // update XML
                     return true;
                 },
                 "The fore/aft distance from camera center to robot center must be less than 1/2 the height of the robot"));
@@ -149,6 +158,7 @@ public class StartParameterValidation {
                     }
 
                     cameraOffsetInfo.setValid(cameraOffsetP);
+                    startParametersXML.setCameraOffsetFromRobotCenter(cameraOffsetInfo.getParameterValue()); // update XML
                     return true;
                 },
                 "The left/right distance from camera center to robot center must be less than 1/2 the width of the robot"));
@@ -171,6 +181,7 @@ public class StartParameterValidation {
                     }
 
                     fovInfo.setValid(fovP);
+                    startParametersXML.setCameraFOV(fovInfo.getParameterValue()); // update XML
                     return true;
                 },
                 "The camera field of view must be between " + CAMERA_FIELD_OF_VIEW_MIN + " and " + CAMERA_FIELD_OF_VIEW_MAX));
@@ -200,6 +211,7 @@ public class StartParameterValidation {
                     }
 
                     deviceCenterInfo.setValid(deviceCenterP);
+                    startParametersXML.setDeviceCenterFromRobotCenter(deviceCenterInfo.getParameterValue()); // update XML
                     return true;
                 },
                 "The fore/aft distance from device center to robot center must be less than 1/2 the height of the robot"));
@@ -229,11 +241,14 @@ public class StartParameterValidation {
                     }
 
                     deviceOffsetInfo.setValid(deviceOffsetP);
+                    startParametersXML.setDeviceOffsetFromRobotCenter(deviceOffsetInfo.getParameterValue()); // update XML
                     return true;
                 },
                 "The left/right distance from device center to robot center must be less than 1/2 the width of the robot"));
 
         validateStartParameter(deviceOffsetListener);
+
+        //**TODO #1 STOPPED HERE 5/19/24
 
         // ROBOT_POSITION_AT_BACKDROP_X
         // constraints: center x no less than 175 PX, no greater than 425 PX
@@ -288,6 +303,12 @@ public class StartParameterValidation {
                 "The y position of the robot at the backstop is out of range"));
 
         validateStartParameter(backdropYListener);
+    }
+
+    // Once this method has been called, update the XML DOM every time one
+    // of the start parameters changes.
+    public void enableXMLUpdate() {
+        updateXML = true;
     }
 
     // This method must only be called after all parameters have been validated.

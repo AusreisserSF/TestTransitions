@@ -84,21 +84,16 @@ public class CenterStageBackdrop extends Application {
         Color allianceColor = (alliance == RobotConstants.Alliance.BLUE) ? Color.BLUE : Color.RED;
         controller.alliance.setTextFill(allianceColor); // or jewelsea setStyle("-fx-text-inner-color: red;");
 
-        //**TODO Flow control/redundancy problem. If you change StartParametersXML
-        // to access StartParametersXML in order to write changes back to the DOM,
-        // then, when you call overrideStartParameters, all non-default parameters
-        // will be written to the DOM with the same values they started with. ?Put
-        // getXXX methods in StartParametersXML to compare?
-
-        // Set up the start parameters with the values specified in the fxml.
-        startParameterValidation = new StartParameterValidation(controller);
-
-        // Read start parameters from an XML file and for each value that is different
-        // from the current fxml default trigger the change listener already set up in
-        // StartParameterValidation.
+        // Read start parameters from an XML file.
         StartParametersXML startParametersXML = new StartParametersXML(WorkingDirectory.getWorkingDirectory() + RobotConstants.XML_DIR);
         StartParameters startParameters = startParametersXML.getStartParameters();
+
+        // Set up the start parameters with the values specified in the fxml.
+        startParameterValidation = new StartParameterValidation(controller, startParametersXML);
+
+        // Override the default start parameters with those from the XML file.
         overrideStartParameters(startParameters);
+        startParameterValidation.enableXMLUpdate();
 
         SpinnerValueFactory.IntegerSpinnerValueFactory spinnerValueFactory;
         if (alliance == RobotConstants.Alliance.BLUE)
