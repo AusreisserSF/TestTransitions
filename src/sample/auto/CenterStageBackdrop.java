@@ -54,6 +54,8 @@ public class CenterStageBackdrop extends Application {
 
     private CenterStageControllerLG controller;
     private StartParameterValidation startParameterValidation;
+    private Button playButton;
+    private Button saveButton;
 
     //## NOTE: I mistakenly investigated "drag-and-drop" but in JavaFX this
     // has to do with dragging and dropping content. All I need to do is drag
@@ -103,6 +105,7 @@ public class CenterStageBackdrop extends Application {
 
         controller.april_tag_spinner.setValueFactory(spinnerValueFactory);
 
+        //**TODO You can put the Preview button into the fxml as invisible also.
         // Show the Preview button now; when it is pressed validate all of the start
         // parameters before switching to the Play/Pause button.
         Button previewButton = new Button("Preview");
@@ -145,19 +148,18 @@ public class CenterStageBackdrop extends Application {
             // the Play button is showing. Once the Play button has been clicked,
             // remove the Save button.
 
-            // Show the Play/Pause button for the actual animation.
-            Button playButton = new Button("Play");
-            playButton.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
+            // Show the Play/Pause and "Save preview changes" buttons for the actual animation.
+            if (alliance == RobotConstants.Alliance.BLUE) {
+                playButton = controller.play_button_blue;
+                saveButton = controller.save_preview_changes_blue;
+            }
+            else {
+                playButton = controller.play_button_red;
+                saveButton = controller.save_preview_changes_red;
+            }
 
-            // Place the button on the opposite side of the field from the selected
-            // alliance.
-            playButton.setLayoutY(FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 3 - 50);
-            if (alliance == RobotConstants.Alliance.BLUE)
-                playButton.setLayoutX((FieldFXCenterStageBackdropLG.TILE_DIMENSIONS * 3) - FieldFXCenterStageBackdropLG.FIELD_OUTSIDE_BORDER_SIZE - 60);
-            else
-                playButton.setLayoutX(FieldFXCenterStageBackdropLG.FIELD_OUTSIDE_BORDER_SIZE + 10);
-
-            field.getChildren().add(playButton);
+            playButton.setVisible(true);
+            saveButton.setVisible(true);
 
             // At this point the start parameters are frozen and the Play button is showing.
             // Get ready to show the preview robot.

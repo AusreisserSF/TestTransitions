@@ -34,7 +34,7 @@ public class DeviceToTargetAnimation {
 
     private enum PlayPauseButtonStateOnPress {FIRST_PLAY, RESUME_PLAY, PAUSE}
 
-    private PlayPauseButtonStateOnPress playPauseButtonStateOnPress;
+    private PlayPauseButtonStateOnPress playPauseButtonStateOnPress = PlayPauseButtonStateOnPress.FIRST_PLAY;
     private SequentialTransition sequentialTransition;
 
     private double robotCoordX;
@@ -59,9 +59,6 @@ public class DeviceToTargetAnimation {
         animationStartingPosition = pAnimationStartingPosition;
         animationStartingRotation = pAnimationStartingRotation;
         playPauseButton = pPlayPauseButton;
-
-        // At this point the Play button is showing but has not yet been pressed.
-        playPauseButtonStateOnPress = PlayPauseButtonStateOnPress.PAUSE; // state for the next button press
 
         // Action event for the play/pause button.
         EventHandler<ActionEvent> event = e -> {
@@ -100,7 +97,6 @@ public class DeviceToTargetAnimation {
         };
 
         playPauseButton.setOnAction(event);
-        playPauseButton.setText("Play");
         playPauseButtonStateOnPress = PlayPauseButtonStateOnPress.FIRST_PLAY;
     }
 
