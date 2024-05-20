@@ -22,16 +22,29 @@
             <Insets />
          </opaqueInsets>
          <children>
-            <Button fx:id="play_button_blue" layoutX="23.0" layoutY="522.0" mnemonicParsing="false" text="Play" visible="false" />
-            <Button fx:id="play_button_red" layoutX="520.0" layoutY="522.0" mnemonicParsing="false" text="Play" visible="false" />
+            <Button fx:id="play_button_blue" layoutX="23.0" layoutY="522.0" mnemonicParsing="false" text="Play" visible="false">
+               <font>
+                  <Font name="Verdana Bold" size="12.0" />
+               </font>
+            </Button>
+            <Button fx:id="play_button_red" layoutX="520.0" layoutY="522.0" mnemonicParsing="false" text="Play" visible="false">
+                <font>
+                    <Font name="Verdana Bold" size="12.0" />
+                </font>
+            </Button>
             <Button fx:id="save_preview_changes_blue" layoutX="23.0" layoutY="560.0" mnemonicParsing="false" text="Save preview changes" visible="false">
                <font>
-                  <Font size="10.0" />
+                  <Font name="Verdana" size="10.0" />
                </font>
             </Button>
             <Button fx:id="save_preview_changes_red" layoutX="448.0" layoutY="560.0" mnemonicParsing="false" text="Save preview changes" visible="false">
                <font>
-                  <Font size="10.0" />
+                  <Font name="Verdana" size="10.0" />
+               </font>
+            </Button>
+            <Button fx:id="preview_button" layoutX="268.0" layoutY="548.0" mnemonicParsing="false" text="Preview" visible="false">
+               <font>
+                  <Font name="Verdana Bold" size="12.0" />
                </font>
             </Button>
          </children></Pane>

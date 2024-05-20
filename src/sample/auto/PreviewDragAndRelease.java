@@ -62,6 +62,9 @@ public class PreviewDragAndRelease {
         // Draw the camera FOV lines from the default position of the camera.
         drawCameraFOV(cameraOnRobot, pPreviewRobot.cameraFieldOfView, aprilTagCenterY);
 
+        //**TODO #1 If the target is outside the FOV of the camera, change the color of
+        // the FOV in the start parameters to red.
+
         // Get the robot body, which defines the limits of the camera and device.
         Rectangle robotBody = (Rectangle) previewRobotGroup.lookup("#" + previewRobotGroup.getId() + "_" + RobotFXLG.ROBOT_BODY_ID);
         cameraOnRobot.addEventHandler(MouseEvent.MOUSE_PRESSED, (MouseEvent mouseEvent) -> {

@@ -16,6 +16,7 @@ import org.firstinspires.ftc.ftcdevcommon.AutonomousRobotException;
 import sample.auto.fx.CenterStageControllerLG;
 import sample.auto.fx.FieldFXCenterStageBackdropLG;
 import sample.auto.fx.RobotFXCenterStageLG;
+import sample.auto.xml.StartParametersXML;
 
 public class DeviceToTargetAnimation {
 
@@ -31,10 +32,10 @@ public class DeviceToTargetAnimation {
     private final double animationStartingRotation;
 
     private final Button playPauseButton;
-
     private enum PlayPauseButtonStateOnPress {FIRST_PLAY, RESUME_PLAY, PAUSE}
-
     private PlayPauseButtonStateOnPress playPauseButtonStateOnPress = PlayPauseButtonStateOnPress.FIRST_PLAY;
+
+    private final Button saveButton;
     private SequentialTransition sequentialTransition;
 
     private double robotCoordX;
@@ -50,7 +51,8 @@ public class DeviceToTargetAnimation {
                                    RobotFXCenterStageLG pPreviewRobot,
                                    StartParameterValidation pStartParameterValidation,
                                    Point2D pAnimationStartingPosition, double pAnimationStartingRotation,
-                                   Button pPlayPauseButton) {
+                                   Button pPlayPauseButton, Button pSaveButton,
+                                   StartParametersXML pStartParametersXML) {
         alliance = pAlliance;
         controller = pController;
         field = pField;
@@ -59,11 +61,17 @@ public class DeviceToTargetAnimation {
         animationStartingPosition = pAnimationStartingPosition;
         animationStartingRotation = pAnimationStartingRotation;
         playPauseButton = pPlayPauseButton;
+        saveButton = pSaveButton;
 
         // Action event for the play/pause button.
-        EventHandler<ActionEvent> event = e -> {
+        EventHandler<ActionEvent> playEvent = e -> {
             switch (playPauseButtonStateOnPress) {
                 case FIRST_PLAY -> {
+                    // Disable the Save button.
+                    saveButton.setVisible(false);
+                    saveButton.setDisable(true);
+
+                    // Perform the animation.
                     sequentialTransition = animationFirstPlay();
 
                     // When the SequentialTransitions are complete, disable the play/pause button.
@@ -96,8 +104,11 @@ public class DeviceToTargetAnimation {
             }
         };
 
-        playPauseButton.setOnAction(event);
+        EventHandler<ActionEvent> saveEvent = e -> pStartParametersXML.writeStartParametersFile();
+
+        playPauseButton.setOnAction(playEvent);
         playPauseButtonStateOnPress = PlayPauseButtonStateOnPress.FIRST_PLAY;
+        saveButton.setOnAction(saveEvent);
     }
 
     //**TODO Clarify flow of control; separate onFinished events?

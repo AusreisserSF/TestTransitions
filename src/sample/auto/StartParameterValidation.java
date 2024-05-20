@@ -59,12 +59,6 @@ public class StartParameterValidation {
         PredicateChangeListener widthListener = (new PredicateChangeListener(
                 pCenterStageControllerLG.robot_width,
                 widthP -> {
-                    //**TODO Still true?  If the user doesn't enter a value for the width the animation runs
-                    // but when the user closes the application window this change listener
-                    // fires with a null value for widthP.
-                    if (widthP == null)
-                        return true;
-
                     StartParameterInfo widthInfo = startParameters.get(StartParameter.ROBOT_WIDTH);
                     if (widthP < ROBOT_BODY_DIMENSION_MIN || widthP > ROBOT_BODY_DIMENSION_MAX) {
                         widthInfo.setInvalid();
@@ -86,12 +80,6 @@ public class StartParameterValidation {
         PredicateChangeListener heightListener = (new PredicateChangeListener(
                 pCenterStageControllerLG.robot_height,
                 heightP -> {
-                    // If the user doesn't enter a value for the height the animation runs
-                    // but when the user closes the application window this change listener
-                    // fires with a null value for heightP.
-                    if (heightP == null)
-                        return true;
-
                     StartParameterInfo heightInfo = startParameters.get(StartParameter.ROBOT_HEIGHT);
                     if (heightP < ROBOT_BODY_DIMENSION_MIN || heightP > ROBOT_BODY_DIMENSION_MAX) {
                         heightInfo.setInvalid();
@@ -115,12 +103,6 @@ public class StartParameterValidation {
         PredicateChangeListener cameraCenterListener = (new PredicateChangeListener(
                 pCenterStageControllerLG.camera_center_from_robot_center,
                 cameraCenterP -> {
-                    // If the user doesn't enter a value the animation runs but when the
-                    // user closes the application window this change listener fires with
-                    // a null value for cameraCenterP.
-                    if (cameraCenterP == null)
-                        return true;
-
                     // Make sure that the robot's height has already been set.
                     StartParameterInfo heightInfo = startParameters.get(StartParameter.ROBOT_HEIGHT);
                     StartParameterInfo cameraCenterInfo = startParameters.get(StartParameter.CAMERA_CENTER_FROM_ROBOT_CENTER);
@@ -146,12 +128,6 @@ public class StartParameterValidation {
         PredicateChangeListener cameraOffsetListener = (new PredicateChangeListener(
                 pCenterStageControllerLG.camera_offset_from_robot_center,
                 cameraOffsetP -> {
-                    // If the user doesn't enter a value the animation runs but when the
-                    // user closes the application window this change listener fires with
-                    // a null value for cameraOffsetP.
-                    if (cameraOffsetP == null)
-                        return true;
-
                     // Make sure that the robot's width has already been set.
                     StartParameterInfo widthInfo = startParameters.get(StartParameter.ROBOT_WIDTH);
                     StartParameterInfo cameraOffsetInfo = startParameters.get(StartParameter.CAMERA_OFFSET_FROM_ROBOT_CENTER);
@@ -175,9 +151,6 @@ public class StartParameterValidation {
         PredicateChangeListener fovListener = (new PredicateChangeListener(
                 pCenterStageControllerLG.camera_field_of_view,
                 fovP -> {
-                    if (fovP == null)
-                        return true;
-
                     StartParameterInfo fovInfo = startParameters.get(StartParameter.CAMERA_FIELD_OF_VIEW);
                     if (fovP < CAMERA_FIELD_OF_VIEW_MIN || fovP > CAMERA_FIELD_OF_VIEW_MAX) {
                         fovInfo.setInvalid();
@@ -201,12 +174,6 @@ public class StartParameterValidation {
         PredicateChangeListener deviceCenterListener = (new PredicateChangeListener(
                 pCenterStageControllerLG.device_center_from_robot_center,
                 deviceCenterP -> {
-                    // If the user doesn't enter a value the animation runs but when the
-                    // user closes the application window this change listener fires with
-                    // a null value for deviceCenterP.
-                    if (deviceCenterP == null)
-                        return true;
-
                     // Make sure that the robot's height has already been set.
                     StartParameterInfo heightInfo = startParameters.get(StartParameter.ROBOT_HEIGHT);
                     StartParameterInfo deviceCenterInfo = startParameters.get(StartParameter.DEVICE_CENTER_FROM_ROBOT_CENTER);
@@ -232,12 +199,6 @@ public class StartParameterValidation {
         PredicateChangeListener deviceOffsetListener = (new PredicateChangeListener(
                 pCenterStageControllerLG.device_offset_from_robot_center,
                 deviceOffsetP -> {
-                    // If the user doesn't enter a value the animation runs but when the
-                    // user closes the application window this change listener fires with
-                    // a null value for deviceOffsetP.
-                    if (deviceOffsetP == null)
-                        return true;
-
                     // Make sure that the robot's width has already been set.
                     StartParameterInfo widthInfo = startParameters.get(StartParameter.ROBOT_WIDTH);
                     StartParameterInfo deviceOffsetInfo = startParameters.get(StartParameter.DEVICE_OFFSET_FROM_ROBOT_CENTER);
@@ -262,12 +223,6 @@ public class StartParameterValidation {
         PredicateChangeListener backdropXListener = (new PredicateChangeListener(
                 pCenterStageControllerLG.robot_position_at_backdrop_x,
                 backdropXP -> {
-                    // If the user doesn't enter a value the animation runs but when the
-                    // user closes the application window this change listener fires with
-                    // a null value for backdropXP.
-                    if (backdropXP == null)
-                        return true;
-
                     // Make sure that the robot's x position at the backdrop is in range.
                     StartParameterInfo backdropXInfo = startParameters.get(StartParameter.ROBOT_POSITION_AT_BACKDROP_X);
                     if (backdropXP < ROBOT_POSITION_AT_BACKDROP_X_MIN || backdropXP > ROBOT_POSITION_AT_BACKDROP_X_MAX) {
@@ -291,12 +246,6 @@ public class StartParameterValidation {
         PredicateChangeListener backdropYListener = (new PredicateChangeListener(
                 pCenterStageControllerLG.robot_position_at_backdrop_y,
                 backdropYP -> {
-                    // If the user doesn't enter a value the animation runs but when the
-                    // user closes the application window this change listener fires with
-                    // a null value for backdropYP.
-                    if (backdropYP == null)
-                        return true;
-
                     // Make sure that the robot's y position at the backdrop is in range.
                     StartParameterInfo backdropYInfo = startParameters.get(StartParameter.ROBOT_POSITION_AT_BACKDROP_Y);
                     if (backdropYP < ROBOT_POSITION_AT_BACKDROP_Y_MIN || backdropYP > ROBOT_POSITION_AT_BACKDROP_Y_MAX) {
