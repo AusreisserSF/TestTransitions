@@ -44,7 +44,7 @@ import java.util.concurrent.atomic.AtomicReference;
 // drawn through the center of the target AprilTag, i.e. there is
 // no "yaw".
 
-//**TODO Migrate all classes and fxml (some copy, some move) from this
+//**TODO #3 Migrate all classes and fxml (some copy, some move) from this
 // test project, TestTransitions, into its own project.
 
 //## Includes a turret simulation, i.e. one in which the body of the

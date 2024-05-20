@@ -111,7 +111,7 @@ public class DeviceToTargetAnimation {
         saveButton.setOnAction(saveEvent);
     }
 
-    //**TODO Clarify flow of control; separate onFinished events?
+    //**TODO #2 Clarify flow of control; separate onFinished events?
 
     private SequentialTransition animationFirstPlay() {
 
