@@ -14,14 +14,15 @@ import sample.auto.fx.FieldFXCenterStageBackdropLG;
 import sample.auto.fx.RobotFXCenterStageLG;
 import sample.auto.fx.RobotFXLG;
 
-import java.text.DecimalFormat;
 import java.util.Locale;
 
 public class PreviewDragAndRelease {
     public static final String CAMERA_FOV_LINE_LEFT_ID = "fovLineLeft";
     public static final String CAMERA_FOV_LINE_RIGHT_ID = "fovLineRight";
 
+    private final CenterStageControllerLG controller;
     private final Pane field;
+    private final RobotFXCenterStageLG previewRobot;
     private final Rectangle cameraOnRobot;
     private Line fovLineLeft;
     private Line fovLineRight;
@@ -43,12 +44,18 @@ public class PreviewDragAndRelease {
     // (event bubbling phase). If we use EventHandlers then the children of the
     // Group will be processed first in the event bubbling phase. Then we can
     // consume the event and prevent it from bubbling upwards.
+
+    //**TODO Disable the Play button if the target is outside the camera's FOV.
+
     public PreviewDragAndRelease(CenterStageControllerLG pController, Pane pField,
                                  Rectangle pApproachZone, RobotFXCenterStageLG pPreviewRobot,
                                  Rectangle pTargetAprilTag) {
 
         // Show the preview robot on the field.
+        controller = pController;
         field = pField;
+        previewRobot = pPreviewRobot;
+
         Group previewRobotGroup = pPreviewRobot.getRobot();
         pField.getChildren().add(previewRobotGroup);
 
@@ -60,10 +67,7 @@ public class PreviewDragAndRelease {
         double aprilTagCenterY = aprilTagCoord.getY() + pTargetAprilTag.getHeight() / 2;
 
         // Draw the camera FOV lines from the default position of the camera.
-        drawCameraFOV(cameraOnRobot, pPreviewRobot.cameraFieldOfView, aprilTagCenterY);
-
-        //**TODO #1 If the target is outside the FOV of the camera, change the color of
-        // the FOV in the start parameters to red.
+        drawCameraFOV(cameraOnRobot, pPreviewRobot.cameraFieldOfView, aprilTagCenterX, aprilTagCenterY);
 
         // Get the robot body, which defines the limits of the camera and device.
         Rectangle robotBody = (Rectangle) previewRobotGroup.lookup("#" + previewRobotGroup.getId() + "_" + RobotFXLG.ROBOT_BODY_ID);
@@ -122,7 +126,7 @@ public class PreviewDragAndRelease {
 
             // Remove the current FOV lines and redraw them from the new
             // camera position.
-            drawCameraFOV(cameraOnRobot, pPreviewRobot.cameraFieldOfView, aprilTagCenterY);
+            drawCameraFOV(cameraOnRobot, pPreviewRobot.cameraFieldOfView, aprilTagCenterX, aprilTagCenterY);
 
             // Get the distance in pixels between robot center and camera center,
             // both fore and aft and side to side, set the correct sign for FTC,
@@ -139,7 +143,6 @@ public class PreviewDragAndRelease {
             newCameraOffsetFromRobotCenter /= FieldFXCenterStageBackdropLG.PX_PER_INCH;
 
             // Update the start parameters display.
-            DecimalFormat numform = new DecimalFormat("00.00;-00.00");
             pController.camera_center_from_robot_center.setText(String.format(Locale.US, "%.2f", newCameraCenterFromRobotCenter));
             pController.camera_offset_from_robot_center.setText(String.format(Locale.US, "%.2f", newCameraOffsetFromRobotCenter));
         });
@@ -220,7 +223,7 @@ public class PreviewDragAndRelease {
 
             // Remove the current FOV lines and redraw them from the new
             // camera position.
-            drawCameraFOV(cameraOnRobot, pPreviewRobot.cameraFieldOfView, aprilTagCenterY);
+            drawCameraFOV(cameraOnRobot, pPreviewRobot.cameraFieldOfView, aprilTagCenterX, aprilTagCenterY);
 
             // Update the start parameter display with the new x and y
             // positions of the center of the preview robot.
@@ -229,33 +232,11 @@ public class PreviewDragAndRelease {
 
             pController.robot_position_at_backdrop_x.setText(String.format(Locale.US, "%.2f", previewRobotCenterInX));
             pController.robot_position_at_backdrop_y.setText(String.format(Locale.US, "%.2f", previewRobotCenterInY));
-
-            // If the target AprilTag is outside of the camera's field of view,
-            // turn the display of FOV degrees in the start parameters area to red.
-            Point2D updatedCameraCoord = cameraOnRobot.localToScene(cameraOnRobot.getX(), cameraOnRobot.getY());
-            double updatedCameraFaceX = updatedCameraCoord.getX() + cameraOnRobot.getWidth() / 2;
-            double updatedCameraFaceY = updatedCameraCoord.getY();
-
-            // Get the adjacent side of the triangle from the camera to the AprilTag.
-            double updatedFOVAdjacent = Math.abs(updatedCameraFaceY - aprilTagCenterY);
-            // tangent  = opposite / adjacent
-            double updatedHalfFOVTan = Math.tan(Math.toRadians(pPreviewRobot.cameraFieldOfView / 2));
-            double updatedHalfFOVOpposite = updatedHalfFOVTan * updatedFOVAdjacent;
-
-            double leftFOVBoundaryAtAprilTag = updatedCameraFaceX - updatedHalfFOVOpposite;
-            double rightFOVBoundaryAtAprilTag = updatedCameraFaceX + updatedHalfFOVOpposite;
-
-            if (aprilTagCenterX < leftFOVBoundaryAtAprilTag || aprilTagCenterX > rightFOVBoundaryAtAprilTag) {
-                // From jewelsea's answer in
-                // https://stackoverflow.com/questions/24702542/how-to-change-the-color-of-text-in-javafx-textfield
-                // textField.setStyle("-fx-text-inner-color: red;");
-                pController.camera_field_of_view.setStyle("-fx-text-inner-color: red; -fx-font-weight: bold;");
-            } else
-                pController.camera_field_of_view.setStyle("-fx-text-inner-color: black; -fx-font-weight: normal;");
-        });
+     });
     }
 
-    private void drawCameraFOV(Rectangle pCamera, double pCameraFOV, double pAprilTagCenterY) {
+    private void drawCameraFOV(Rectangle pCamera, double pCameraFOV,
+                               double pAprilTagCenterX, double pAprilTagCenterY) {
 
         // Remove the current FOV lines.
         field.getChildren().removeAll(fovLineLeft, fovLineRight);
@@ -286,6 +267,30 @@ public class PreviewDragAndRelease {
         fovLineRight.getStrokeDashArray().addAll(10.0);
         fovLineRight.setStrokeWidth(3.0);
         field.getChildren().add(fovLineRight);
+
+        // If the target AprilTag is outside of the camera's field of view,
+        // turn the display of FOV degrees in the start parameters area to red.
+        Point2D updatedCameraCoord = cameraOnRobot.localToScene(cameraOnRobot.getX(), cameraOnRobot.getY());
+        double updatedCameraFaceX = updatedCameraCoord.getX() + cameraOnRobot.getWidth() / 2;
+        double updatedCameraFaceY = updatedCameraCoord.getY();
+
+        // Get the adjacent side of the triangle from the camera to the AprilTag.
+        double updatedFOVAdjacent = Math.abs(updatedCameraFaceY - pAprilTagCenterY);
+        // tangent  = opposite / adjacent
+        double updatedHalfFOVTan = Math.tan(Math.toRadians(previewRobot.cameraFieldOfView / 2));
+        double updatedHalfFOVOpposite = updatedHalfFOVTan * updatedFOVAdjacent;
+
+        double leftFOVBoundaryAtAprilTag = updatedCameraFaceX - updatedHalfFOVOpposite;
+        double rightFOVBoundaryAtAprilTag = updatedCameraFaceX + updatedHalfFOVOpposite;
+
+        if (pAprilTagCenterX < leftFOVBoundaryAtAprilTag || pAprilTagCenterX > rightFOVBoundaryAtAprilTag) {
+            // From jewelsea's answer in
+            // https://stackoverflow.com/questions/24702542/how-to-change-the-color-of-text-in-javafx-textfield
+            // textField.setStyle("-fx-text-inner-color: red;");
+            controller.camera_field_of_view.setStyle("-fx-text-inner-color: red; -fx-font-weight: bold;");
+        } else
+            controller.camera_field_of_view.setStyle("-fx-text-inner-color: black; -fx-font-weight: normal;");
+
     }
 }
 
