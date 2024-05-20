@@ -3,6 +3,7 @@ package sample.auto;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
+import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -45,11 +46,9 @@ public class PreviewDragAndRelease {
     // Group will be processed first in the event bubbling phase. Then we can
     // consume the event and prevent it from bubbling upwards.
 
-    //**TODO #1 Disable the Play button if the target is outside the camera's FOV.
-
     public PreviewDragAndRelease(CenterStageControllerLG pController, Pane pField,
                                  Rectangle pApproachZone, RobotFXCenterStageLG pPreviewRobot,
-                                 Rectangle pTargetAprilTag) {
+                                 Rectangle pTargetAprilTag, Button pPlayButton, Button pSaveButton) {
 
         // Show the preview robot on the field.
         controller = pController;
@@ -67,7 +66,14 @@ public class PreviewDragAndRelease {
         double aprilTagCenterY = aprilTagCoord.getY() + pTargetAprilTag.getHeight() / 2;
 
         // Draw the camera FOV lines from the default position of the camera.
-        drawCameraFOV(cameraOnRobot, pPreviewRobot.cameraFieldOfView, aprilTagCenterX, aprilTagCenterY);
+        // If the target is outside of the camera's FOV, disable the Play and Save buttons.
+        if (drawCameraFOV(cameraOnRobot, pPreviewRobot.cameraFieldOfView, aprilTagCenterX, aprilTagCenterY)) {
+            pPlayButton.setDisable(false);
+            pSaveButton.setDisable(false);
+        } else {
+            pPlayButton.setDisable(true);
+            pSaveButton.setDisable(true);
+        }
 
         // Get the robot body, which defines the limits of the camera and device.
         Rectangle robotBody = (Rectangle) previewRobotGroup.lookup("#" + previewRobotGroup.getId() + "_" + RobotFXLG.ROBOT_BODY_ID);
@@ -125,8 +131,15 @@ public class PreviewDragAndRelease {
             }
 
             // Remove the current FOV lines and redraw them from the new
-            // camera position.
-            drawCameraFOV(cameraOnRobot, pPreviewRobot.cameraFieldOfView, aprilTagCenterX, aprilTagCenterY);
+            // camera position. If the target is outside of the camera's FOV,
+            // disable the Play and Save buttons.
+            if (drawCameraFOV(cameraOnRobot, pPreviewRobot.cameraFieldOfView, aprilTagCenterX, aprilTagCenterY)) {
+                pPlayButton.setDisable(false);
+                pSaveButton.setDisable(false);
+            } else {
+                pPlayButton.setDisable(true);
+                pSaveButton.setDisable(true);
+            }
 
             // Get the distance in pixels between robot center and camera center,
             // both fore and aft and side to side, set the correct sign for FTC,
@@ -222,8 +235,15 @@ public class PreviewDragAndRelease {
             }
 
             // Remove the current FOV lines and redraw them from the new
-            // camera position.
-            drawCameraFOV(cameraOnRobot, pPreviewRobot.cameraFieldOfView, aprilTagCenterX, aprilTagCenterY);
+            // camera position. If the target is outside of the camera's FOV,
+            // disable the Play and Save buttons.
+            if (drawCameraFOV(cameraOnRobot, pPreviewRobot.cameraFieldOfView, aprilTagCenterX, aprilTagCenterY)) {
+                pPlayButton.setDisable(false);
+                pSaveButton.setDisable(false);
+            } else {
+                pPlayButton.setDisable(true);
+                pSaveButton.setDisable(true);
+            }
 
             // Update the start parameter display with the new x and y
             // positions of the center of the preview robot.
@@ -235,8 +255,9 @@ public class PreviewDragAndRelease {
      });
     }
 
-    private void drawCameraFOV(Rectangle pCamera, double pCameraFOV,
+    private boolean drawCameraFOV(Rectangle pCamera, double pCameraFOV,
                                double pAprilTagCenterX, double pAprilTagCenterY) {
+        boolean targetWithinFOV;
 
         // Remove the current FOV lines.
         field.getChildren().removeAll(fovLineLeft, fovLineRight);
@@ -288,9 +309,13 @@ public class PreviewDragAndRelease {
             // https://stackoverflow.com/questions/24702542/how-to-change-the-color-of-text-in-javafx-textfield
             // textField.setStyle("-fx-text-inner-color: red;");
             controller.camera_field_of_view.setStyle("-fx-text-inner-color: red; -fx-font-weight: bold;");
-        } else
+            targetWithinFOV = false;
+        } else {
             controller.camera_field_of_view.setStyle("-fx-text-inner-color: black; -fx-font-weight: normal;");
+            targetWithinFOV = true;
+        }
 
+        return targetWithinFOV;
     }
 }
 

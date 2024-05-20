@@ -44,7 +44,7 @@ import java.util.concurrent.atomic.AtomicReference;
 // drawn through the center of the target AprilTag, i.e. there is
 // no "yaw".
 
-//**TODO #3 Migrate all classes and fxml (some copy, some move) from this
+//**TODO #2 Migrate all classes and fxml (some copy, some move) from this
 // test project, TestTransitions, into its own project.
 
 //## Includes a turret simulation, i.e. one in which the body of the
@@ -199,7 +199,8 @@ public class CenterStageBackdrop extends Application {
 
             // Show the draggable preview robot and its internally draggable camera and device.
             Rectangle aprilTag = (Rectangle) field.lookup("#" + FieldFXCenterStageBackdropLG.APRIL_TAG_ID + targetAprilTag);
-            new PreviewDragAndRelease(controller, field, approachZone, previewRobot, aprilTag);
+            new PreviewDragAndRelease(controller, field, approachZone, previewRobot, aprilTag,
+                    playButton, saveButton);
 
             // Set the starting position for the animation robot.
             Point2D startingPosition;
