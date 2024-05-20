@@ -72,7 +72,8 @@ public class StartParameterValidation {
                     }
 
                     widthInfo.setValid(widthP);
-                    startParametersXML.setRobotWidth(widthInfo.getParameterValue()); // update XML
+                    if (updateXML)
+                        startParametersXML.setRobotWidth(widthInfo.getParameterValue()); // update XML
                     return true;
                 },
                 "The width of the robot must be between " + ROBOT_BODY_DIMENSION_MIN + " and " + ROBOT_BODY_DIMENSION_MAX));
@@ -98,7 +99,8 @@ public class StartParameterValidation {
                     }
 
                     heightInfo.setValid(heightP);
-                    startParametersXML.setRobotHeight(heightInfo.getParameterValue()); // update XML
+                    if (updateXML)
+                        startParametersXML.setRobotHeight(heightInfo.getParameterValue()); // update XML
                     return true;
                 },
                 "The height of the robot must be between " + ROBOT_BODY_DIMENSION_MIN + " and " + ROBOT_BODY_DIMENSION_MAX));
@@ -128,7 +130,8 @@ public class StartParameterValidation {
                     }
 
                     cameraCenterInfo.setValid(cameraCenterP);
-                    startParametersXML.setCameraCenterFromRobotCenter(cameraCenterInfo.getParameterValue()); // update XML
+                    if (updateXML)
+                        startParametersXML.setCameraCenterFromRobotCenter(cameraCenterInfo.getParameterValue()); // update XML
                     return true;
                 },
                 "The fore/aft distance from camera center to robot center must be less than 1/2 the height of the robot"));
@@ -158,7 +161,8 @@ public class StartParameterValidation {
                     }
 
                     cameraOffsetInfo.setValid(cameraOffsetP);
-                    startParametersXML.setCameraOffsetFromRobotCenter(cameraOffsetInfo.getParameterValue()); // update XML
+                    if (updateXML)
+                        startParametersXML.setCameraOffsetFromRobotCenter(cameraOffsetInfo.getParameterValue()); // update XML
                     return true;
                 },
                 "The left/right distance from camera center to robot center must be less than 1/2 the width of the robot"));
@@ -181,7 +185,8 @@ public class StartParameterValidation {
                     }
 
                     fovInfo.setValid(fovP);
-                    startParametersXML.setCameraFOV(fovInfo.getParameterValue()); // update XML
+                    if (updateXML)
+                        startParametersXML.setCameraFOV(fovInfo.getParameterValue()); // update XML
                     return true;
                 },
                 "The camera field of view must be between " + CAMERA_FIELD_OF_VIEW_MIN + " and " + CAMERA_FIELD_OF_VIEW_MAX));
@@ -211,7 +216,8 @@ public class StartParameterValidation {
                     }
 
                     deviceCenterInfo.setValid(deviceCenterP);
-                    startParametersXML.setDeviceCenterFromRobotCenter(deviceCenterInfo.getParameterValue()); // update XML
+                    if (updateXML)
+                        startParametersXML.setDeviceCenterFromRobotCenter(deviceCenterInfo.getParameterValue()); // update XML
                     return true;
                 },
                 "The fore/aft distance from device center to robot center must be less than 1/2 the height of the robot"));
@@ -241,14 +247,13 @@ public class StartParameterValidation {
                     }
 
                     deviceOffsetInfo.setValid(deviceOffsetP);
-                    startParametersXML.setDeviceOffsetFromRobotCenter(deviceOffsetInfo.getParameterValue()); // update XML
+                    if (updateXML)
+                        startParametersXML.setDeviceOffsetFromRobotCenter(deviceOffsetInfo.getParameterValue()); // update XML
                     return true;
                 },
                 "The left/right distance from device center to robot center must be less than 1/2 the width of the robot"));
 
         validateStartParameter(deviceOffsetListener);
-
-        //**TODO #1 STOPPED HERE 5/19/24
 
         // ROBOT_POSITION_AT_BACKDROP_X
         // constraints: center x no less than 175 PX, no greater than 425 PX
@@ -271,6 +276,8 @@ public class StartParameterValidation {
                     }
 
                     backdropXInfo.setValid(backdropXP);
+                    if (updateXML)
+                        startParametersXML.setRobotPositionAtBackdropX(backdropXInfo.getParameterValue()); // update XML
                     return true;
                 },
                 "The x position of the robot at the backstop is out of range"));
@@ -298,6 +305,8 @@ public class StartParameterValidation {
                     }
 
                     backdropYInfo.setValid(backdropYP);
+                    if (updateXML)
+                        startParametersXML.setRobotPositionAtBackdropY(backdropYInfo.getParameterValue()); // update XML
                     return true;
                 },
                 "The y position of the robot at the backstop is out of range"));
