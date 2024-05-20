@@ -37,5 +37,13 @@ public class CenterStageControllerLG {
     public Spinner<Integer> april_tag_spinner;
     @FXML
     public ToggleGroup approach_toggle;
+    @FXML
+    public Button play_button_blue;
+    @FXML
+    public Button save_preview_changes_blue;
+    @FXML
+    public Button play_button_red;
+    @FXML
+    public Button save_preview_changes_red;
 
 }
