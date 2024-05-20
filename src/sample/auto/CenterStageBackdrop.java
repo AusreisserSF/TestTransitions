@@ -30,16 +30,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
-//**TODO Documentation
-// This is really about positioning the robot with respect to
-// a target whose angle and distance from a camera mounted on a robot
-// can be determined - such as an AprilTag or, as in this simulation,
-// the three AprilTags on the backdrop of the CenterStage game.
-// Assumptions/restrictions ...
+// This is really about positioning the robot with respect to a
+// target whose angle and distance from a camera mounted on the robot
+// can be determined - such as a single AprilTag or, as in this
+// simulation, one of the three AprilTags on the backdrop of the
+// CenterStage game.
+
+// Assumptions and restrictions ...
 // The robot is square or rectangular.
 // The face of the camera is parallel to the side of the robot that
-// faces the target AprilTag at the point the camera gets the angle
-// and distance to the AprilTag (simulated here).
+// is opposite the target AprilTag at the point that the FTC
+// VisionPortal would return the angle and distance to the AprilTag
+// (simulated here).
 // The same side of the robot is assumed to be parallel to a line
 // drawn through the center of the target AprilTag, i.e. there is
 // no "yaw".
