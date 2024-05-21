@@ -66,12 +66,13 @@ public class DeviceToTargetAnimation {
         // Action event for the play/pause button.
         EventHandler<ActionEvent> playEvent = e -> {
             switch (playPauseButtonStateOnPress) {
+                // The actual animation starts here.
                 case FIRST_PLAY -> {
                     // Disable the Save button.
                     saveButton.setVisible(false);
                     saveButton.setDisable(true);
 
-                    // Perform the animation.
+                    // Get the steps in the animation.
                     sequentialTransition = animationFirstPlay();
 
                     // When the SequentialTransitions are complete, disable the play/pause button.
@@ -83,6 +84,8 @@ public class DeviceToTargetAnimation {
 
                     playPauseButton.setText("Pause");
                     playPauseButtonStateOnPress = PlayPauseButtonStateOnPress.PAUSE;
+
+                    // Perform the animation.
                     sequentialTransition.play();
                 }
                 case RESUME_PLAY -> {
@@ -140,20 +143,16 @@ public class DeviceToTargetAnimation {
         System.out.println("Device center from robot center " + deviceCenterFromRobotCenter);
         System.out.println("Device offset from robot center " + deviceOffsetFromRobotCenter);
 
-        // Use the final position of the preview robot as the target
-        // position for the animation robot.
-
-        // Instead of getting the coordinates, which are those of the center
-        // of the robot, from the start parameters get them from the preview
-        // robot - because its position may have changed by drag-and-release.
+        // Use the final position of the preview robot as the target position
+        // for the animation robot.
         Group previewRobotGroup = previewRobot.getRobot();
         Bounds previewRobotBounds = previewRobotGroup.getBoundsInParent();
         double robotPositionAtBackdropX = previewRobotBounds.getCenterX();
         double robotPositionAtBackdropY = previewRobotBounds.getCenterY();
-        logFTCFieldCoordinates(alliance, robotPositionAtBackdropX, robotPositionAtBackdropY);
 
         // The position of the animation robot in front of the backdrop can
         // only be logged now that the preview robot drag-release is complete.
+        logFTCFieldCoordinates(alliance, robotPositionAtBackdropX, robotPositionAtBackdropY);
         System.out.println("Animation robot approach position at the backdrop " + robotPositionAtBackdropX + ", y " + robotPositionAtBackdropY);
 
         // Clear the preview robot and the camera field-of-view lines.
@@ -161,11 +160,10 @@ public class DeviceToTargetAnimation {
         Line fovRight = (Line) field.lookup("#" + PreviewDragAndRelease.CAMERA_FOV_LINE_RIGHT_ID);
         field.getChildren().removeAll(previewRobotGroup, fovLeft, fovRight);
 
-        // Now show the animation robot.
+        // Show the animation robot.
         field.getChildren().add(animationRobotGroup);
 
-        //!! I noticed the use of localToScene(() in some code from the FTCSimulator -
-        // this is more like it. By the way, this is the *center* of the robot.
+        // The method localToScene() returns the coordinates of the center of the robot.
         Point2D animationRobotLocation = animationRobotGroup.localToScene(animationRobotGroup.getBoundsInParent().getCenterX(), animationRobotGroup.getBoundsInParent().getCenterY());
 
         // A slight pause after the preview and before the animation starts.
@@ -195,9 +193,10 @@ public class DeviceToTargetAnimation {
         rotateTransition.setByAngle(rotation);
         rotateTransition.setOnFinished(event -> System.out.println("Angle after initial rotation " + animationRobotGroup.getRotate()));
 
-
-
-
+        //## The TranslateTransition for the final strafe of the robot that puts
+        // the device in line with the target must be declared before the
+        // OnFinished action of the ParallelTransition because the distance to
+        // strafe is only known after the ParallelTransition is complete.
         TranslateTransition strafeTT = new TranslateTransition(Duration.millis(2000));
         strafeTT.setNode(animationRobotGroup);
         strafeTT.setOnFinished(event -> {
@@ -223,9 +222,9 @@ public class DeviceToTargetAnimation {
             System.out.println("Robot position after strafe x " + robotBP.getCenterX() + ", y " + robotBP.getCenterY());
         });
 
-        //## The RotateTransition for the final rotation of the robot so that the
-        // device lines up with the target must be declared before the
-        // ParallelTransition, i.e. out of the time sequence, because the angle to
+        //## The RotateTransition for the final rotation of the robot that puts
+        // the device in line with the target must be declared before the
+        // OnFinished action of the ParallelTransition because the angle to
         // rotate is only known after the ParallelTransition is complete.
         RotateTransition rotateDeviceTowardsAprilTagT = new RotateTransition(Duration.seconds(2));
         rotateDeviceTowardsAprilTagT.setNode(animationRobotGroup);
@@ -333,8 +332,8 @@ public class DeviceToTargetAnimation {
             // Get data about the strafe (strafe distance to position the device opposite
             // the target and distance from the device to the target) as well as the angle
             // by which the robot must be rotated so that the delivery device points at the
-            // AprilTag and the final distance from the device to the AprilTag. The startup
-            // parameters determine which set of data to use.
+            // target AprilTag and the final distance from the device to the AprilTag. The
+            // startup parameters determine which set of data to use.
 
             // The fields centerStageRobot.cameraCenterFromRobotCenterPX and
             // centerStageRobot.cameraOffsetFromRobotCenterPX are already signed correctly
@@ -350,9 +349,9 @@ public class DeviceToTargetAnimation {
                     animationRobot.deviceCenterFromRobotCenterPX, animationRobot.deviceOffsetFromRobotCenterPX);
 
             // In case a strafe was selected from the start parameters.
-            // Support a strafe that positions the delivery device opposite the AT.
-            // Positive: strafe to the left; negative: strafe to the right. So
-            // invert the FTC direction for FX.
+            // Support a strafe that positions the delivery device opposite the
+            // target AprilTag. Positive: strafe to the left; negative: strafe
+            // to the right. Invert the FTC direction for FX.
             double finalStrafe = -corrections.strafeDistanceDeviceOppositeTarget;
             System.out.println("FX distance to strafe " + finalStrafe);
             strafeTT.setByX(finalStrafe);
@@ -366,16 +365,6 @@ public class DeviceToTargetAnimation {
         PauseTransition strafePauseT = new PauseTransition(Duration.millis(2500));
         strafePauseT.setOnFinished(event -> {
             removeCameraToTargetLines();
-
-            // Draw two sides of the triangle formed between the center of
-            // the robot and the target AprilTag.
-            // Hypotenuse.
-            //Line lineRCTH = new Line(robotCoordX, robotCoordY, aprilTagCenterX, aprilTagCenterY);
-            //lineRCTH.setId("lineRCTH");
-            //lineRCTH.setStroke(Color.AQUA);
-            //lineRCTH.getStrokeDashArray().addAll(10.0);
-            //lineRCTH.setStrokeWidth(3.0);
-            //field.getChildren().add(lineRCTH);
 
             // Opposite.
             Line lineRCTO = new Line(robotCoordX, aprilTagCenterY, aprilTagCenterX, aprilTagCenterY);
@@ -477,15 +466,6 @@ public class DeviceToTargetAnimation {
             lineRCTH.setStrokeWidth(3.0);
             field.getChildren().add(lineRCTH);
 
-            // Opposite.
-            // Line lineRCTO = new Line(robotCoordX, aprilTagCenterY, aprilTagCenterX, aprilTagCenterY);
-            // lineRCTO.setId("lineRCTO");
-            // lineRCTO.setStroke(Color.AQUA);
-            // lineRCTO.getStrokeDashArray().addAll(7.0, 10.0);
-            // lineRCTO.setStrokeDashOffset(7.0);
-            // lineRCTO.setStrokeWidth(3.0);
-            // field.getChildren().add(lineRCTO);
-
             // The adjacent side of this triangle is shared with the robot center
             // to device triangle.
             Line lineRCTA = new Line(robotCoordX, robotCoordY, robotCoordX, aprilTagCenterY);
@@ -548,8 +528,8 @@ public class DeviceToTargetAnimation {
             field.getChildren().add(lineTTH);
         });
 
-        // Look at the startup parameter that indicates whether to strafe, turn,
-        // or rotate the turret.
+        // Get the startup parameter that indicates whether to strafe the robot,
+        // turn the robot, or rotate the turret.
         RadioButton selectedRadioButton = (RadioButton) controller.approach_toggle.getSelectedToggle();
         String radioButtonText = selectedRadioButton.getText();
 

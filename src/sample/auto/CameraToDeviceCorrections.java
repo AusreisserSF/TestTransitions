@@ -13,9 +13,6 @@ public class CameraToDeviceCorrections {
     // device to target post-rotation. Note that the adjacent sides of the robot
     // center to target triangle and the robot center to device triangle
     // pre-rotation are the same.
-
-    //**TODO Need diagrams of all of the triangles. Try https://app.diagrams.net/.
-
     public static CorrectionData getCameraToDeviceCorrections(double pAngleCameraFaceToTarget, double pDistanceCameraFaceToTarget,
                                                               double pDistanceRobotCenterToCameraFace, double pOffsetRobotCenterToCameraCenter,
                                                               double pDistanceRobotCenterToDeliveryDevice, double pOffsetRobotCenterToDeliveryDevice) {
