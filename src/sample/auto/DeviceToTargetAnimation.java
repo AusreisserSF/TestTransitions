@@ -111,8 +111,8 @@ public class DeviceToTargetAnimation {
         saveButton.setOnAction(saveEvent);
     }
 
-    //**TODO #1 Clarify flow of control; separate onFinished events?
 
+    // This method creates and returns the steps that comprise the animation.
     private SequentialTransition animationFirstPlay() {
 
         // We're done with the Preview so collect the possibly changed
@@ -143,10 +143,6 @@ public class DeviceToTargetAnimation {
         // Use the final position of the preview robot as the target
         // position for the animation robot.
 
-        //## The curves are a proof-of-concept. They will be different depending
-        // on the user's selection for the final position in front of the backdrop.
-        // CubicCurveTo constructor parameters: controlX1, controlX2, controlY1, controlY2, endX, endY
-
         // Instead of getting the coordinates, which are those of the center
         // of the robot, from the start parameters get them from the preview
         // robot - because its position may have changed by drag-and-release.
@@ -168,10 +164,6 @@ public class DeviceToTargetAnimation {
         // Now show the animation robot.
         field.getChildren().add(animationRobotGroup);
 
-        //## As a demonstration start the robot facing inward from the BLUE
-        // alliance wall and make the robot follow a CubicCurve pathToBackdrop while
-        // simultaneously rotating -90 degrees to face the backdrop.
-
         //!! I noticed the use of localToScene(() in some code from the FTCSimulator -
         // this is more like it. By the way, this is the *center* of the robot.
         Point2D animationRobotLocation = animationRobotGroup.localToScene(animationRobotGroup.getBoundsInParent().getCenterX(), animationRobotGroup.getBoundsInParent().getCenterY());
@@ -179,12 +171,6 @@ public class DeviceToTargetAnimation {
         // A slight pause after the preview and before the animation starts.
         PauseTransition postPreviewPauseT = new PauseTransition(Duration.millis(500));
 
-        // It would be clearer if we could define the paths from the animation robot's
-        // blue or red start position to the robot's position in front of the backdrop.
-        // But the Preview is still in effect and the user may drag and release the
-        // preview robot. So we have to wait until the user hits the Play button to
-        // capture the preview robot's final position in front of the backdrop so that
-        // we can use that position for the animation robot.
         Path pathToBackdrop = new Path();
         pathToBackdrop.getElements().add(new MoveTo(animationRobotLocation.getX(), animationRobotLocation.getY()));
         CubicCurveTo cubicCurveTo;
@@ -209,9 +195,9 @@ public class DeviceToTargetAnimation {
         rotateTransition.setByAngle(rotation);
         rotateTransition.setOnFinished(event -> System.out.println("Angle after initial rotation " + animationRobotGroup.getRotate()));
 
-        //## The TranslateTransition for the final strafe must be declared before the
-        // ParallelTransition, i.e. out of the time sequence, because the distance to
-        // strafe is only known after the ParallelTransition is complete.
+
+
+
         TranslateTransition strafeTT = new TranslateTransition(Duration.millis(2000));
         strafeTT.setNode(animationRobotGroup);
         strafeTT.setOnFinished(event -> {
@@ -237,9 +223,6 @@ public class DeviceToTargetAnimation {
             System.out.println("Robot position after strafe x " + robotBP.getCenterX() + ", y " + robotBP.getCenterY());
         });
 
-        RadioButton selectedRadioButton = (RadioButton) controller.approach_toggle.getSelectedToggle();
-        String radioButtonText = selectedRadioButton.getText();
-
         //## The RotateTransition for the final rotation of the robot so that the
         // device lines up with the target must be declared before the
         // ParallelTransition, i.e. out of the time sequence, because the angle to
@@ -260,42 +243,9 @@ public class DeviceToTargetAnimation {
             field.getChildren().add(lineDT);
         });
 
-        // If we're treating the device as a turret then the robot itself does
-        // not need to turn. Just draw the lines from the turret to the target.
-        PauseTransition turretToTargetPauseT = new PauseTransition(Duration.millis(2500));
-        turretToTargetPauseT.setOnFinished(event -> {
-            removeCameraToTargetLines();
-
-            // Use information about the strafe distances to calculate the angle
-            // and distances for the turret.
-
-            // The opposite side of the turret to target triangle is the same
-            // as the strafe distance from the device to the target.
-            double distanceTurretToTargetOpposite = Math.abs(corrections.strafeDistanceDeviceOppositeTarget);
-
-            // The adjacent side of the turret to target triangle is the same
-            // as the final post-strafe distance from the device from the target.
-            double distanceTurretToTargetAdjacent = corrections.postStrafeDistanceDeviceToTarget;
-
-            // Now we can calculate the hypotenuse and the angle.
-            double ttHypotenuseSquared = Math.pow(distanceTurretToTargetOpposite, 2) + Math.pow(distanceTurretToTargetAdjacent, 2);
-            double ttHypotenuse = Math.sqrt(ttHypotenuseSquared);
-            System.out.println("Distance from turret to target" + ttHypotenuse);
-
-            // sin theta = opposite / hypotenuse
-            double sinTTAngle = distanceTurretToTargetOpposite / ttHypotenuse;
-            double ttAngle = Math.toDegrees(Math.asin(sinTTAngle));
-            System.out.println("Angle from turret to target" + ttAngle);
-
-            // Draw the hypotenuse of the device (turret) to target (AprilTag) triangle.
-            Line lineTTH = new Line(deviceCenterX, deviceCenterY, aprilTagCenterX, aprilTagCenterY);
-            lineTTH.setStroke(Color.YELLOW);
-            lineTTH.getStrokeDashArray().addAll(10.0);
-            lineTTH.setStrokeWidth(3.0);
-            field.getChildren().add(lineTTH);
-        });
-
         // Follow the cubic curve and rotate in parallel.
+        // Note that the OnFinished event modifies the strafeTT transition and the
+        // rotateDeviceTowardsAprilTagT transition so these must be declared above.
         ParallelTransition parallelT = new ParallelTransition(pathTransition, rotateTransition);
         parallelT.setOnFinished(event -> {
             // See answer from jewelsea in https://stackoverflow.com/questions/30338598/translatetransition-does-not-change-x-y-co-ordinates
@@ -563,7 +513,46 @@ public class DeviceToTargetAnimation {
             field.getChildren().removeAll(lineRCTHRef, lineRCTORef, lineRCTARef);
         });
 
-        // Look at the startup parameter that indicates whether to strafe or rotate.
+        // If we're treating the device as a turret then the robot itself does
+        // not need to turn. Just draw the lines from the turret to the target.
+        PauseTransition turretToTargetPauseT = new PauseTransition(Duration.millis(2500));
+        turretToTargetPauseT.setOnFinished(event -> {
+            removeCameraToTargetLines();
+
+            // Use information about the strafe distances to calculate the angle
+            // and distances for the turret.
+
+            // The opposite side of the turret to target triangle is the same
+            // as the strafe distance from the device to the target.
+            double distanceTurretToTargetOpposite = Math.abs(corrections.strafeDistanceDeviceOppositeTarget);
+
+            // The adjacent side of the turret to target triangle is the same
+            // as the final post-strafe distance from the device from the target.
+            double distanceTurretToTargetAdjacent = corrections.postStrafeDistanceDeviceToTarget;
+
+            // Now we can calculate the hypotenuse and the angle.
+            double ttHypotenuseSquared = Math.pow(distanceTurretToTargetOpposite, 2) + Math.pow(distanceTurretToTargetAdjacent, 2);
+            double ttHypotenuse = Math.sqrt(ttHypotenuseSquared);
+            System.out.println("Distance from turret to target" + ttHypotenuse);
+
+            // sin theta = opposite / hypotenuse
+            double sinTTAngle = distanceTurretToTargetOpposite / ttHypotenuse;
+            double ttAngle = Math.toDegrees(Math.asin(sinTTAngle));
+            System.out.println("Angle from turret to target" + ttAngle);
+
+            // Draw the hypotenuse of the device (turret) to target (AprilTag) triangle.
+            Line lineTTH = new Line(deviceCenterX, deviceCenterY, aprilTagCenterX, aprilTagCenterY);
+            lineTTH.setStroke(Color.YELLOW);
+            lineTTH.getStrokeDashArray().addAll(10.0);
+            lineTTH.setStrokeWidth(3.0);
+            field.getChildren().add(lineTTH);
+        });
+
+        // Look at the startup parameter that indicates whether to strafe, turn,
+        // or rotate the turret.
+        RadioButton selectedRadioButton = (RadioButton) controller.approach_toggle.getSelectedToggle();
+        String radioButtonText = selectedRadioButton.getText();
+
         SequentialTransition seqTransition = new SequentialTransition(postPreviewPauseT, parallelT); // common
         switch (radioButtonText) {
             case "Strafe robot" -> seqTransition.getChildren().addAll(strafePauseT, preStrafePauseT, strafeTT);
