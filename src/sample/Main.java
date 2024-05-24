@@ -1,7 +1,6 @@
 package sample;
 
 import javafx.application.Application;
-import sample.auto.CenterStageBackdrop;
 
 public class Main {
 
@@ -12,7 +11,6 @@ public class Main {
             case "SimpleTest" -> Application.launch(SimpleTest.class, args);
             case "BoundsDemo" -> Application.launch(BoundsDemo.class, args);
             case "Transitions" -> Application.launch(Transitions.class, args);
-            case "Backdrop" -> Application.launch(CenterStageBackdrop.class, args);
             case "Text" -> Application.launch(TextInput.class, args);
             case "DragAndDrop" -> Application.launch(DragAndDrop.class, args);
             case "Drag" -> Application.launch(Drag.class, args);
